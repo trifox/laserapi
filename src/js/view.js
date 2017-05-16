@@ -1,6 +1,8 @@
 var helper = require('./helper.js')
-var laserConfig = require('./LaserApiConfig.js')
+var laserConfig = require('./LaserApiConfig.js').default
+var laserApi = require('./LaserApi.js').default
 
+console.log(laserApi)
 /* make sure to use https as the web audio api does not like http */
 
 if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '0.0.0.0') {
@@ -118,47 +120,50 @@ function getColorDistance(col1, col2) {
     return result;
 }
 loadFromLocalStorage();
-console.log(getColorDistance(laserConfig.default.testColor, [0, 0, 0]))
-console.log(getColorDistance(laserConfig.default.testColor, [0, 255, 0]))
-console.log(getColorDistance(laserConfig.default.testColor, [255, 255, 255]))
+console.log(getColorDistance(laserConfig.testColor, [0, 0, 0]))
+console.log(getColorDistance(laserConfig.testColor, [0, 255, 0]))
+console.log(getColorDistance(laserConfig.testColor, [255, 255, 255]))
 
-var gRect = new Array(laserConfig.default.gridResolution *laserConfig.default. gridResolution);
+var gRect = new Array(laserConfig.gridResolution * laserConfig.gridResolution);
 var globalImageData = null;
 /* start as soon as things are set up */
 document.addEventListener("DOMContentLoaded", function (event) {
     var canvas = document.getElementById('canvas')
     var context = canvas.getContext("2d")
     var video = document.getElementById('video')
+
+    laserApi.init(video, canvas);
+
     canvas.width = Math.floor(video.videoWidth)
     canvas.height = Math.floor(video.videoHeight)
     canvas.style.width = canvas.width;
     canvas.style.height = canvas.height;
 
     // ask for mic permission
-    navigator.getUserMedia({
-        video: {
-            width: laserConfig.default.videoResolution.width,
-            height: laserConfig.default.videoResolution.height
-        }
-    }, function (stream) {
+    /*    navigator.getUserMedia({
+     video: {
+     width: laserConfig.videoResolution.width,
+     height: laserConfig.videoResolution.height
+     }
+     }, function (stream) {
 
-        video.srcObject = stream;
-        video.onloadedmetadata = function (e) {
-            // Do something with the video here.
-            video.play();
+     video.srcObject = stream;
+     video.onloadedmetadata = function (e) {
+     // Do something with the video here.
+     video.play();
 
-            canvas.width = Math.floor(video.videoWidth)
-            canvas.height = Math.floor(video.videoHeight)
-            canvas.style.width = canvas.width;
-            canvas.style.height = canvas.height;
+     canvas.width = Math.floor(video.videoWidth)
+     canvas.height = Math.floor(video.videoHeight)
+     canvas.style.width = canvas.width;
+     canvas.style.height = canvas.height;
 
-            updateCanvasRegular()
-        };
+     updateCanvasRegular()
+     };
 
-    }, function () {
+     }, function () {
 
-    })
-
+     })
+     */
     // render canvas
     var updateCanvas = function (options) {
 
@@ -185,12 +190,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
             var canvasColor = context.getImageData(0, 0, canvas.width, canvas.height); // rgba e [0,255]
             var pixels = canvasColor.data;
 
-            var gwidth = (canvas.width / laserConfig.default.gridResolution);
-            var gheight = (canvas.height / laserConfig.default.gridResolution)
+            var gwidth = (canvas.width / laserConfig.gridResolution);
+            var gheight = (canvas.height / laserConfig.gridResolution)
 
-            for (var gy = 0; gy < laserConfig.default.gridResolution; gy++) {
-                for (var gx = 0; gx < laserConfig.default.gridResolution; gx++) {
-                    var gIndex = gy * laserConfig.default.gridResolution + gx;
+            for (var gy = 0; gy < laserConfig.gridResolution; gy++) {
+                for (var gx = 0; gx < laserConfig.gridResolution; gx++) {
+                    var gIndex = gy * laserConfig.gridResolution + gx;
                     gRect[gIndex] = 0;
                 }
             }
@@ -215,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     var indexnormal = (y * canvas.width + x) * 4;
                     var gx = Math.floor(x / gwidth);
                     var gy = Math.floor(y / gheight);
-                    var gIndex = gy * laserConfig.default.gridResolution + gx;
+                    var gIndex = gy * laserConfig.gridResolution + gx;
 
                     //canvasColor.data[index + 1] = 0;
                     //canvasColor.data[index + 2] = 0;
@@ -226,12 +231,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     current[1] = canvasColorOriginal.data[index + 1];
                     current[2] = canvasColorOriginal.data[index + 2];
 
-                    if (getColorDistance(laserConfig.default.testColor, [
+                    if (getColorDistance(laserConfig.testColor, [
                             canvasColorOriginal.data[index],
                             canvasColorOriginal.data[index + 1],
                             canvasColorOriginal.data[index + 2]
 
-                        ]) < laserConfig.default.treshhold) {
+                        ]) < laserConfig.treshold) {
                         /*  coordinates.push({
                          x: x,
                          x: x,
@@ -260,11 +265,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
             context.putImageData(globalImageData, 0, 0);
 
-            for (var gx = 0; gx < laserConfig.default.gridResolution; gx++) {
-                for (var gy = 0; gy < laserConfig.default.gridResolution; gy++) {
+            for (var gx = 0; gx < laserConfig.gridResolution; gx++) {
+                for (var gy = 0; gy < laserConfig.gridResolution; gy++) {
                     var ggx = gx * gwidth;
                     var ggy = gy * gheight;
-                    var gIndex = gy * laserConfig.default.gridResolution + gx;
+                    var gIndex = gy * laserConfig.gridResolution + gx;
 
                     if (gRect[gIndex] > 0) {
                         context.strokeStyle = "#0000ff";
@@ -274,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                         context.textAlign = 'center'
                         // context.fillText('' + gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 
-                        context.fillRect(ggx, ggy, canvas.width / laserConfig.default.gridResolution, canvas.height / laserConfig.default.gridResolution)
+                        context.fillRect(ggx, ggy, canvas.width / laserConfig.gridResolution, canvas.height / laserConfig.gridResolution)
                     }
                     else {
                         // context.strokeStyle = "#ffffff";

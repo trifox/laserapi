@@ -6,8 +6,28 @@ var config = {
         width: 640,
         height: 480
     },
-    treshhold: 200
+    treshold: 200,
 
-}
+    transform: {
+        topleft: {
+            x: 0,
+            y: 0
+        },
+        topright: {
+            x: 1,
+            y: 0
+        },
+        bottomleft: {
+            x: 0,
+            y: 1
+        },
+        bottomright: {
+            x: 1,
+            y: 1
+        }
+
+    }
+
+};
 
 export default config
