@@ -1,137 +1,176 @@
-<html>
-<head>
-    <title><%= INTL_TITLE %></title>
-    <meta charset="utf-8">
-    <meta id="meta-description" name="description" content="<%= INTL_META_DESCRIPTION %>">
-    <meta id="meta-tags" name="tags" content="<%= INTL_META_TAGS %>">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes">
-    <style>
+<html >
+<head >
+    <title ><%= INTL_TITLE %></title >
+    <meta charset="utf-8" >
+    <meta id="meta-description"
+          name="description"
+          content="<%= INTL_META_DESCRIPTION %>" >
+    <meta id="meta-tags"
+          name="tags"
+          content="<%= INTL_META_TAGS %>" >
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes" >
+    <style >
         body {
             margin: 0px;
-            background-color: rgb(50, 50, 255);
+            background-color: rgb(128, 128, 128);
         }
 
-        #canvasHistory {
+        #canvas {
             width: 100%;
             height: 100%;
-            margin: 0px
-        }
-
-        #btnMute {
-            color: #ffffff;
-            display: none;
-            font: 20px Arial;
-            text-align: right;
+            margin: 0px;
+            top: 0px;
+            left: 0px;
             position: absolute;
-            top: 2px;
-            right: 2px;
-            padding: 10px;
-            border: 1px solid white;
         }
-
-        #btnInfo {
-            color: #ffffff;
-            display: none;
-            font: 20px Arial;
-            text-align: left;
-            position: absolute;
-            bottom: 2px;
-            left: 2px;
-            padding: 10px;
-            border: 1px solid white
+        #canvas :-webkit-full-screen {
+            width: 100%;
+            height: 100%;
         }
-
-        #axisY {
-            text-align: left;
-            color: #fff;
-            display: none;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-        }
-
-        #axisX {
-            text-align: right;
-            color: #fff;
-            display: none;
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-        }
-
-        #lineVolume {
-            text-align: left;
-            color: #fff;
-            display: none;
-            position: absolute;
-            left: 2px;
-            line-height: 5px;
-            right: 2px;
-            top: 50px;
-            pointer-events: none
-        }
-
-        @media screen and (max-width: 600px) {
-            #lineVolume {
-                line-height: 20px;
-            }
-        }
-
-        #textInfo {
-            color: #ffffff;
-            text-align: center;
-            width: 80%;
-            margin-left: 10%;
-            position: absolute;
+        .control {
+            width: 100%;
             bottom: 0px;
-            pointer-events: none
+            position: absolute;
         }
 
-        .noTouch {
-            pointer-events: none
+        .knob {
+            position: absolute;
+            z-index: 1;
+            border-left: 2px solid red;
+            border-top: 2px solid red;
+            width: 10px;
+            height: 10px;
         }
 
-        .forceTouch {
-            pointer-events: all;
+        .videocontainer {
+            width: 50%;
+            margin: 0px;
+            right: 0px;
+            z-index: 0;
+            top: 0px;
+            position: absolute;
         }
-    </style>
-</head>
 
-<body>
+        .slider[type='range'] {
+            width: 1000px;
+        }
+    </style >
+</head >
 
-<canvas id="canvasHistory"></canvas>
-<a id="btnMute"><%=
-    INTL_MUTE_INITIAL %></a>
+<body >
+<script >
 
-<a id="btnInfo"><%=
-    INTL_BTN_INFO %></a>
+    function fullscreen() {
 
+        console.log('fullscreen clicked')
+        var elem = document.getElementById("canvas");
+        console.log('element is ', elem)
 
-<div id="axisY">
-    <%=
-    INTL_Y_AXIS_LEGEND %>
-</div>
-
-<div id="axisX">
-    <%=
-    INTL_X_AXIS_LEGEND %>
-</div>
-
-<div id="lineVolume">
-    <%=
-    INTL_Y_AXIS_LEVEL_DESCRIPTION %>
-    <hr>
-</div>
+        if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        }
 
 
-<div id="textInfo">
-    <span class="noTouch"><%=
-    INTL_DESCRIPTION %></span>
-    <p class="forceTouch"><%=
-        INTL_DESCRIPTION_LINKS %></p>
-</div>
+
+    }
+</script >
+<div class="control" >
+
+    <input type="button"
+           id="fullscreen_button"
+           value="fullscreen"
+           onclick="javascript:fullscreen()" >
+    <p > topleftx</p ><input type="range"
+                             class="slider"
+
+                             id="topleft_x"
+                             min="0"
+                             max="10000"
+                             value="0" >
+    <p > toplefty</p ><input type="range"
+                             class="slider"
+                             id="topleft_y"
+                             value="0"
+
+                             min="0"
+                             max="10000"
+>
+    </p >
+    <p >
+    <p >toprightx</p ><input type="range"
+                             class="slider"
+                             id="topright_x"
+                             min="0"
+                             max="10000"
+                             value="5000" >
+    <p >toprighty</p ><input type="range"
+                             class="slider"
+                             id="topright_y"
+                             value="0"
+
+                             min="0"
+                             max="10000"
+>
+
+    </p >
+    <p >
+        <br /> bottomleftx<br /><input type="range"
+                                       class="slider"
+                                       id="bottomleft_x"
+                                       min="0"
+                                       max="10000"
+                                       value="0" >
+        bottomlefty<br /><input type="range"
+                                class="slider"
+                                id="bottomleft_y"
+                                value="5000"
+
+                                min="0"
+                                max="10000"
+    >
+    </p >
+    <p >
+        <br /> bottomrightx<br /><input type="range"
+                                        class="slider"
+                                        id="bottomright_x"
+                                        value="5000"
+                                        min="0"
+                                        max="10000"
+    >
+        bottomrighty<br /><input type="range"
+                                 class="slider"
+                                 id="bottomright_y"
+                                 value="5000"
+
+                                 min="0"
+                                 max="10000"
+    >
+    </p >
+</div >
+
+<canvas id="canvas" ></canvas >
+<div class="videocontainer"
+     id="videocontainer" >
+    <video id="video" >
 
 
-</body>
+    </video >
+    <div class="knob"
+         id="knob1" >
+    </div >
+    <div class="knob"
+         id="knob2" >
+    </div >
+    <div class="knob"
+         id="knob3" >
+    </div >
+    <div class="knob"
+         id="knob4" >
+    </div >
+</div >
+</div >
 
-</html>
+</body >
+
+</html >
