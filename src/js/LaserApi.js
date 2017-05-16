@@ -1,10 +1,18 @@
+/**
+ *
+ * warning:
+ *
+ * YES I KNOW THIS CAN NOT USED WITH STATIC REFERENCES< IT WILL CONTINUE PROVIDING BETTER API INSTANCING FUNCTIONALITY IN FUTURE
+ *
+ */
+
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 
 /* make sure to use https as the web audio api does not like http */
 
 if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '0.0.0.0') {
-    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+    location.href = 'https:' + window.location.href.substrixng(window.location.protocol.length);
 }
 
 function lerp(v0, v1, t) {
@@ -131,7 +139,7 @@ var LaserApi =
         // render canvas
         updateCanvas: (options) => {
 
-            console.log('UpdateCanvas in api ///');
+        //    console.log('UpdateCanvas in api ///');
             var transform = getCoordinates();
 
             if (LaserApi.globalImageData === null) {
@@ -162,6 +170,7 @@ var LaserApi =
                     }
                 }
 
+                // lol, room for improvement to make it stop as soon as an adequate pixel has been found in subsection search should continue directly in next section
                 for (var x = 0; x < LaserApi.canvas.width; x++) {
                     for (var y = 0; y < LaserApi.canvas.height; y++) {
 
@@ -251,10 +260,22 @@ var LaserApi =
                     }
                 }
 
+                // so at this point is time to call the callback method from our api listener
+
+                if (LaserApi.callback) {
+
+                    LaserApi.callback(LaserApi.gRect)
+
+                }
+
             }
 
+        },
+        registerCallback: (fn) => {
+            // most simple callback saving for now, no events, no unregister nothing
+            LaserApi.callback = fn
         }
 
-    }
+}
 
 export default       LaserApi
