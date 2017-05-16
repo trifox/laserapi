@@ -1,4 +1,5 @@
 var helper = require('./helper.js')
+var laserConfig = require('./LaserApiConfig.js')
 
 /* make sure to use https as the web audio api does not like http */
 
@@ -117,14 +118,11 @@ function getColorDistance(col1, col2) {
     return result;
 }
 loadFromLocalStorage();
-var testColor = [255, 255, 255];
-console.log(getColorDistance(testColor, [0, 0, 0]))
-console.log(getColorDistance(testColor, [0, 255, 0]))
-console.log(getColorDistance(testColor, [255, 255, 255]))
+console.log(getColorDistance(laserConfig.default.testColor, [0, 0, 0]))
+console.log(getColorDistance(laserConfig.default.testColor, [0, 255, 0]))
+console.log(getColorDistance(laserConfig.default.testColor, [255, 255, 255]))
 
-var gridResolution = 32
-
-var gRect = new Array(gridResolution * gridResolution);
+var gRect = new Array(laserConfig.default.gridResolution *laserConfig.default. gridResolution);
 var globalImageData = null;
 /* start as soon as things are set up */
 document.addEventListener("DOMContentLoaded", function (event) {
@@ -139,8 +137,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     // ask for mic permission
     navigator.getUserMedia({
         video: {
-            width: 1920,
-            height: 1080
+            width: laserConfig.default.videoResolution.width,
+            height: laserConfig.default.videoResolution.height
         }
     }, function (stream) {
 
@@ -187,12 +185,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
             var canvasColor = context.getImageData(0, 0, canvas.width, canvas.height); // rgba e [0,255]
             var pixels = canvasColor.data;
 
-            var gwidth = (canvas.width / gridResolution);
-            var gheight = (canvas.height / gridResolution)
+            var gwidth = (canvas.width / laserConfig.default.gridResolution);
+            var gheight = (canvas.height / laserConfig.default.gridResolution)
 
-            for (var gy = 0; gy < gridResolution; gy++) {
-                for (var gx = 0; gx < gridResolution; gx++) {
-                    var gIndex = gy * gridResolution + gx;
+            for (var gy = 0; gy < laserConfig.default.gridResolution; gy++) {
+                for (var gx = 0; gx < laserConfig.default.gridResolution; gx++) {
+                    var gIndex = gy * laserConfig.default.gridResolution + gx;
                     gRect[gIndex] = 0;
                 }
             }
@@ -217,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     var indexnormal = (y * canvas.width + x) * 4;
                     var gx = Math.floor(x / gwidth);
                     var gy = Math.floor(y / gheight);
-                    var gIndex = gy * gridResolution + gx;
+                    var gIndex = gy * laserConfig.default.gridResolution + gx;
 
                     //canvasColor.data[index + 1] = 0;
                     //canvasColor.data[index + 2] = 0;
@@ -228,12 +226,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     current[1] = canvasColorOriginal.data[index + 1];
                     current[2] = canvasColorOriginal.data[index + 2];
 
-                    if (getColorDistance(testColor, [
+                    if (getColorDistance(laserConfig.default.testColor, [
                             canvasColorOriginal.data[index],
                             canvasColorOriginal.data[index + 1],
                             canvasColorOriginal.data[index + 2]
 
-                        ]) < 200) {
+                        ]) < laserConfig.default.treshhold) {
                         /*  coordinates.push({
                          x: x,
                          x: x,
@@ -250,9 +248,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
                         gRect[gIndex] = gRect[gIndex] + 1;
 
                     } else {
-                                globalImageData.data[indexnormal] *= 0.9;
-                                 globalImageData.data[indexnormal + 1] *= 0.9;
-                                  globalImageData.data[indexnormal + 2] *= 0.9;
+                        globalImageData.data[indexnormal] *= 0.9;
+                        globalImageData.data[indexnormal + 1] *= 0.9;
+                        globalImageData.data[indexnormal + 2] *= 0.9;
 
                         //gRect[gIndex] = 0;
                     }
@@ -262,11 +260,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
             context.putImageData(globalImageData, 0, 0);
 
-            for (var gx = 0; gx < gridResolution; gx++) {
-                for (var gy = 0; gy < gridResolution; gy++) {
+            for (var gx = 0; gx < laserConfig.default.gridResolution; gx++) {
+                for (var gy = 0; gy < laserConfig.default.gridResolution; gy++) {
                     var ggx = gx * gwidth;
                     var ggy = gy * gheight;
-                    var gIndex = gy * gridResolution + gx;
+                    var gIndex = gy * laserConfig.default.gridResolution + gx;
 
                     if (gRect[gIndex] > 0) {
                         context.strokeStyle = "#0000ff";
@@ -276,7 +274,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                         context.textAlign = 'center'
                         // context.fillText('' + gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 
-                        context.fillRect(ggx, ggy, canvas.width / gridResolution, canvas.height / gridResolution)
+                        context.fillRect(ggx, ggy, canvas.width / laserConfig.default.gridResolution, canvas.height / laserConfig.default.gridResolution)
                     }
                     else {
                         // context.strokeStyle = "#ffffff";
