@@ -1,8 +1,9 @@
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 var laserApi = require('./LaserApi.js').default
+var game01 = require('./setups/game-001-play-midi.js').default
 var Tone = require('tone')
-console.log(laserApi)
+console.log(game01)
 /* make sure to use https as the web audio api does not like http */
 
 //play a middle 'C' for the duration of an 8th note
@@ -31,7 +32,7 @@ const makeBingFunction = (index) => {
         triggered = true;
         lastDate = currentDate
         // pitch time velocity
-        synths[index].triggerAttackRelease(index*7, .2);
+        synths[index].triggerAttackRelease(10 + index * 4, .2);
         //  synths[index].triggerAttackRelease(index * 8, 1.1);
     }
 
@@ -125,46 +126,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         updateKnobs(laserConfig.transform)
         saveToLocalStorage()
-
-        var currentDate = performance.now()
-
-        if (currentDate - lastDate < 100) {
-            //     return
-        }
-        lastDate = currentDate
-
-        //   console.log('new grid received', grid)
-
-        for (var i = 0; i < grid.length; i++) {
-
-            if (grid[i] > 0) {
-                // something is active in this grid
-
-                if (playTones[i]) {
-
-                    // do nothing
-                    //   console.log('playing ', i)
-                    //   console.log('playing ', playTones[i])
-                    //   playTones[i].triggerAttack()
-                    //playTones[i].triggerAttack()
-                    // play it
-                    playTones[i]()
-
-                } else {
-
-                    playTones[i] = makeBingFunction(i)
-                    // play it
-                    playTones[i]()
-                }
-
-            } else {
-                //. grid deactive
-                playTones[i] = null
-          //      synths[i].triggerRelease(1);
-            }
-
-        }
-
+        game01.handle(grid)
     });
 
     canvas.width = Math.floor(video.videoWidth)

@@ -1,12 +1,12 @@
 var config = {
 
-    testColor: [128, 255, 128],
+    testColor: [32, 255, 32],
     gridResolution: 8,
     videoResolution: {
         width: 640,
         height: 480
     },
-    treshold:100,
+    treshold:150,
 
     transform: {
         topleft: {
