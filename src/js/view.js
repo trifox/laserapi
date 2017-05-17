@@ -76,6 +76,22 @@ function setCoordinatesForInputElement(elemprefix, data) {
     elem1y.value = data.y * 10000.0;
 }
 
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+}
 function getCoordinates() {
 
     return {
@@ -121,7 +137,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var canvas = document.getElementById('canvas')
     var context = canvas.getContext("2d")
     var video = document.getElementById('video')
-
+    laserConfig.treshold = document.getElementById('treshold').value
+    laserConfig.color[0] = hexToRgb(document.getElementById('lasercolor').value).r
+    laserConfig.color[1] = hexToRgb(document.getElementById('lasercolor').value).g
+    laserConfig.color[2] = hexToRgb(document.getElementById('lasercolor').value).b
     laserApi.init(video, canvas);
     laserApi.registerCallback((grid) => {
         laserConfig.transform = getCoordinates()
