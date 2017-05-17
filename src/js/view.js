@@ -1,10 +1,12 @@
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 var laserApi = require('./LaserApi.js').default
-var game01 = require('./setups/game-001-play-midi.js').default
+var game01 = require('./setups/game-002-moorhuni').default
 var Tone = require('tone')
 console.log(game01)
 /* make sure to use https as the web audio api does not like http */
+
+
 
 //play a middle 'C' for the duration of an 8th note
 // save playing tones

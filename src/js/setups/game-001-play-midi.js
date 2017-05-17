@@ -1,4 +1,3 @@
-
 var laserConfig = require('../LaserApiConfig.js').default
 var Tone = require('tone')
 var playTones = {}
@@ -6,28 +5,7 @@ var playTones = {}
 var synths = []
 for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
 
-    synths[i] = new Tone.Synth().toMaster();
-}
-
-const makeBingFunction = (index) => {
-
-    var lastDate = performance.now()
-    var triggered = false;
-    return () => {
-        var currentDate = performance.now()
-        if (currentDate - lastDate < 100) {
-            //     return
-        }
-        if (triggered) {
-            console.log('retunr')
-            return
-        }
-        triggered = true;
-        lastDate = currentDate
-        // pitch time velocity
-        synths[index].triggerAttackRelease(index * 7, .2);
-    }
-
+    synths[i] = new Tone.Synth(  ).toMaster();
 }
 
 const handler = (grid) => {
@@ -38,16 +16,18 @@ const handler = (grid) => {
 
             if (playTones[i]) {
 
-                playTones[i]()
+             //   playTones[i]()
 
             } else {
 
-                playTones[i] = makeBingFunction(i)
-                playTones[i]()
+                playTones[i] = true
+                synths[i].triggerAttack(10+i*5);
             }
 
         } else {
-            playTones[i] = null
+            playTones[i] = false
+
+            synths[i].triggerRelease();
         }
 
     }
