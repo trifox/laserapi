@@ -1,6 +1,6 @@
 var laserConfig = require('../LaserApiConfig.js').default
 
-var canvas = document.getElementById('canvas')
+var canvas = document.getElementById('canvascontainer')
 
 const createItem = (index) => {
 
@@ -9,8 +9,8 @@ const createItem = (index) => {
     div.style.position = 'absolute';
     div.style.width = 75;
     div.style.height = 75;
-    div.style.top = 300 + index * 10;
-    div.style.left = 300 + index * 10;
+    div.style.top = 300 + (index % 3 ) * 80;
+    div.style.left = 300 + Math.floor(index / 3 ) * 80;
     div.style.zIndex = 1000;
 
     return div;
@@ -82,7 +82,7 @@ const handler = (grid) => {
             // rect for grid plate object
             for (var k = 0; k < itemCount; k++) {
                 var div = divs[k]
-                  var clientBoundingRect= div.getBoundingClientRect()
+                var clientBoundingRect = div.getBoundingClientRect()
                 var rect1 = {
 
                     topleft: {
@@ -98,7 +98,7 @@ const handler = (grid) => {
                         y: clientBoundingRect.bottom,
                     },
                     bottomright: {
-                        x:clientBoundingRect.right,
+                        x: clientBoundingRect.right,
                         y: clientBoundingRect.bottom,
                     }
                 }
@@ -124,20 +124,19 @@ const handler = (grid) => {
                 }
 
                 if (isInsideRect(rect1, rect2)) {
-              //      console.log('intersecting ', rect1, rect2)
-              //      console.log('dist is ', getDist(rect1, rect2))
+                    //      console.log('intersecting ', rect1, rect2)
+                    //      console.log('dist is ', getDist(rect1, rect2))
 
+                    var dist = getDist(rect1, rect2)
+                    var length = Math.sqrt(dist.x * dist.x + dist.y * dist.y)
 
-                    var dist=getDist(rect1, rect2)
-                    var length=Math.sqrt(dist.x*dist.x+dist.y*dist.y)
-
-                    directions[k].x += getDist(rect1, rect2).x/length
-                    directions[k].y += getDist(rect1, rect2).y/length
-              //      console.log('moving ', direction)
+                    directions[k].x += (getDist(rect1, rect2).x / length ) * 2
+                    directions[k].y += (getDist(rect1, rect2).y / length ) * 2
+                    //      console.log('moving ', direction)
                 } else {
 
-                //    console.log('not intersectiong ', rect1, rect2)
-              //      console.log('dist is ', getDist(rect1, rect2))
+                    //    console.log('not intersectiong ', rect1, rect2)
+                    //      console.log('dist is ', getDist(rect1, rect2))
 
                 }
             }
@@ -148,7 +147,7 @@ const handler = (grid) => {
     }
     for (var k = 0; k < itemCount; k++) {
         divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x * 1
-        divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y *1
+        divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y * 1
     }
 }
 
