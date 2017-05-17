@@ -5,7 +5,7 @@ var playTones = {}
 var synths = []
 for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
 
-    synths[i] = new Tone.Synth(  ).toMaster();
+    synths[i] = new Tone.Synth().toMaster();
 }
 
 const handler = (grid) => {
@@ -16,12 +16,12 @@ const handler = (grid) => {
 
             if (playTones[i]) {
 
-             //   playTones[i]()
+                //   playTones[i]()
 
             } else {
 
                 playTones[i] = true
-                synths[i].triggerAttack(10+i*5);
+                synths[i].triggerAttack(20+i*8.7);
             }
 
         } else {

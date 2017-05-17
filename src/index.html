@@ -16,7 +16,7 @@
             background-color: rgb(128, 128, 128);
         }
 
-        #canvas {
+        #canvas canvascontainer {
             width: 100%;
             height: 100%;
             margin: 0px;
@@ -66,7 +66,7 @@
     function fullscreen() {
 
         console.log('fullscreen clicked')
-        var elem = document.getElementById("canvas");
+        var elem = document.getElementById("canvascontainer");
         console.log('element is ', elem)
 
         if (elem.webkitRequestFullscreen) {
@@ -161,10 +161,10 @@
     </p >
 </div >
 
-<div id="canvascontainer">
-<canvas id="canvas" ></canvas >
-</div>
-    <div class="videocontainer"
+<div id="canvascontainer" >
+    <canvas id="canvas" ></canvas >
+</div >
+<div class="videocontainer"
      id="videocontainer" >
     <video id="video" ></video >
     <div class="knob"
