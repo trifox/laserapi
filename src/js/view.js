@@ -153,9 +153,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
         game01.handle(grid)
     });
 
-    // canvas.width = Math.floor(video.videoWidth)
-    //   canvas.height = Math.floor(video.videoHeight)
-    //   canvas.style.width = canvas.width;
-    //  canvas.style.height = canvas.height;
+     canvas.width = Math.floor(video.videoWidth)
+       canvas.height = Math.floor(video.videoHeight)
+       canvas.style.width = canvas.width;
+      canvas.style.height = canvas.height;
 
 })

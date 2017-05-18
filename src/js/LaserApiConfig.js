@@ -1,7 +1,7 @@
 var config = {
 
     testColor: [255, 32, 32],
-    gridResolution: 8,
+    gridResolution: 32,
     videoResolution: {
         width: 320,
         height: 240

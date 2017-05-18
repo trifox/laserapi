@@ -1,6 +1,6 @@
 var laserConfig = require('../LaserApiConfig.js').default
 
-var canvas = document.getElementById('canvascontainer')
+var canvas = document.getElementById('canvas')
 
 const createItem = (index) => {
 
