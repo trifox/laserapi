@@ -10,10 +10,10 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 
 /* make sure to use https as the web audio api does not like http */
-
-if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '0.0.0.0') {
-    location.href = 'https:' + window.location.href.substrixng(window.location.protocol.length);
-}
+//
+// if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '0.0.0.0') {
+//     location.href = 'https:' + window.location.href.substrixng(window.location.protocol.length);
+// }
 
 function lerp(v0, v1, t) {
 
