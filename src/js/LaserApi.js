@@ -80,6 +80,8 @@ function getColorDistance(col1, col2) {
 
     return result;
 }
+var lastDate = performance.now()
+
 var LaserApi =
     {
         gRect: new Array(laserConfig.gridResolution * laserConfig.gridResolution),
@@ -125,6 +127,15 @@ var LaserApi =
         // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
         updateCanvasRegular: () => {
 
+            var currentDate = performance.now()
+       //     console.log('checking ', lastDate, currentDate);
+            if (currentDate - lastDate < laserConfig.tickIntervalMilliseconds) {
+                window.requestAnimationFrame(LaserApi.updateCanvasRegular);
+                return
+            }
+        //    console.log('returning ', lastDate, currentDate);
+            lastDate = currentDate
+
             LaserApi.updateCanvas()
             window.requestAnimationFrame(LaserApi.updateCanvasRegular);
             /*  setTimeout(function () {
@@ -139,7 +150,7 @@ var LaserApi =
         // render canvas
         updateCanvas: (options) => {
 
-        //    console.log('UpdateCanvas in api ///');
+            //    console.log('UpdateCanvas in api ///');
             var transform = getCoordinates();
 
             if (LaserApi.globalImageData === null) {
@@ -276,6 +287,6 @@ var LaserApi =
             LaserApi.callback = fn
         }
 
-}
+    }
 
 export default       LaserApi

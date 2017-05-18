@@ -2,7 +2,8 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 var laserApi = require('./LaserApi.js').default
 //var game01 = require('./setups/game-001-play-midi').default
-var game01 = require('./setups/game-002-moorhuni').default
+//var game02 = require('./setups/game-002-moorhuni').default
+var game01 = require('./setups/game-003-pong').default
 var Tone = require('tone')
 console.log(game01)
 /* make sure to use https as the web audio api does not like http */

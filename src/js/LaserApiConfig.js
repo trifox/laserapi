@@ -1,10 +1,11 @@
 var config = {
 
     testColor: [255, 32, 32],
-    gridResolution: 44,
+    gridResolution: 8,
+    tickIntervalMilliseconds: 25,
     videoResolution: {
-        width: 320,
-        height: 240
+        width: 640,
+        height: 480
     },
     treshold: 120,
 
