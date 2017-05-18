@@ -9,7 +9,11 @@ for that simple recording of output using a video stream and a easy texture tran
 
 ## Demo
  
- // not yet implemented
+master deoployment
+https://laser.froso.de/
+
+development deployment
+https://laser-dev.froso.de/
 
 ## License
 
