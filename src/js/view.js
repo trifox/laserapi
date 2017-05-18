@@ -141,9 +141,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var context = canvas.getContext("2d")
     var video = document.getElementById('video')
     laserConfig.treshold = document.getElementById('treshold').value
-    laserConfig.color[0] = hexToRgb(document.getElementById('lasercolor').value).r
-    laserConfig.color[1] = hexToRgb(document.getElementById('lasercolor').value).g
-    laserConfig.color[2] = hexToRgb(document.getElementById('lasercolor').value).b
+    laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
+    laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
+    laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
     laserApi.init(video, canvas);
     laserApi.registerCallback((grid) => {
         laserConfig.transform = getCoordinates()
