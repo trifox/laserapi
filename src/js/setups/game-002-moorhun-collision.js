@@ -17,6 +17,7 @@ const createItem = (index) => {
 }
 var divs = []
 
+var moveSpeed=5
 const itemCount = 10;
 
 for (var i = 0; i < itemCount; i++) {
@@ -146,8 +147,8 @@ const handler = (grid) => {
 
     }
     for (var k = 0; k < itemCount; k++) {
-        divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x * 1
-        divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y * 1
+        divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x * moveSpeed
+        divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y * moveSpeed
     }
 }
 

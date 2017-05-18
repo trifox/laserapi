@@ -47,6 +47,15 @@ function loadFromLocalStorage() {
     try {
         var data = JSON.parse(window.localStorage.getItem('laser'))
         console.log('last data is ', data)
+
+        if (data.treshold) {
+            document.getElementById('treshold').value = data.treshold
+        }
+        if (data.testColor) {
+
+            document.getElementById('lasercolor').value = data.testColor
+
+        }
         if (data && data.transform) {
             setCoordinates(data.transform)
         }
@@ -58,7 +67,11 @@ function loadFromLocalStorage() {
 
 function saveToLocalStorage() {
 
-    window.localStorage.setItem('laser', JSON.stringify({transform: getCoordinates()}))
+    window.localStorage.setItem('laser', JSON.stringify({
+        treshold: document.getElementById('treshold').value,
+        testColor: document.getElementById('lasercolor').value,
+        transform: getCoordinates()
+    }))
 }
 
 function getCoordinatesForInputElement(elemprefix) {
@@ -140,12 +153,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var canvas = document.getElementById('canvas')
     var context = canvas.getContext("2d")
     var video = document.getElementById('video')
-    laserConfig.treshold = document.getElementById('treshold').value
-    laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
-    laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
-    laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
+
     laserApi.init(video, canvas);
     laserApi.registerCallback((grid) => {
+        laserConfig.treshold = document.getElementById('treshold').value
+        laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
+        laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
+        laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
         laserConfig.transform = getCoordinates()
 
         updateKnobs(laserConfig.transform)
@@ -153,9 +167,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
         game01.handle(grid)
     });
 
-     canvas.width = Math.floor(video.videoWidth)
-       canvas.height = Math.floor(video.videoHeight)
-       canvas.style.width = canvas.width;
-      canvas.style.height = canvas.height;
+    canvas.width = Math.floor(video.videoWidth)
+    canvas.height = Math.floor(video.videoHeight)
+    canvas.style.width = canvas.width;
+    canvas.style.height = canvas.height;
 
 })

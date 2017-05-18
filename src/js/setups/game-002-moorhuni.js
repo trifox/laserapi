@@ -9,23 +9,43 @@ const createItem = (index) => {
     div.style.position = 'absolute';
     div.style.width = 75;
     div.style.height = 75;
-    div.style.top = 300 + (index % 3 ) * 80;
-    div.style.left = 300 + Math.floor(index / 3 ) * 80;
+    div.style.top = 100 + (index % 3 ) * 100;
+    div.style.left = 100 + Math.floor(index / 3) * 100;
     div.style.zIndex = 1000;
 
     return div;
 }
 var divs = []
 
-const itemCount = 10;
+var moveSpeed = 10
+const itemCount = 6;
 
-for (var i = 0; i < itemCount; i++) {
+for (var i = 0; i < itemCount/2; i++) {
 
     var div = createItem(i)
     canvas.parentNode.appendChild(div)
-    divs[i] = div;
+    divs.push( div);
+        div.style.borderRadius = '5px'
+        div.style.border = '5px solid lightgreen'
 
 }
+for (var i = 0; i < itemCount/2; i++) {
+
+    var div = createItem(i)
+    canvas.parentNode.appendChild(div)
+    divs.push( div);
+    if (i < itemCount / 2) {
+
+        div.style.borderRadius = '5px'
+        div.style.border = '5px solid lightblue'
+        div.style.backgroundColor = 'blue';
+        div.style.left = 400;
+
+    }
+}
+
+
+
 const isInsideRect = (rect1, rect2) => {
     //   console.log('comparing ', rect1, rect2)
     var p1 = rect1.topleft.x <= rect2.topright.x
@@ -55,7 +75,28 @@ function getDist(rect1, rect2) {
         y: (p1.y - p2.y) / 2
     }
 }
+const getRectangleFromBoundingRect = (clientBoundingRect) => {
+    var rect1 = {
 
+        topleft: {
+            x: clientBoundingRect.left,
+            y: clientBoundingRect.top,
+        },
+        topright: {
+            x: clientBoundingRect.right,
+            y: clientBoundingRect.top,
+        },
+        bottomleft: {
+            x: clientBoundingRect.left,
+            y: clientBoundingRect.bottom,
+        },
+        bottomright: {
+            x: clientBoundingRect.right,
+            y: clientBoundingRect.bottom,
+        }
+    }
+    return rect1
+}
 const handler = (grid) => {
 
     // rect for test object
@@ -83,25 +124,7 @@ const handler = (grid) => {
             for (var k = 0; k < itemCount; k++) {
                 var div = divs[k]
                 var clientBoundingRect = div.getBoundingClientRect()
-                var rect1 = {
-
-                    topleft: {
-                        x: clientBoundingRect.left,
-                        y: clientBoundingRect.top,
-                    },
-                    topright: {
-                        x: clientBoundingRect.right,
-                        y: clientBoundingRect.top,
-                    },
-                    bottomleft: {
-                        x: clientBoundingRect.left,
-                        y: clientBoundingRect.bottom,
-                    },
-                    bottomright: {
-                        x: clientBoundingRect.right,
-                        y: clientBoundingRect.bottom,
-                    }
-                }
+                var rect1 = getRectangleFromBoundingRect(clientBoundingRect)
 
                 var rect2 = {
 
@@ -130,8 +153,8 @@ const handler = (grid) => {
                     var dist = getDist(rect1, rect2)
                     var length = Math.sqrt(dist.x * dist.x + dist.y * dist.y)
 
-                    directions[k].x += (getDist(rect1, rect2).x / length ) * 2
-                    directions[k].y += (getDist(rect1, rect2).y / length ) * 2
+                    directions[k].x += getDist(rect1, rect2).x
+                    directions[k].y += getDist(rect1, rect2).y
                     //      console.log('moving ', direction)
                 } else {
 
@@ -145,10 +168,42 @@ const handler = (grid) => {
         }
 
     }
+
+    var oldPositions = []
     for (var k = 0; k < itemCount; k++) {
-        divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x * 1
-        divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y * 1
+
+        if (divs[k]) {
+            oldPositions [k] = divs[k].getBoundingClientRect()
+
+            var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
+            divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x / length * moveSpeed
+            divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y / length * moveSpeed
+        }
     }
+
+    for (var i = 0; i < itemCount; i++) {
+
+        if (divs[i]) {
+            var rect1 = getRectangleFromBoundingRect(divs[i].getBoundingClientRect())
+            for (var k = 0; k < itemCount; k++) {
+                if (k !== i) {
+
+                    var rect2 = getRectangleFromBoundingRect(divs[k].getBoundingClientRect())
+                    //  console.log('checking ', rect1, rect2)
+                    if (isInsideRect(rect1, rect2)) {
+                        // anoverlapp occured, move both back!
+                        //  console.log('Overlap ', rect1, rect2)
+                        divs[k].style.left = oldPositions [k].left
+                        divs[k].style.top = oldPositions [k].top
+
+                        divs[i].style.left = oldPositions [i].left
+                        divs[i].style.top = oldPositions [i].top
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 export default {
