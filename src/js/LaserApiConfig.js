@@ -1,7 +1,7 @@
 var config = {
-
+    debugVideo: false,
     testColor: [255, 32, 32],
-    gridResolution: 12,
+    gridResolution: 6,
     tickIntervalMilliseconds: 25,
     videoResolution: {
         width: 640,

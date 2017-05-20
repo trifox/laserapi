@@ -1,12 +1,15 @@
 // the main canvas is organized here
 
 var laserConfig = require('./LaserApiConfig.js').default
+var video = null
+
 export default {
 
-    video: null,
-
-    init: (video) => {
-        this.video = video
+    getVideo: () => {
+        return video
+    },
+    init: (videoIn) => {
+        video = videoIn
         console.log('Initialising VIDEO from canvas DOM element', video)
         navigator.getUserMedia({
             video: {

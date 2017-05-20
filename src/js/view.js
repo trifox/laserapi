@@ -1,8 +1,8 @@
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
 var CanvasVideo = require('./CanvasVideo').default
-var laserApi = require('./LaserApi.js').default
-//var game01 = require('./setups/game-001-play-midi').default
+var LaserApi = require('./LaserApi.js').default
+var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
 var MainCanvas = require('./MasterCanvas').default
 //var game02 = require('./setups/game-002-moorhuni').default
@@ -12,6 +12,66 @@ var MainCanvas = require('./MasterCanvas').default
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
 
+function frameHandler() {
+
+    // console.log('Re Rendering');
+    // console.log('Re Rendering', MainCanvas.getCanvas());
+
+    animationHandler();
+
+    var transform = getTransformOfVideoInput()
+
+    MainCanvas.get2dContext().save()
+    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
+    MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
+    MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
+    MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
+
+    //  console.log('Re rotate', transform.rotate);
+    MainCanvas.get2dContext().imageSmoothingEnabled = false
+    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), 0, 0, MainCanvas.getCanvas().width, MainCanvas.getCanvas().height);
+
+    var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height); // rgba e [0,255]
+
+    MainCanvas.get2dContext().restore()
+
+    if (!laserConfig.debugVideo) {
+        MainCanvas.clear()
+    }
+    var laserGrid = LaserApi.getRectForInputImage(canvasColor)
+
+    for (var x = 0; x < laserConfig.gridResolution; x++) {
+        for (var y = 0; y < laserConfig.gridResolution; y++) {
+
+            var gwidth = (laserConfig.canvasResolution.width / laserConfig.gridResolution);
+            var gheight = (laserConfig.canvasResolution.height / laserConfig.gridResolution)
+
+            var ggx = x * gwidth;
+            var ggy = y * gheight;
+            var gIndex = y * laserConfig.gridResolution + x;
+
+            if (laserGrid[gIndex] > 0) {
+                MainCanvas.get2dContext().strokeStyle = "#0000ff";
+                MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
+                MainCanvas.get2dContext().font = "10px Arial";
+                MainCanvas.get2dContext().fillStyle = '#ffffff'
+                MainCanvas.get2dContext().textAlign = 'center'
+                // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
+
+                MainCanvas.get2dContext().fillRect(ggx, ggy, laserConfig.canvasResolution.width / laserConfig.gridResolution, laserConfig.canvasResolution.height / laserConfig.gridResolution)
+            }
+            else {
+                // context.strokeStyle = "#ffffff";
+
+            }
+
+        }
+    }
+    game01.handle(laserGrid)
+    setTimeout(frameHandler, 25)
+}
+
+setTimeout(frameHandler, 25)
 
 function loadFromLocalStorage() {
 
@@ -113,7 +173,8 @@ function getTransformOfVideoInput() {
     }
 }
 function setCoordinates(data) {
-    return
+    return;
+
     setCoordinatesForInputElement('topleft', data.topleft);
     setCoordinatesForInputElement('topright', data.topright);
     setCoordinatesForInputElement('bottomleft', data.bottomleft);
@@ -141,7 +202,7 @@ function updateKnobs(rect) {
 }
 
 function setVideoTransform(transform) {
-
+    return;
     var video = document.getElementById('video')
 
     var trans = ''
@@ -172,8 +233,6 @@ function animationHandler() {
     //  updateKnobs(laserConfig.transform)
     saveToLocalStorage()
     setVideoTransform(getTransformOfVideoInput());
-
-    window.requestAnimationFrame(animationHandler);
 
 }
 

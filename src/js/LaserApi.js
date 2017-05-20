@@ -89,6 +89,94 @@ var LaserApi =
         video: null,
         canvas: null,
 
+        getRectForInputImage: (canvasColorOriginal) => {
+
+       //     console.log('input image is ', canvasColorOriginal)
+            var gwidth = (canvasColorOriginal.width / laserConfig.gridResolution);
+            var gheight = (canvasColorOriginal.height / laserConfig.gridResolution)
+
+            for (var gy = 0; gy < laserConfig.gridResolution; gy++) {
+                for (var gx = 0; gx < laserConfig.gridResolution; gx++) {
+                    var gIndex = gy * laserConfig.gridResolution + gx;
+                    LaserApi.gRect[gIndex] = 0;
+                }
+            }
+
+            // lol, room for improvement to make it stop as soon as an adequate pixel has been found in subsection search should continue directly in next section
+            for (var x = 0; x < laserConfig.canvasResolution.width; x++) {
+                for (var y = 0; y < laserConfig.canvasResolution.height; y++) {
+
+                    /*var transformed = transformCoordinate({
+                     x: x / LaserApi.canvas.width,
+                     y: y / LaserApi.canvas.height
+                     }, transform);
+
+                     transformed.x *= LaserApi.canvas.width;
+                     transformed.y *= LaserApi.canvas.height;
+
+                     transformed.x = Math.round(transformed.x)
+                     transformed.y = Math.round(transformed.y)
+
+                     */
+
+                    var transformed = {
+                        x: x,
+                        y: y
+                    }
+
+                    if (x === 0 && y === 0) {
+                        //          console.log("transformed is ", transformed)
+                    }
+                    var index = (transformed.y * laserConfig.canvasResolution.width + transformed.x) * 4;
+                    var indexnormal = (y * laserConfig.canvasResolution.width + x) * 4;
+                    var gx = Math.floor(x / gwidth);
+                    var gy = Math.floor(y / gheight);
+                    var gIndex = gy * laserConfig.gridResolution + gx;
+
+                    //canvasColor.data[index + 1] = 0;
+                    //canvasColor.data[index + 2] = 0;
+                    //                    if (canvasColor.data[index] > (canvasColor.data[index + 1] + canvasColor.data[index + 2])) {
+                    var diff = [];
+                    var current = [];
+                    current[0] = canvasColorOriginal.data[index];
+                    current[1] = canvasColorOriginal.data[index + 1];
+                    current[2] = canvasColorOriginal.data[index + 2];
+
+                    if (getColorDistance(laserConfig.testColor, [
+                            canvasColorOriginal.data[index],
+                            canvasColorOriginal.data[index + 1],
+                            canvasColorOriginal.data[index + 2]
+
+                        ]) < laserConfig.treshold) {
+                        /*  coordinates.push({
+                         x: x,
+                         x: x,
+                         y: y,
+                         r: canvasColor.data[index],
+                         g: canvasColor.data[index + 1],
+                         b: canvasColor.data[index + 2]
+                         });
+                         */
+                        // LaserApi.globalImageData.data[indexnormal] = 0;
+                        // LaserApi.globalImageData.data[indexnormal + 1] = 0;
+                        // LaserApi.globalImageData.data[indexnormal + 2] = 255;
+
+                        LaserApi.gRect[gIndex] = LaserApi.gRect[gIndex] + 1;
+
+                    } else {
+                        // LaserApi.globalImageData.data[indexnormal] *= 0.9;
+                        // LaserApi.globalImageData.data[indexnormal + 1] *= 0.9;
+                        // LaserApi.globalImageData.data[indexnormal + 2] *= 0.9;
+
+                        //LaserApi .gRect[gIndex] = 0;
+                    }
+                }
+
+            }
+            return LaserApi.gRect
+
+        },
+
         init: (video, canvas) => {
             LaserApi.video = video
             LaserApi.canvas = canvas
