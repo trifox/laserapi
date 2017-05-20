@@ -3,12 +3,26 @@ var Tone = require('tone')
 var playTones = {}
 
 var synths = []
-for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
 
-    synths[i] = new Tone.Synth().toMaster();
+var lastResolution = -1
+
+function init() {
+    synths = []
+    playTones = {}
+
+    for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
+
+        synths[i] = new Tone.Synth().toMaster();
+    }
 }
 
 const handler = (grid) => {
+
+    if (lastResolution != laserConfig.gridResolution) {
+
+        init()
+        lastResolution = laserConfig.gridResolution
+    }
 
     for (var i = 0; i < grid.length; i++) {
 
@@ -21,7 +35,7 @@ const handler = (grid) => {
             } else {
 
                 playTones[i] = true
-                synths[i].triggerAttack(20+i*8.7);
+                synths[i].triggerAttack(20 + i * 8.7);
             }
 
         } else {

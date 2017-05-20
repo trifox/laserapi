@@ -2,6 +2,7 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
 var CanvasVideo = require('./CanvasVideo').default
 var LaserApi = require('./LaserApi.js').default
+require("bootstrap-webpack");
 var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
 var MainCanvas = require('./MasterCanvas').default
@@ -225,6 +226,8 @@ var lastDate = performance.now()
 function animationHandler() {
 
     laserConfig.treshold = document.getElementById('treshold').value
+    laserConfig.gridResolution = document.getElementById('gridResolution').value
+    laserConfig.debugVideo = document.getElementById('debugVideo').checked
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
     laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
