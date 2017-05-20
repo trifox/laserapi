@@ -1,9 +1,13 @@
 var config = {
 
     testColor: [255, 32, 32],
-    gridResolution: 8,
+    gridResolution: 12,
     tickIntervalMilliseconds: 25,
     videoResolution: {
+        width: 640,
+        height: 480
+    },
+    canvasResolution: {
         width: 640,
         height: 480
     },
@@ -12,7 +16,7 @@ var config = {
     transform: {
         topleft: {
             x: 0,
-            y: 0
+            y: 0.5
         },
         topright: {
             x: 1,

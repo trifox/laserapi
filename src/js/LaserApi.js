@@ -127,12 +127,12 @@ var LaserApi =
         updateCanvasRegular: () => {
 
             var currentDate = performance.now()
-       //     console.log('checking ', lastDate, currentDate);
+            //     console.log('checking ', lastDate, currentDate);
             if (currentDate - lastDate < laserConfig.tickIntervalMilliseconds) {
                 window.requestAnimationFrame(LaserApi.updateCanvasRegular);
                 return
             }
-        //    console.log('returning ', lastDate, currentDate);
+            //    console.log('returning ', lastDate, currentDate);
             lastDate = currentDate
 
             LaserApi.updateCanvas()
@@ -184,16 +184,24 @@ var LaserApi =
                 for (var x = 0; x < LaserApi.canvas.width; x++) {
                     for (var y = 0; y < LaserApi.canvas.height; y++) {
 
-                        var transformed = transformCoordinate({
-                            x: x / LaserApi.canvas.width,
-                            y: y / LaserApi.canvas.height
-                        }, transform);
+                        /*var transformed = transformCoordinate({
+                         x: x / LaserApi.canvas.width,
+                         y: y / LaserApi.canvas.height
+                         }, transform);
 
-                        transformed.x *= LaserApi.canvas.width;
-                        transformed.y *= LaserApi.canvas.height;
+                         transformed.x *= LaserApi.canvas.width;
+                         transformed.y *= LaserApi.canvas.height;
 
-                        transformed.x = Math.round(transformed.x)
-                        transformed.y = Math.round(transformed.y)
+                         transformed.x = Math.round(transformed.x)
+                         transformed.y = Math.round(transformed.y)
+
+                         */
+
+                        var transformed = {
+                            x: x,
+                            y: y
+                        }
+
                         if (x === 0 && y === 0) {
                             //          console.log("transformed is ", transformed)
                         }

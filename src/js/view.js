@@ -1,49 +1,18 @@
 var helper = require('./helper.js')
-var laserConfig = require('./LaserApiConfig.js').default
+var laserConfig = require('./LaserApiConfig').default
+var CanvasVideo = require('./CanvasVideo').default
 var laserApi = require('./LaserApi.js').default
-var game01 = require('./setups/game-001-play-midi').default
-var shader = require('./shader').default
+//var game01 = require('./setups/game-001-play-midi').default
+//var shader = require('./shader').default
+var MainCanvas = require('./MasterCanvas').default
 //var game02 = require('./setups/game-002-moorhuni').default
 //var game01 = require('./setups/game-003-pong').default
-var Tone = require('tone')
-console.log(game01)
 /* make sure to use https as the web audio api does not like http */
 
+MainCanvas.init(document.getElementById('canvas'))
+CanvasVideo.init(document.getElementById('video'))
 
 
-
-
-//play a middle 'C' for the duration of an 8th note
-// save playing tones
-var playTones = {}
-
-var synths = []
-for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
-
-    synths[i] = new Tone.Synth().toMaster();
-}
-
-const makeBingFunction = (index) => {
-
-    var lastDate = performance.now()
-    var triggered = false;
-    return () => {
-        var currentDate = performance.now()
-        if (currentDate - lastDate < 100) {
-            //     return
-        }
-        if (triggered) {
-            console.log('retunr')
-            return
-        }
-        triggered = true;
-        lastDate = currentDate
-        // pitch time velocity
-        synths[index].triggerAttackRelease(10 + index * 4, .2);
-        //  synths[index].triggerAttackRelease(index * 8, 1.1);
-    }
-
-}
 function loadFromLocalStorage() {
 
     try {
@@ -58,6 +27,17 @@ function loadFromLocalStorage() {
             document.getElementById('lasercolor').value = data.testColor
 
         }
+
+        if (data.videoTransform) {
+
+            document.getElementById('rotateVideo').value = data.videoTransform.rotate
+            document.getElementById('scaleVideo').value = data.videoTransform.scale
+            document.getElementById('translateVideoX').value = data.videoTransform.translate.x
+            document.getElementById('translateVideoY').value = data.videoTransform.translate.y
+
+        }
+
+        setVideoTransform(data.videoTransform)
         if (data && data.transform) {
             setCoordinates(data.transform)
         }
@@ -72,7 +52,8 @@ function saveToLocalStorage() {
     window.localStorage.setItem('laser', JSON.stringify({
         treshold: document.getElementById('treshold').value,
         testColor: document.getElementById('lasercolor').value,
-        transform: getCoordinates()
+        transform: getCoordinates(),
+        videoTransform: getTransformOfVideoInput()
     }))
 }
 
@@ -111,7 +92,7 @@ function hexToRgb(hex) {
         } : null;
 }
 function getCoordinates() {
-
+    return laserConfig.transform
     return {
         topleft: getCoordinatesForInputElement('topleft'),
         topright: getCoordinatesForInputElement('topright'),
@@ -120,7 +101,19 @@ function getCoordinates() {
 
     }
 }
+function getTransformOfVideoInput() {
+
+    return {
+        rotate: document.getElementById('rotateVideo').value,
+        scale: document.getElementById('scaleVideo').value,
+        translate: {
+            x: document.getElementById('translateVideoX').value,
+            y: document.getElementById('translateVideoY').value,
+        }
+    }
+}
 function setCoordinates(data) {
+    return
     setCoordinatesForInputElement('topleft', data.topleft);
     setCoordinatesForInputElement('topright', data.topright);
     setCoordinatesForInputElement('bottomleft', data.bottomleft);
@@ -128,6 +121,7 @@ function setCoordinates(data) {
 }
 
 function updateKnobs(rect) {
+    return
     var knob1 = document.getElementById('knob1');
     var knob2 = document.getElementById('knob2');
     var knob3 = document.getElementById('knob3');
@@ -146,29 +140,82 @@ function updateKnobs(rect) {
 
 }
 
+function setVideoTransform(transform) {
+
+    var video = document.getElementById('video')
+
+    var trans = ''
+    //
+    trans = 'translate(' + transform.translate.x + 'px,' + transform.translate.y + 'px) ';
+    trans += 'scale(' + transform.scale + ') ';
+    trans += 'rotate(' + transform.rotate + 'deg) ';
+    video.style.transform = trans
+
+    //  console.log('set tranform to ', trans)
+    //   console.log('set tranform to ', video.style.transform)
+
+}
+
 loadFromLocalStorage();
 
 var interval = 1000 / 25
 var lastDate = performance.now()
 
+function animationHandler() {
+
+    laserConfig.treshold = document.getElementById('treshold').value
+    laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
+    laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
+    laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
+    laserConfig.transform = getCoordinates()
+    //     shader.start()
+    //  updateKnobs(laserConfig.transform)
+    saveToLocalStorage()
+    setVideoTransform(getTransformOfVideoInput());
+
+    window.requestAnimationFrame(animationHandler);
+
+}
+
+var canvasSize = {
+
+    x: 512,
+    y: 512
+
+}
+
 document.addEventListener("DOMContentLoaded", function (event) {
+    return
     var canvas = document.getElementById('canvas')
+    canvas.width = canvasSize.x;
+    canvas.height = canvasSize.y;
+    canvas.style.width = canvasSize.x;
+    canvas.style.height = canvasSize.y;
     var context = canvas.getContext("2d")
+    context.clearRect(0, 0, canvasSize.x, canvasSize.y)
+
     var video = document.getElementById('video')
 
-    laserApi.init(video, canvas);
-    laserApi.registerCallback((grid) => {
-        shader.start()
-        laserConfig.treshold = document.getElementById('treshold').value
-        laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
-        laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
-        laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
-        laserConfig.transform = getCoordinates()
+    navigator.getUserMedia({
+        video: {
+            width: laserConfig.videoResolution.width,
+            height: laserConfig.videoResolution.height
+        }
+    }, (stream) => {
 
-        updateKnobs(laserConfig.transform)
-        saveToLocalStorage()
-        game01.handle(grid)
-    });
+        console.log('Stream received', stream)
+        video.srcObject = stream;
+        video.onloadedmetadata = (e) => {
+            console.log('Metadata received', this)
+            console.log('Metadata received', e)
+            // Do something with the video here.
+            video.play();
+            animationHandler();
+        };
+
+    }, () => {
+
+    })
 
     canvas.width = Math.floor(video.videoWidth)
     canvas.height = Math.floor(video.videoHeight)

@@ -16,22 +16,24 @@
             background-color: rgb(128, 128, 128);
         }
 
-        #canvas   {
-            width: 100%;
-            height: 100%;
+        #canvascontainer {
+            background-color: grey;
+
+        }
+
+        #canvas {
             margin: 0px;
+            overflow: hidden;
             top: 0px;
             left: 0px;
             position: absolute;
-        }
-        #canvas :-webkit-full-screen {
-            width: 100%;
-            height: 100%;
+            border: solid green 4px;
         }
 
         .control {
             width: 100%;
             bottom: 0px;
+            z-index: 10000;
             position: absolute;
         }
 
@@ -47,9 +49,12 @@
         .videocontainer {
             width: 50%;
             margin: 0px;
+            image-rendering: pixelated;
             right: 0px;
             z-index: 0;
             top: 0px;
+            background: red;
+            overflow: hidden;
             position: absolute;
         }
 
@@ -77,7 +82,9 @@
 <div class="control" >
 
     <p > lasercolor </p >
-    <input type="color" id="lasercolor" value="#ff6666"/>
+    <input type="color"
+           id="lasercolor"
+           value="#ff6666" />
     <p >treshold
     </p >
     <input type="range"
@@ -92,72 +99,46 @@
            id="fullscreen_button"
            value="fullscreen"
            onclick="javascript:fullscreen()" >
-    <p > topleftx</p ><input type="range"
-                             class="slider"
 
-                             id="topleft_x"
-                             min="0"
-                             max="10000"
-                             value="0" >
-    <p > toplefty</p ><input type="range"
-                             class="slider"
-                             id="topleft_y"
-                             value="0"
+    // video position in video using csss
 
-                             min="0"
-                             max="10000"
+    scale<br /><input type="range"
+                      class="slider"
+                      id="scaleVideo"
+                      value="1"
+                      step="0.0001"
+                      min="0"
+                      max="10"
 >
-    </p >
-    <p >
-    <p >toprightx</p ><input type="range"
-                             class="slider"
-                             id="topright_x"
-                             min="0"
-                             max="10000"
-                             value="5000" >
-    <p >toprighty</p ><input type="range"
-                             class="slider"
-                             id="topright_y"
-                             value="0"
+    rotate<br /><input type="range"
+                       class="slider"
+                       id="rotateVideo"
+                       value="0"
 
-                             min="0"
-                             max="10000"
+                       step="0.0001"
+                       min="0"
+                       max="360"
+>
+    x<br /><input type="range"
+                  class="slider"
+                  id="translateVideoX"
+                  value="0"
+
+                  step="0.0001"
+                  min="0"
+                  max="1920"
+>
+    y<br /><input type="range"
+                  class="slider"
+                  id="translateVideoY"
+                  value="0"
+                  step="0.0001"
+
+                  min="0"
+                  max="1080"
 >
 
-    </p >
-    <p >
-        <br /> bottomleftx<br /><input type="range"
-                                       class="slider"
-                                       id="bottomleft_x"
-                                       min="0"
-                                       max="10000"
-                                       value="0" >
-        bottomlefty<br /><input type="range"
-                                class="slider"
-                                id="bottomleft_y"
-                                value="5000"
 
-                                min="0"
-                                max="10000"
-    >
-    </p >
-    <p >
-        <br /> bottomrightx<br /><input type="range"
-                                        class="slider"
-                                        id="bottomright_x"
-                                        value="5000"
-                                        min="0"
-                                        max="10000"
-    >
-        bottomrighty<br /><input type="range"
-                                 class="slider"
-                                 id="bottomright_y"
-                                 value="5000"
-
-                                 min="0"
-                                 max="10000"
-    >
-    </p >
 </div >
 
 <div id="canvascontainer" >
@@ -165,21 +146,13 @@
 </div >
 <div class="videocontainer"
      id="videocontainer" >
-    <video id="video" width="512" height="512"></video >
-    <div class="knob"
-         id="knob1" >
-    </div >
-    <div class="knob"
-         id="knob2" >
-    </div >
-    <div class="knob"
-         id="knob3" >
-    </div >
-    <div class="knob"
-         id="knob4" >
-    </div >
+    <video id="video"
+           width="512"
+           height="512" ></video >
+
 </div >
 </div >
+
 
 </body >
 
