@@ -2,7 +2,7 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig.js').default
 var laserApi = require('./LaserApi.js').default
 var game01 = require('./setups/game-001-play-midi').default
-var game01 = require('./shader').default
+var shader = require('./shader').default
 //var game02 = require('./setups/game-002-moorhuni').default
 //var game01 = require('./setups/game-003-pong').default
 var Tone = require('tone')
@@ -158,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     laserApi.init(video, canvas);
     laserApi.registerCallback((grid) => {
+        shader.start()
         laserConfig.treshold = document.getElementById('treshold').value
         laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
         laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g

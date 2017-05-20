@@ -110,7 +110,6 @@ var LaserApi =
                     console.log('Metadata received', e)
                     // Do something with the video here.
                     video.play();
-
                     LaserApi.canvas.width = Math.floor(video.videoWidth)
                     LaserApi.canvas.height = Math.floor(video.videoHeight)
                     LaserApi.canvas.style.width = LaserApi.canvas.width;

@@ -1,9 +1,13 @@
 var shell = require('gl-now')()
 var laserApi = require('./LaserApi').default
+var createTexture = require("gl-texture2d")
 var createShader = require('gl-shader')
 var shader, buffer
-
-shell.on('gl-init', function () {
+var tex
+var initialised = false
+const init = function () {
+    console.log('Initialising shader')
+    initialised = true
     var gl = shell.gl
 
     //Create shader
@@ -21,6 +25,7 @@ shell.on('gl-init', function () {
         void main() {\
         \
           gl_FragColor = vec4(uv.x*t,uv.y,0,1);\
+          gl_FragColor = texture2D(texture, vec2(uv.x,uv.y)); \
         }')
 
     //Create vertex buffer
@@ -37,9 +42,14 @@ shell.on('gl-init', function () {
         -1, 1, 0,
 
     ]), gl.STATIC_DRAW)
-})
 
+    tex = createTexture(gl, document.getElementById('video'))
+    console.log('texture is ', tex)
+}
 shell.on('gl-render', function (t) {
+    if (!initialised) {
+        return
+    }
     var gl = shell.gl
 
     //Bind shader
@@ -51,7 +61,14 @@ shell.on('gl-render', function (t) {
 
     //Set uniforms
     shader.uniforms.t += 0.01
+    shader.uniforms.texture = tex.bind()
 
     //Draw
     gl.drawArrays(gl.TRIANGLES, 0, 6)
 })
+
+export default{
+
+    start: init
+
+}
