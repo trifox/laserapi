@@ -41,7 +41,10 @@ function skewY(context, angle) {
     context.setTransform(1, Math.tan((angle / 180.0) * Math.PI), 0, 1, 0, 0);
 }
 function skewX(context, angle) {
-    context.setTransform(Math.tan((angle / 180.0) * Math.PI), 1, 0, 0, 0, 0);
+    context.setTransform(1, 0, Math.tan((angle / 180.0) * Math.PI), 1, 1, 0, 0);
+}
+function skewXY(context, angle1, angle2) {
+    context.setTransform(1, Math.tan((angle1 / 180.0) * Math.PI), Math.tan((angle2 / 180.0) * Math.PI), 1, 1, 0, 0);
 }
 
 function frameHandler() {
@@ -59,7 +62,8 @@ function frameHandler() {
     MainCanvas.getCanvas().style.width = laserConfig.canvasResolution.width
     MainCanvas.getCanvas().style.height = laserConfig.canvasResolution.height
     MainCanvas.get2dContext().save()
-    skewY(MainCanvas.get2dContext(), document.getElementById('skewX').value)
+    skewXY(MainCanvas.get2dContext(), document.getElementById('skewY').value, document.getElementById('skewX').value)
+    //skewX(MainCanvas.get2dContext(), document.getElementById('skewX').value)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
