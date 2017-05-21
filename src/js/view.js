@@ -95,15 +95,15 @@ function frameHandler() {
     setTimeout(frameHandler, 0)
 }
 
-var presets
+var presets = []
 setTimeout(frameHandler, 0)
 if (document.addEventListener) {
     document.addEventListener('webkitfullscreenchange', exitHandler, false);
-   // document.addEventListener('fullscreenchange', exitHandler, false);
+    // document.addEventListener('fullscreenchange', exitHandler, false);
 }
 
 function exitHandler(data) {
-    console.log('exitHandler',data)
+    console.log('exitHandler', data)
     if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null) {
     } else {
 
@@ -194,7 +194,9 @@ function initHTML() {
 function loadPresetsFromLocalStorage() {
 
     var data = JSON.parse(window.localStorage.getItem('laserPresets'))
-    presets = data.presets
+    if (data) {
+        presets = data.presets
+    }
     console.log('presets data is ', data)
 }
 function loadFromLocalStorage() {
