@@ -29,6 +29,15 @@ function lerp2d(v0, v1, t) {
     };
 
 }
+function lerp3d(v0, v1, t) {
+
+    return {
+        x: lerp(v0.x, v1.x, t),
+        y: lerp(v0.y, v1.y, t),
+        z: lerp(v0.z, v1.z, t)
+    };
+
+}
 
 // normalized coord in, normalized coord out
 function transformCoordinate(coord, mapping) {
@@ -84,12 +93,106 @@ var lastDate = performance.now()
 
 var LaserApi =
     {
+        lerp: lerp,
+        lerp2d: lerp2d,
+        lerp3d: lerp3d,
+
         gRect: new Array(laserConfig.gridResolution * laserConfig.gridResolution),
         globalImageData: null,
         video: null,
         canvas: null,
 
-        init: (video, canvas) => {
+        getRectForInputImage: function (canvasColorOriginal) {
+
+            //     console.log('input image is ', canvasColorOriginal)
+            var gwidth = (canvasColorOriginal.width / laserConfig.gridResolution);
+            var gheight = (canvasColorOriginal.height / laserConfig.gridResolution)
+
+            for (var gy = 0; gy < laserConfig.gridResolution; gy++) {
+                for (var gx = 0; gx < laserConfig.gridResolution; gx++) {
+                    var gIndex = gy * laserConfig.gridResolution + gx;
+                    LaserApi.gRect[gIndex] = 0;
+                }
+            }
+
+            // lol, room for improvement to make it stop as soon as an adequate pixel has been found in subsection search should continue directly in next section
+            for (var x = 0; x < laserConfig.testResolution.width; x++) {
+                for (var y = 0; y < laserConfig.testResolution.height; y++) {
+
+                    /*var transformed = transformCoordinate({
+                     x: x / LaserApi.canvas.width,
+                     y: y / LaserApi.canvas.height
+                     }, transform);
+
+                     transformed.x *= LaserApi.canvas.width;
+                     transformed.y *= LaserApi.canvas.height;
+
+                     transformed.x = Math.round(transformed.x)
+                     transformed.y = Math.round(transformed.y)
+
+                     */
+
+                    var transformed = {
+                        x: x,
+                        y: y
+                    }
+
+                    if (x === 0 && y === 0) {
+                        //          console.log("transformed is ", transformed)
+                    }
+                    var index = (transformed.y * laserConfig.testResolution.width + transformed.x) * 4;
+                    var indexnormal = (y * laserConfig.testResolution.width + x) * 4;
+                    var gx = Math.floor(x / gwidth);
+                    var gy = Math.floor(y / gheight);
+                    var gIndex = gy * laserConfig.gridResolution + gx;
+                    if (LaserApi.gRect[gIndex] > 0) {
+                        //     break;
+                    }
+                    //canvasColor.data[index + 1] = 0;
+                    //canvasColor.data[index + 2] = 0;
+                    //                    if (canvasColor.data[index] > (canvasColor.data[index + 1] + canvasColor.data[index + 2])) {
+                    var diff = [];
+                    var current = [];
+                    current[0] = canvasColorOriginal.data[index];
+                    current[1] = canvasColorOriginal.data[index + 1];
+                    current[2] = canvasColorOriginal.data[index + 2];
+
+                    if (getColorDistance(laserConfig.testColor, [
+                            canvasColorOriginal.data[index],
+                            canvasColorOriginal.data[index + 1],
+                            canvasColorOriginal.data[index + 2]
+
+                        ]) < laserConfig.treshold) {
+                        /*  coordinates.push({
+                         x: x,
+                         x: x,
+                         y: y,
+                         r: canvasColor.data[index],
+                         g: canvasColor.data[index + 1],
+                         b: canvasColor.data[index + 2]
+                         });
+                         */
+                        // LaserApi.globalImageData.data[indexnormal] = 0;
+                        // LaserApi.globalImageData.data[indexnormal + 1] = 0;
+                        // LaserApi.globalImageData.data[indexnormal + 2] = 255;
+
+                        LaserApi.gRect[gIndex] = LaserApi.gRect[gIndex] + 1;
+
+                    } else {
+                        // LaserApi.globalImageData.data[indexnormal] *= 0.9;
+                        // LaserApi.globalImageData.data[indexnormal + 1] *= 0.9;
+                        // LaserApi.globalImageData.data[indexnormal + 2] *= 0.9;
+
+                        //LaserApi .gRect[gIndex] = 0;
+                    }
+                }
+
+            }
+            return LaserApi.gRect
+
+        },
+
+        init: function (video, canvas) {
             LaserApi.video = video
             LaserApi.canvas = canvas
             LaserApi.context = canvas.getContext("2d")
@@ -101,16 +204,15 @@ var LaserApi =
                     width: laserConfig.videoResolution.width,
                     height: laserConfig.videoResolution.height
                 }
-            }, (stream) => {
+            }, function (stream) {
 
                 console.log('Stream received', stream)
                 video.srcObject = stream;
-                video.onloadedmetadata = (e) => {
+                video.onloadedmetadata = function (e) {
                     console.log('Metadata received', this)
                     console.log('Metadata received', e)
                     // Do something with the video here.
                     video.play();
-
                     LaserApi.canvas.width = Math.floor(video.videoWidth)
                     LaserApi.canvas.height = Math.floor(video.videoHeight)
                     LaserApi.canvas.style.width = LaserApi.canvas.width;
@@ -119,21 +221,21 @@ var LaserApi =
                     LaserApi.updateCanvasRegular()
                 };
 
-            }, () => {
+            }, function () {
 
             })
 
         },
         // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
-        updateCanvasRegular: () => {
+        updateCanvasRegular: function () {
 
             var currentDate = performance.now()
-       //     console.log('checking ', lastDate, currentDate);
+            //     console.log('checking ', lastDate, currentDate);
             if (currentDate - lastDate < laserConfig.tickIntervalMilliseconds) {
                 window.requestAnimationFrame(LaserApi.updateCanvasRegular);
                 return
             }
-        //    console.log('returning ', lastDate, currentDate);
+            //    console.log('returning ', lastDate, currentDate);
             lastDate = currentDate
 
             LaserApi.updateCanvas()
@@ -148,7 +250,7 @@ var LaserApi =
         },
 
         // render canvas
-        updateCanvas: (options) => {
+        updateCanvas: function (options) {
 
             //    console.log('UpdateCanvas in api ///');
             var transform = getCoordinates();
@@ -185,16 +287,24 @@ var LaserApi =
                 for (var x = 0; x < LaserApi.canvas.width; x++) {
                     for (var y = 0; y < LaserApi.canvas.height; y++) {
 
-                        var transformed = transformCoordinate({
-                            x: x / LaserApi.canvas.width,
-                            y: y / LaserApi.canvas.height
-                        }, transform);
+                        /*var transformed = transformCoordinate({
+                         x: x / LaserApi.canvas.width,
+                         y: y / LaserApi.canvas.height
+                         }, transform);
 
-                        transformed.x *= LaserApi.canvas.width;
-                        transformed.y *= LaserApi.canvas.height;
+                         transformed.x *= LaserApi.canvas.width;
+                         transformed.y *= LaserApi.canvas.height;
 
-                        transformed.x = Math.round(transformed.x)
-                        transformed.y = Math.round(transformed.y)
+                         transformed.x = Math.round(transformed.x)
+                         transformed.y = Math.round(transformed.y)
+
+                         */
+
+                        var transformed = {
+                            x: x,
+                            y: y
+                        }
+
                         if (x === 0 && y === 0) {
                             //          console.log("transformed is ", transformed)
                         }
@@ -256,6 +366,7 @@ var LaserApi =
                         if (LaserApi.gRect[gIndex] > 0) {
                             LaserApi.context.strokeStyle = "#0000ff";
                             LaserApi.context.strokeRect(ggx, ggy, gwidth, gheight)
+                            LaserApi.context.strokeStyle = "#0000ff";
                             LaserApi.context.font = "10px Arial";
                             LaserApi.context.fillStyle = '#ffffff'
                             LaserApi.context.textAlign = 'center'
@@ -282,7 +393,7 @@ var LaserApi =
             }
 
         },
-        registerCallback: (fn) => {
+        registerCallback: function (fn) {
             // most simple callback saving for now, no events, no unregister nothing
             LaserApi.callback = fn
         }

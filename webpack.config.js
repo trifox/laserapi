@@ -10,9 +10,9 @@ Object.keys(intlJSON).map(function (key) {
     intlJSONStringified['INTL_' + key] = JSON.stringify(intlJSON[key]);
 });
 intlJSON = intlJSONStringified;
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var isProduction = process.env.NODE_ENV === 'production';
-
 
 console.log('Building with NODE_ENV', process.env.NODE_ENV, path.join(__dirname, "dist"));
 
@@ -35,10 +35,22 @@ var config = {
         filename: "bundle.js"
     },
     module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
+            }
+        ] ,
         loaders: [
             {
                 test: /\.html$/,
                 loader: 'ejs-loader'
+            }, {
+                test: /\.css$/,
+                loader: 'css-loader'
             }
         ]
     },
@@ -46,35 +58,36 @@ var config = {
     plugins: [new WebpackCleanupPlugin()]
 };
 
-
 if (isProduction) {
-    // config.plugins.push(
-    //     new UglifyJsPlugin({
-    //         compress: {
-    //             sequences: true,
-    //             properties: true,
-    //             drop_debugger: true,
-    //             dead_code: true,
-    //             unsafe: true,
-    //             conditionals: true,
-    //             comparisons: true,
-    //             evaluate: true,
-    //             booleans: true,
-    //             unused: true,
-    //             loops: true,
-    //             cascade: true,
-    //             keep_fargs: false,
-    //             if_return: true,
-    //             join_vars: true,
-    //             drop_console: true
-    //         },
-    //         'mangle-props': true,
-    //         mangle: true,
-    //         beautify: false
-    //     }));
+    config.plugins.push(
+        new UglifyJsPlugin({
+            compress: {
+                sequences: true,
+                properties: true,
+                drop_debugger: true,
+                dead_code: true,
+                unsafe: true,
+                conditionals: true,
+                comparisons: true,
+                evaluate: true,
+                booleans: true,
+                unused: true,
+                loops: true,
+                cascade: true,
+                keep_fargs: false,
+                if_return: true,
+                join_vars: true,
+                drop_console: true
+            },
+            'mangle-props': true,
+            mangle: true,
+            beautify: false
+        }));
 }
 
-
+config.plugins.push(
+    new ExtractTextPlugin("styles.css")
+)
 config.plugins.push(
     new webpack.DefinePlugin(intlJSON),
     new HtmlWebpackPlugin({
@@ -94,7 +107,6 @@ if (isProduction) {
         new HtmlWebpackInlineSourcePlugin()
     );
 }
-
 
 module.exports = config;
 

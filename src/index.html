@@ -2,6 +2,8 @@
 <head >
     <title ><%= INTL_TITLE %></title >
     <meta charset="utf-8" >
+    <link rel="stylesheet"
+          href="./styles.css" >
     <meta id="meta-description"
           name="description"
           content="<%= INTL_META_DESCRIPTION %>" >
@@ -16,40 +18,40 @@
             background-color: rgb(128, 128, 128);
         }
 
-        #canvas   {
-            width: 100%;
-            height: 100%;
+        #canvascontainer {
+            background-color: grey;
+            height:100%;
+            width:100%
+
+        }
+
+        #canvas {
             margin: 0px;
+            overflow: hidden;
             top: 0px;
             left: 0px;
             position: absolute;
-        }
-        #canvas :-webkit-full-screen {
-            width: 100%;
-            height: 100%;
+            border: solid green 4px;
         }
 
         .control {
             width: 100%;
             bottom: 0px;
+            z-index: 10000;
+            overflow: scroll;
+            max-height: 500px;
             position: absolute;
-        }
-
-        .knob {
-            position: absolute;
-            z-index: 1;
-            border-left: 2px solid blue;
-            border-top: 2px solid blue;
-            width: 10px;
-            height: 10px;
         }
 
         .videocontainer {
             width: 50%;
             margin: 0px;
+            image-rendering: pixelated;
             right: 0px;
             z-index: 0;
             top: 0px;
+            background: red;
+            overflow: hidden;
             position: absolute;
         }
 
@@ -62,102 +64,176 @@
 <body >
 <script >
 
-    function fullscreen() {
-
-        console.log('fullscreen clicked')
-        var elem = document.getElementById("canvascontainer");
-        console.log('element is ', elem)
-
-        if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-        }
-
-    }
 </script >
-<div class="control" >
+<div class="control w3-card-2" >
+    <form class="w3-container" >
 
-    <p > lasercolor </p >
-    <input type="color" id="lasercolor" value="#ff6666"/>
-    <p >treshold
-    </p >
-    <input type="range"
-           class="slider"
 
-           id="treshold"
-           min="0"
-           max="255"
-           value="100" >
+        <label >game</label >
+        <select class="w3-select"
+                name="option"
+                id="game-selector" >
+        </select >
+        <fieldset >
+            <label > scale</label >
+            <input type="range"
+                   class="w3-input"
+                   id="scaleVideo"
+                   value="1"
+                   step="0.000001"
+                   min="0"
+                   max="10"
+            >
+            <label > rotate</label >
+            <input type="range"
+                   class="w3-input"
+                   id="rotateVideo"
+                   value="0"
 
-    <input type="button"
-           id="fullscreen_button"
-           value="fullscreen"
-           onclick="javascript:fullscreen()" >
-    <p > topleftx</p ><input type="range"
-                             class="slider"
+                   step="0.000001"
+                   min="0"
+                   max="360"
+            >
+            <label > skewX</label >
+            <input type="range"
+                   class="w3-input"
+                   id="skewX"
+                   value="0"
 
-                             id="topleft_x"
-                             min="0"
-                             max="10000"
-                             value="0" >
-    <p > toplefty</p ><input type="range"
-                             class="slider"
-                             id="topleft_y"
-                             value="0"
+                   step="0.000001"
+                   min="0"
+                   max="360"
+            >
+            <label > skewY</label >
+            <input type="range"
+                   class="w3-input"
+                   id="skewY"
+                   value="0"
 
-                             min="0"
-                             max="10000"
->
-    </p >
-    <p >
-    <p >toprightx</p ><input type="range"
-                             class="slider"
-                             id="topright_x"
-                             min="0"
-                             max="10000"
-                             value="5000" >
-    <p >toprighty</p ><input type="range"
-                             class="slider"
-                             id="topright_y"
-                             value="0"
+                   step="0.000001"
+                   min="0"
+                   max="360"
+            >
 
-                             min="0"
-                             max="10000"
->
+            <label > x</label >
+            <input type="range"
+                   id="translateVideoX"
+                   value="0"
+                   class="w3-input"
 
-    </p >
-    <p >
-        <br /> bottomleftx<br /><input type="range"
-                                       class="slider"
-                                       id="bottomleft_x"
-                                       min="0"
-                                       max="10000"
-                                       value="0" >
-        bottomlefty<br /><input type="range"
-                                class="slider"
-                                id="bottomleft_y"
-                                value="5000"
+                   step="0.000001"
+                   min="-1920"
+                   max="1920"
+            >
+            <label >y</label >
+            <input type="range"
+                   id="translateVideoY"
+                   value="0"
+                   class="w3-input"
+                   step="0.000001"
 
-                                min="0"
-                                max="10000"
-    >
-    </p >
-    <p >
-        <br /> bottomrightx<br /><input type="range"
-                                        class="slider"
-                                        id="bottomright_x"
-                                        value="5000"
-                                        min="0"
-                                        max="10000"
-    >
-        bottomrighty<br /><input type="range"
-                                 class="slider"
-                                 id="bottomright_y"
-                                 value="5000"
+                   min="-1080"
+                   max="1080"
+            >
+        </fieldset >
+        <fieldset >
+            <label > lasercolor </label >
+            <input type="color"
+                   class="w3-input"
+                   id="lasercolor"
+                   value="#ff6666" />
 
-                                 min="0"
-                                 max="10000"
-    >
-    </p >
+            <label >treshold
+            </label >
+            <input type="range"
+                   class="w3-input"
+                   id="treshold"
+                   min="0"
+                   max="255"
+                   value="100" >
+
+            <label >fullscreen
+            </label >
+            <input type="button"
+                   class="w3-input"
+                   id="fullscreen_button"
+                   value="fullscreen"
+                   onclick="javascript:fullscreen()" >
+
+            <label >gridresolution </label >
+            <input type="range"
+                   id="gridResolution"
+                   value="8"
+                   class="w3-input"
+                   step="1"
+
+                   min="2"
+                   max="128"
+            >
+
+
+            <label >debugVideo</label >
+            <input type="checkbox"
+                   id="debugVideo"
+
+
+                   class="w3-input"
+            >
+
+            <label >showGame</label >
+            <input type="checkbox"
+                   id="showGame"
+                   checked
+                   class="w3-input"
+
+            >
+
+            <label >showDebug</label >
+            <input type="checkbox"
+                   id="showDebug"
+
+                   class="w3-input"
+
+            >
+
+            <fieldset >
+
+
+                <label >presetname</label >
+                <input type="text"
+                       id="preset-name"
+
+                       class="w3-input"
+
+                >
+
+
+                <label >delete preset</label >
+                <input type="button"
+                       class="w3-input"
+                       id="delete-preset-button"
+                       value="Delete Preset"
+                ><input type="button"
+                        class="w3-input"
+                        id="save-preset-button"
+                        value="Save Preset"
+            >
+                <label >presets</label >
+                <select class="w3-select"
+                        name="option"
+                        id="presets-selector" >
+                    <option value=""
+                            disabled
+                            selected >Select Preset
+                    </option >
+                    <option value="1" >Option 1</option >
+                    <option value="2" >Option 2</option >
+                    <option value="3" >Option 3</option >
+                </select >
+
+            </fieldset >
+        </fieldset >
+    </form >
 </div >
 
 <div id="canvascontainer" >
@@ -165,21 +241,13 @@
 </div >
 <div class="videocontainer"
      id="videocontainer" >
-    <video id="video" ></video >
-    <div class="knob"
-         id="knob1" >
-    </div >
-    <div class="knob"
-         id="knob2" >
-    </div >
-    <div class="knob"
-         id="knob3" >
-    </div >
-    <div class="knob"
-         id="knob4" >
-    </div >
+    <video id="video"
+           width="512"
+           height="512" ></video >
+
 </div >
 </div >
+
 
 </body >
 
