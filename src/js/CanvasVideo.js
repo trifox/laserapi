@@ -5,10 +5,10 @@ var video = null
 
 export default {
 
-    getVideo: () => {
+    getVideo: function () {
         return video
     },
-    init: (videoIn) => {
+    init: function (videoIn) {
         video = videoIn
         console.log('Initialising VIDEO from canvas DOM element', video)
         navigator.getUserMedia({
@@ -16,18 +16,18 @@ export default {
                 width: laserConfig.videoResolution.width,
                 height: laserConfig.videoResolution.height
             }
-        }, (stream) => {
+        }, function (stream) {
 
             console.log('Stream received', stream)
             video.srcObject = stream;
-            video.onloadedmetadata = (e) => {
+            video.onloadedmetadata = function (e) {
                 console.log('Metadata received', this)
                 console.log('Metadata received', e)
                 // Do something with the video here.
                 video.play();
             };
 
-        }, () => {
+        }, function () {
 
         })
 

@@ -18,7 +18,7 @@ function init(count) {
     }
 }
 function toPaddedHexString(num, len) {
-//    console.log('toPaddedHexString', num, len)
+    //    console.log('toPaddedHexString', num, len)
     var str = ( num % 255).toString(16);
     return "0".repeat(len - str.length) + str;
 }
@@ -26,10 +26,10 @@ function toPaddedHexString(num, len) {
 function getColorString(r, g, b) {
 
     var result = '#' + toPaddedHexString(Math.floor(Math.abs(r)), 2) + toPaddedHexString(Math.floor(Math.abs(g)), 2) + toPaddedHexString(Math.floor(Math.abs(b)), 2)
-   // console.log('result is ', result)
+    // console.log('result is ', result)
     return result
 }
-const handler = (laserGrid) => {
+const handler = function (laserGrid) {
 
     if (lastResolution != laserGrid.length) {
 
@@ -51,8 +51,8 @@ const handler = (laserGrid) => {
                 myGrid[gIndex].active = currentDate - myGrid[gIndex].time < fadeDuration
 
                 // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
-             //   console.log('diff is ', currentDate - myGrid[gIndex].time)
-                MainCanvas.get2dContext().fillStyle = getColorString(0,  255-((currentDate - myGrid[gIndex].time) / fadeDuration) * 255, 255, 255)
+                //   console.log('diff is ', currentDate - myGrid[gIndex].time)
+                MainCanvas.get2dContext().fillStyle = getColorString(0, 255 - ((currentDate - myGrid[gIndex].time) / fadeDuration) * 255, 255, 255)
 
                 // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 
@@ -74,7 +74,7 @@ const handler = (laserGrid) => {
 
 export default {
 
-    handle: (grid) => {
+    handle: function (grid) {
         handler(grid)
     }
 

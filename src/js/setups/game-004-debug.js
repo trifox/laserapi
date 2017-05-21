@@ -3,7 +3,7 @@ var MainCanvas = require('../MasterCanvas').default
 
 var lastResolution = -1
 
-const handler = (laserGrid) => {
+const handler =function (laserGrid) {
     for (var x = 0; x < laserConfig.gridResolution; x++) {
         for (var y = 0; y < laserConfig.gridResolution; y++) {
 
@@ -38,7 +38,7 @@ const handler = (laserGrid) => {
 
 export default {
 
-    handle: (grid) => {
+    handle: function(grid)   {
         handler(grid)
     }
 

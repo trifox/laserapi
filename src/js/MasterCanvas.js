@@ -5,19 +5,19 @@ var canvas = null
 var context2d = null
 
 export default {
-    clear: () => {
+    clear: function () {
         context2d.beginPath();
         context2d.rect(0, 0, canvas.width, canvas.height);
         context2d.fillStyle = "black";
         context2d.fill();
     },
-    getCanvas: () => {
+    getCanvas: function () {
         return canvas
     },
-    get2dContext: () => {
+    get2dContext: function()   {
         return context2d
     },
-    init: (canvasIn) => {
+    init: function (canvasIn) {
         canvas = canvasIn
         canvas.width = laserConfig.canvasResolution.width
         canvas.height = laserConfig.canvasResolution.height

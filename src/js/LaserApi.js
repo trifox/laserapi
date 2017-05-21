@@ -89,9 +89,9 @@ var LaserApi =
         video: null,
         canvas: null,
 
-        getRectForInputImage: (canvasColorOriginal) => {
+        getRectForInputImage:function (canvasColorOriginal)  {
 
-       //     console.log('input image is ', canvasColorOriginal)
+            //     console.log('input image is ', canvasColorOriginal)
             var gwidth = (canvasColorOriginal.width / laserConfig.gridResolution);
             var gheight = (canvasColorOriginal.height / laserConfig.gridResolution)
 
@@ -177,7 +177,7 @@ var LaserApi =
 
         },
 
-        init: (video, canvas) => {
+        init: function (video, canvas) {
             LaserApi.video = video
             LaserApi.canvas = canvas
             LaserApi.context = canvas.getContext("2d")
@@ -189,11 +189,11 @@ var LaserApi =
                     width: laserConfig.videoResolution.width,
                     height: laserConfig.videoResolution.height
                 }
-            }, (stream) => {
+            }, function (stream) {
 
                 console.log('Stream received', stream)
                 video.srcObject = stream;
-                video.onloadedmetadata = (e) => {
+                video.onloadedmetadata = function (e) {
                     console.log('Metadata received', this)
                     console.log('Metadata received', e)
                     // Do something with the video here.
@@ -206,13 +206,13 @@ var LaserApi =
                     LaserApi.updateCanvasRegular()
                 };
 
-            }, () => {
+            }, function () {
 
             })
 
         },
         // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
-        updateCanvasRegular: () => {
+        updateCanvasRegular: function()  {
 
             var currentDate = performance.now()
             //     console.log('checking ', lastDate, currentDate);
@@ -235,7 +235,7 @@ var LaserApi =
         },
 
         // render canvas
-        updateCanvas: (options) => {
+        updateCanvas:function (options)   {
 
             //    console.log('UpdateCanvas in api ///');
             var transform = getCoordinates();
@@ -377,7 +377,7 @@ var LaserApi =
             }
 
         },
-        registerCallback: (fn) => {
+        registerCallback: function(fn)   {
             // most simple callback saving for now, no events, no unregister nothing
             LaserApi.callback = fn
         }

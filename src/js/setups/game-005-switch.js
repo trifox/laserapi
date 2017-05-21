@@ -17,7 +17,7 @@ function init(count) {
     }
 }
 
-const handler = (laserGrid) => {
+const handler =function (laserGrid)   {
 
     if (lastResolution != laserGrid.length) {
 
@@ -68,7 +68,7 @@ const handler = (laserGrid) => {
 
 export default {
 
-    handle: (grid) => {
+    handle: function(grid) {
         handler(grid)
     }
 

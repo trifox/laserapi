@@ -2,6 +2,7 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
 var CanvasVideo = require('./CanvasVideo').default
 var LaserApi = require('./LaserApi.js').default
+var w3 = require('./../css/w3.css').default
 //var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
 var MainCanvas = require('./MasterCanvas').default
@@ -11,17 +12,17 @@ var MainCanvas = require('./MasterCanvas').default
 var gameDebug = require('./setups/game-004-debug').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
- //   require('./setups/game-001-play-midi').default,
- //   require('./setups/game-002-moorhuni').default,
-    require('./setups/game-003-pong').default,
-//    require('./setups/game-005-switch').default,
-//    require('./setups/game-006-fade').default
+    // require('./setups/game-001-play-midi').default,
+    require('./setups/game-002-moorhuni').default,
+    // require('./setups/game-003-pong').default,
+    // require('./setups/game-005-switch').default,
+    //     require('./setups/game-006-fade').default
 ]
 /* make sure to use https as the web audio api does not like http */
 
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
-
+games[0].init();
 function frameHandler() {
 
     // console.log('Re Rendering');
@@ -53,10 +54,11 @@ function frameHandler() {
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColor)
 
-    if (!laserConfig.debugVideo) {
+    if (!laserConfig.showDebug) {
 
         games[0].handle(laserGrid)
-    } else {
+    }
+    if (laserConfig.showGame) {
         gameDebug.handle(laserGrid)
     }
     setTimeout(frameHandler, 25)
@@ -79,6 +81,21 @@ function loadFromLocalStorage() {
 
         }
 
+        if (data.laserConfig.debugVideo) {
+
+            document.getElementById('debugVideo').value = data.laserConfig.debugVideo
+
+        }
+        if (data.laserConfig.showGame) {
+
+            document.getElementById('showGame').value = data.laserConfig.showGame
+
+        }
+        if (data.laserConfig.showDebug) {
+
+            document.getElementById('showDebug').value = data.laserConfig.showDebug
+
+        }
         if (data.laserConfig.debugVideo) {
 
             document.getElementById('debugVideo').value = data.laserConfig.debugVideo
@@ -232,6 +249,8 @@ function animationHandler() {
     laserConfig.treshold = document.getElementById('treshold').value
     laserConfig.gridResolution = document.getElementById('gridResolution').value
     laserConfig.debugVideo = document.getElementById('debugVideo').checked
+    laserConfig.showDebug = document.getElementById('showDebug').checked
+    laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.videoTransform = getTransformOfVideoInput()
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
@@ -268,11 +287,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
             width: laserConfig.videoResolution.width,
             height: laserConfig.videoResolution.height
         }
-    }, (stream) => {
+    }, function (stream) {
 
         console.log('Stream received', stream)
         video.srcObject = stream;
-        video.onloadedmetadata = (e) => {
+        video.onloadedmetadata = function (e) {
             console.log('Metadata received', this)
             console.log('Metadata received', e)
             // Do something with the video here.
@@ -280,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             animationHandler();
         };
 
-    }, () => {
+    }, function () {
 
     })
 

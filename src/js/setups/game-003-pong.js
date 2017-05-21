@@ -2,7 +2,7 @@ var laserConfig = require('../LaserApiConfig.js').default
 var p2 = require('p2')
 var canvas = document.getElementById('canvas')
 
-const createItem = (index, size = 75) => {
+const createItem = function(index, size = 75)  {
 
     var div1 = document.createElement('div');
     div1.style.position = 'absolute';
@@ -56,7 +56,7 @@ physicsBall.style.border = '0px solid white'
 physicsBall.style.backgroundColor = 'green';
 physicsBall.style.left = 10;
 
-const addPlane = (angle, world, collisionshape) => {
+const addPlane =function (angle, world, collisionshape) {
 
     // Create a platform that the ball can bounce on
     var platformShape1 = new p2.Plane();
@@ -84,7 +84,7 @@ const addPlane = (angle, world, collisionshape) => {
     }));
 
 }
-const addObstacle = (world, collisionshape) => {
+const addObstacle =function (world, collisionshape)  {
 
     // Create a platform that the ball can bounce on
     var platformShape1 = new p2.Box({
@@ -118,7 +118,7 @@ const addObstacle = (world, collisionshape) => {
 
 }
 const obstacles = []
-const init2dPhysics = () => {
+const init2dPhysics = function() {
 
     ///////////////////
     // Create a physics world, where bodies and constraints live
@@ -184,7 +184,7 @@ const init2dPhysics = () => {
     ////////////////
 }
 init2dPhysics()
-const isInsideRect = (rect1, rect2) => {
+const isInsideRect =function (rect1, rect2)  {
     //   console.log('comparing ', rect1, rect2)
     var p1 = rect1.topleft.x <= rect2.topright.x
     var p2 = rect1.topright.x >= rect2.topleft.x
@@ -213,7 +213,7 @@ function getDist(rect1, rect2) {
         y: (p1.y - p2.y) / 2
     }
 }
-const getRectangleFromBoundingRect = (clientBoundingRect) => {
+const getRectangleFromBoundingRect = function(clientBoundingRect)   {
     var rect1 = {
 
         topleft: {
@@ -235,7 +235,7 @@ const getRectangleFromBoundingRect = (clientBoundingRect) => {
     }
     return rect1
 }
-const handler = (grid) => {
+const handler = function(grid)   {
 
     // rect for test object
 
@@ -351,8 +351,8 @@ const handler = (grid) => {
 
 export default {
 
-    handle: (grid) => {
+
+    handle: function(grid)  {
         handler(grid)
     }
-
 }

@@ -26,7 +26,7 @@ function init(count) {
     }
 }
 
-const handler = (grid) => {
+const handler = function(grid) {
 
     if (lastResolution != grid.length) {
 
@@ -64,7 +64,7 @@ const handler = (grid) => {
 
 export default {
 
-    handle: (grid) => {
+    handle: function(grid)   {
         handler(grid)
     }
 
