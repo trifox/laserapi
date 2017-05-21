@@ -6,7 +6,17 @@ var LaserApi = require('./LaserApi.js').default
 //var shader = require('./shader').default
 var MainCanvas = require('./MasterCanvas').default
 // var game01 = require('./setups/game-002-moorhuni').default
-var game01 = require('./setups/game-003-pong').default
+//var game01 = require('./setups/game-003-pong').default
+//var game01 = require('./setups/game-004-paint').default
+var gameDebug = require('./setups/game-004-debug').default
+//var game01 = require('./setups/game-005-switch').default
+var games = [
+ //   require('./setups/game-001-play-midi').default,
+ //   require('./setups/game-002-moorhuni').default,
+    require('./setups/game-003-pong').default,
+//    require('./setups/game-005-switch').default,
+//    require('./setups/game-006-fade').default
+]
 /* make sure to use https as the web audio api does not like http */
 
 MainCanvas.init(document.getElementById('canvas'))
@@ -43,39 +53,12 @@ function frameHandler() {
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColor)
 
-    for (var x = 0; x < laserConfig.gridResolution; x++) {
-        for (var y = 0; y < laserConfig.gridResolution; y++) {
+    if (!laserConfig.debugVideo) {
 
-            var gwidth = (laserConfig.canvasResolution.width / laserConfig.gridResolution);
-            var gheight = (laserConfig.canvasResolution.height / laserConfig.gridResolution)
-
-            var ggx = x * gwidth;
-            var ggy = y * gheight;
-            var gIndex = y * laserConfig.gridResolution + x;
-
-            if (laserGrid[gIndex] > 0) {
-                MainCanvas.get2dContext().strokeStyle = "#0000ff";
-                MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
-                MainCanvas.get2dContext().font = "10px Arial";
-                // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
-                if (gIndex % 2 === 0) {
-                    MainCanvas.get2dContext().fillStyle = '#0000ff'
-                } else {
-                    MainCanvas.get2dContext().fillStyle = '#00ff00'
-                }
-                MainCanvas.get2dContext().textAlign = 'center'
-                // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
-
-                MainCanvas.get2dContext().fillRect(ggx, ggy, laserConfig.canvasResolution.width / laserConfig.gridResolution, laserConfig.canvasResolution.height / laserConfig.gridResolution)
-            }
-            else {
-                // context.strokeStyle = "#ffffff";
-
-            }
-
-        }
+        games[0].handle(laserGrid)
+    } else {
+        gameDebug.handle(laserGrid)
     }
-    game01.handle(laserGrid)
     setTimeout(frameHandler, 25)
 }
 
@@ -101,6 +84,11 @@ function loadFromLocalStorage() {
             document.getElementById('debugVideo').value = data.laserConfig.debugVideo
 
         }
+        if (data.laserConfig.gridResolution) {
+
+            document.getElementById('gridResolution').value = data.laserConfig.gridResolution
+
+        }
 
         if (data.videoTransform) {
 
@@ -113,6 +101,7 @@ function loadFromLocalStorage() {
 
         setVideoTransform(data.videoTransform)
         if (data && data.transform) {
+
             setCoordinates(data.transform)
         }
     }

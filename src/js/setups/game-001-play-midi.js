@@ -5,43 +5,57 @@ var playTones = {}
 var synths = []
 
 var lastResolution = -1
+const maxSynths = 16
+function init(count) {
 
-function init() {
+    if (synths.length) {
+
+        for (var i = 0; i < synths.length; i++) {
+
+            synths[i].triggerRelease();
+        }
+
+    }
+
     synths = []
     playTones = {}
 
-    for (var i = 0; i < laserConfig.gridResolution * laserConfig.gridResolution; i++) {
+    for (var i = 0; i < count; i++) {
 
-        synths[i] = new Tone.Synth().toMaster();
+        synths.push(new Tone.Synth().toMaster());
     }
 }
 
 const handler = (grid) => {
 
-    if (lastResolution != laserConfig.gridResolution) {
+    if (lastResolution != grid.length) {
 
-        init()
-        lastResolution = laserConfig.gridResolution
+        init(maxSynths)
+        lastResolution = grid.length
     }
 
     for (var i = 0; i < grid.length; i++) {
 
         if (grid[i] > 0) {
 
-            if (playTones[i]) {
+            if (playTones[i % maxSynths]
+            ) {
 
                 //   playTones[i]()
 
-            } else {
+            }
+            else {
 
-                playTones[i] = true
-                synths[i].triggerAttack(20 + i * 8.7);
+                playTones[i % maxSynths] = true
+                synths[i % maxSynths].triggerAttack(20 + i * 8.7);
             }
 
         } else {
-            playTones[i] = false
+            if (playTones[i % maxSynths]) {
+                playTones[i % maxSynths] = false
+                synths[i % maxSynths].triggerRelease();
+            }
 
-            synths[i].triggerRelease();
         }
 
     }
