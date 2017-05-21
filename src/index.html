@@ -2,6 +2,10 @@
 <head >
     <title ><%= INTL_TITLE %></title >
     <meta charset="utf-8" >
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous" >
     <meta id="meta-description"
           name="description"
           content="<%= INTL_META_DESCRIPTION %>" >
@@ -80,82 +84,95 @@
     }
 </script >
 <div class="form-group control" >
+    <form >
+        <fieldset class="form-group" >
+            <label > lasercolor </label >
+            <input type="color"
+                   class="form-control"
+                   id="lasercolor"
+                   value="#ff6666" />
 
-    <p > lasercolor </p >
-    <input type="color"
-           id="lasercolor"
-           value="#ff6666" />
-    <p >treshold
-    </p >
-    <input type="range"
-           class="slider"
+            <label >treshold
+            </label >
+            <input type="range"
+                   class=" form-control"
 
-           id="treshold"
-           min="0"
-           max="255"
-           value="100" >
+                   id="treshold"
+                   min="0"
+                   max="255"
+                   value="100" >
 
-    <input type="button"
-           id="fullscreen_button"
-           value="fullscreen"
-           onclick="javascript:fullscreen()" >
+            <label >fullscreen
+            </label >
+            <input type="button"
+                   class="form-control"
+                   id="fullscreen_button"
+                   value="fullscreen"
+                   onclick="javascript:fullscreen()" >
 
-    // video position in video using csss
+        </fieldset >
 
-    scale<br /><input type="range"
-                      class="slider"
-                      id="scaleVideo"
-                      value="1"
-                      step="0.0001"
-                      min="0"
-                      max="10"
->
-    rotate<br /><input type="range"
-                       class="slider"
-                       id="rotateVideo"
-                       value="0"
+        <label > scale</label >
+        <input type="range"
+               class=" form-control"
+               id="scaleVideo"
+               value="1"
+               step="0.0001"
+               min="0"
+               max="10"
+        >
+        <label > rotate</label >
+        <input type="range"
+               class=" form-control"
+               id="rotateVideo"
+               value="0"
 
-                       step="0.0001"
-                       min="0"
-                       max="360"
->
-    x<br /><input type="range"
-                  class="slider"
-                  id="translateVideoX"
-                  value="0"
+               step="0.0001"
+               min="0"
+               max="360"
+        >
+        <label > x</label >
+        <input type="range"
+               class=" form-control"
+               id="translateVideoX"
+               value="0"
 
-                  step="0.0001"
-                  min="-1920"
-                  max="1920"
->
-    y<br /><input type="range"
-                  class="slider"
-                  id="translateVideoY"
-                  value="0"
-                  step="0.0001"
+               step="0.0001"
+               min="-1920"
+               max="1920"
+        >
+        <label >y</label >
+        <input type="range"
+               class=" form-control"
+               id="translateVideoY"
+               value="0"
+               step="0.0001"
 
-                  min="-1080"
-                  max="1080"
->
+               min="-1080"
+               max="1080"
+        >
 
-    gridresolution <br /><input type="range"
-                                class="slider"
-                                id="gridResolution"
-                                value="8"
-                                step="1"
+        <label >gridresolution </label >
+        <input type="range"
+               class=" form-control"
+               id="gridResolution"
+               value="8"
+               step="1"
 
-                                min="2"
-                                max="128"
->
-
-
-    debugVideo<br /><input type="checkbox"
-                           id="debugVideo"
-
-
->
+               min="2"
+               max="128"
+        >
 
 
+        <label >debugVideo</label >
+        <input type="checkbox"
+               id="debugVideo"
+               class="slider form-control"
+
+
+        >
+
+    </form >
 </div >
 
 <div id="canvascontainer" >

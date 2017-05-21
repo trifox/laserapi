@@ -2,12 +2,11 @@ var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
 var CanvasVideo = require('./CanvasVideo').default
 var LaserApi = require('./LaserApi.js').default
-require("bootstrap-webpack");
-var game01 = require('./setups/game-001-play-midi').default
+//var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
 var MainCanvas = require('./MasterCanvas').default
-//var game02 = require('./setups/game-002-moorhuni').default
-//var game01 = require('./setups/game-003-pong').default
+// var game01 = require('./setups/game-002-moorhuni').default
+var game01 = require('./setups/game-003-pong').default
 /* make sure to use https as the web audio api does not like http */
 
 MainCanvas.init(document.getElementById('canvas'))
@@ -30,6 +29,9 @@ function frameHandler() {
 
     //  console.log('Re rotate', transform.rotate);
     MainCanvas.get2dContext().imageSmoothingEnabled = false
+
+    MainCanvas.clear()
+
     MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), 0, 0, MainCanvas.getCanvas().width, MainCanvas.getCanvas().height);
 
     var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height); // rgba e [0,255]
@@ -55,7 +57,12 @@ function frameHandler() {
                 MainCanvas.get2dContext().strokeStyle = "#0000ff";
                 MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
                 MainCanvas.get2dContext().font = "10px Arial";
-                MainCanvas.get2dContext().fillStyle = '#ffffff'
+                // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
+                if (gIndex % 2 === 0) {
+                    MainCanvas.get2dContext().fillStyle = '#0000ff'
+                } else {
+                    MainCanvas.get2dContext().fillStyle = '#00ff00'
+                }
                 MainCanvas.get2dContext().textAlign = 'center'
                 // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 
@@ -81,7 +88,7 @@ function loadFromLocalStorage() {
         console.log('last data is ', data)
 
         if (data.treshold) {
-            document.getElementById('treshold').value = data.treshold
+            document.getElementById('treshold').value = data.laserConfig.treshold
         }
         if (data.testColor) {
 
@@ -89,12 +96,18 @@ function loadFromLocalStorage() {
 
         }
 
+        if (data.laserConfig.debugVideo) {
+
+            document.getElementById('debugVideo').value = data.laserConfig.debugVideo
+
+        }
+
         if (data.videoTransform) {
 
-            document.getElementById('rotateVideo').value = data.videoTransform.rotate
-            document.getElementById('scaleVideo').value = data.videoTransform.scale
-            document.getElementById('translateVideoX').value = data.videoTransform.translate.x
-            document.getElementById('translateVideoY').value = data.videoTransform.translate.y
+            document.getElementById('rotateVideo').value = data.laserConfig.videoTransform.rotate
+            document.getElementById('scaleVideo').value = data.laserConfig.videoTransform.scale
+            document.getElementById('translateVideoX').value = data.laserConfig.videoTransform.translate.x
+            document.getElementById('translateVideoY').value = data.laserConfig.videoTransform.translate.y
 
         }
 
@@ -114,7 +127,9 @@ function saveToLocalStorage() {
         treshold: document.getElementById('treshold').value,
         testColor: document.getElementById('lasercolor').value,
         transform: getCoordinates(),
-        videoTransform: getTransformOfVideoInput()
+        videoTransform: getTransformOfVideoInput(),
+        debugVideo: document.getElementById('debugVideo').checked,
+        laserConfig: laserConfig
     }))
 }
 
@@ -228,6 +243,7 @@ function animationHandler() {
     laserConfig.treshold = document.getElementById('treshold').value
     laserConfig.gridResolution = document.getElementById('gridResolution').value
     laserConfig.debugVideo = document.getElementById('debugVideo').checked
+    laserConfig.videoTransform = getTransformOfVideoInput()
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
     laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
