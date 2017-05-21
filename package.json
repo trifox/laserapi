@@ -63,6 +63,7 @@
     "sass-loader": "^6.0.5",
     "style-loader": "^0.17.0",
     "tone": "^0.10.0",
+    "uglify-js": "^2.8.0",
     "uglifyjs": "^2.4.11",
     "url-loader": "^0.5.8",
     "w3": "^1.0.0"
