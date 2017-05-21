@@ -78,6 +78,11 @@
     <form class="w3-container" >
 
 
+        <label >game</label >
+        <select class="w3-select"
+                name="option"
+                id="game-selector" >
+        </select >
         <fieldset >
             <label > scale</label >
             <input type="range"
@@ -200,6 +205,38 @@
 
             >
 
+            <fieldset >
+
+
+                <label >presetname</label >
+                <input type="text"
+                       id="preset-name"
+
+                       class="w3-input"
+
+                >
+
+
+                <label >save preset</label >
+                <input type="button"
+                       class="w3-input"
+                       id="save-preset-button"
+                       value="Save Preset"
+                >
+                <label >presets</label >
+                <select class="w3-select"
+                        name="option"
+                        id="presets-selector" >
+                    <option value=""
+                            disabled
+                            selected >Select Preset
+                    </option >
+                    <option value="1" >Option 1</option >
+                    <option value="2" >Option 2</option >
+                    <option value="3" >Option 3</option >
+                </select >
+
+            </fieldset >
         </fieldset >
     </form >
 </div >

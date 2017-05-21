@@ -68,6 +68,7 @@ const handler =function (laserGrid)   {
 
 export default {
 
+    name: 'Paint'    ,
     handle: function(grid) {
         handler(grid)
     }

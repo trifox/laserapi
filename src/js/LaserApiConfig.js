@@ -1,4 +1,5 @@
 var config = {
+    gameIndex: 0,
     debugVideo: true,
     testColor: [255, 32, 32],
     gridResolution: 64,

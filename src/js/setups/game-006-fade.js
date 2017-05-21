@@ -3,7 +3,7 @@ var LaserApi = require('../LaserApi').default
 var MainCanvas = require('../MasterCanvas').default
 
 var lastResolution = -1
-var fadeDuration =25000
+var fadeDuration = 25000
 var myGrid = []
 
 function init(count) {
@@ -14,6 +14,7 @@ function init(count) {
 
         myGrid.push({
             active: false,
+
             time: new Date() - 1000
         });
     }
@@ -32,7 +33,7 @@ function getColorString(r, g, b) {
 }
 
 function getColorString2(position) {
-   // console.log('position is ',position)
+    // console.log('position is ',position)
     var col1 = {
         x: 0,
         y: 255,
@@ -40,8 +41,8 @@ function getColorString2(position) {
     }
     var col2 = {
         x: 0,
-        y: 128,
-        z: 128
+        y: 255,
+        z: 255
     }
     var col3 = {
         x: 0,
@@ -59,13 +60,11 @@ function getColorString2(position) {
         z: 0
     }
     var lerpresult
-    if(position<0){
+    if (position < 0) {
         return getColorString(col1.x, col1.y, col1.z)
-    }             else
-    if(position>1){
+    } else if (position > 1) {
         return getColorString(col5.x, col5.y, col5.z)
-    }             else
-    if (position < 0.25) {
+    } else if (position < 0.25) {
         lerpresult = LaserApi.lerp3d(col1, col2, position * 4)
         return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
 
@@ -104,9 +103,9 @@ const handler = function (laserGrid) {
             var ggy = y * gheight;
             var gIndex = y * laserConfig.gridResolution + x;
 
-            myGrid[gIndex].active = currentDate - myGrid[gIndex].time < fadeDuration
             if (myGrid[gIndex].active) {
 
+                myGrid[gIndex].active = currentDate - myGrid[gIndex].time < fadeDuration
                 // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
                 //   console.log('diff is ', currentDate - myGrid[gIndex].time)
                 //    MainCanvas.get2dContext().fillStyle = getColorString(0, 255 - ((currentDate - myGrid[gIndex].time) / fadeDuration) * 255, 0, 255)
@@ -130,7 +129,7 @@ const handler = function (laserGrid) {
 }
 
 export default {
-
+    name: 'Fade'    ,
     handle: function (grid) {
         handler(grid)
     }

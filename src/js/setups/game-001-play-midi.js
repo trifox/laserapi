@@ -26,7 +26,7 @@ function init(count) {
     }
 }
 
-const handler = function(grid) {
+const handler = function (grid) {
 
     if (lastResolution != grid.length) {
 
@@ -64,7 +64,8 @@ const handler = function(grid) {
 
 export default {
 
-    handle: function(grid)   {
+    name: 'MIDI',
+    handle: function (grid) {
         handler(grid)
     }
 

@@ -12,10 +12,10 @@ var MainCanvas = require('./MasterCanvas').default
 var gameDebug = require('./setups/game-004-debug').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
-    //require('./setups/game-001-play-midi').default,
-    // require('./setups/game-002-moorhuni').default,
-    //  require('./setups/game-003-pong-2').default,
-    //require('./setups/game-005-switch').default,
+    require('./setups/game-001-play-midi').default,
+    require('./setups/game-002-moorhuni').default,
+    require('./setups/game-003-pong-2').default,
+    require('./setups/game-005-switch').default,
     require('./setups/game-006-fade').default
 ]
 /* make sure to use https as the web audio api does not like http */
@@ -76,7 +76,7 @@ function frameHandler() {
 
     if (laserConfig.showGame) {
 
-        games[0].handle(laserGrid)
+        games[laserConfig.gameIndex].handle(laserGrid)
     }
     if (laserConfig.showDebug) {
         gameDebug.handle(laserGrid)
@@ -84,14 +84,66 @@ function frameHandler() {
     setTimeout(frameHandler, 0)
 }
 
+var presets
 setTimeout(frameHandler, 0)
-var fscreenbutton = document.getElementById('fullscreen_button').onclick = function () {
 
-    console.log('going fullscreen')
+function initHTML() {
 
+    document.getElementById('fullscreen_button').onclick = function () {
+
+        console.log('going fullscreen')
+
+    }
+    document.getElementById('save-preset-button').onclick = function () {
+
+        console.log('saving preset')
+
+        presets = JSON.parse(window.localStorage.getItem('laserPresets'))
+        if (presets === null) {
+            presets = {
+                presets: []
+            }
+        }
+
+        presets.presets.push({
+            name: document.getElementById('preset-name').value,
+            config: laserConfig
+        })
+
+        window.localStorage.setItem('laserPresets', JSON.stringify(presets))
+    }
+
+    for (var i = 0; i < games.length; i++) {
+
+        var option = document.createElement("option");
+        option.text = "Game #" + i + ' - ' + games[i].name;
+        option.value = i
+        if (i === laserConfig.gameIndex) {
+            option.selected = true
+        }
+        console.log('game found: ', option.text)
+        document.getElementById('game-selector').add(option);
+
+    }
+
+    document.getElementById('game-selector').onchange = function (evt) {
+
+        laserConfig.gameIndex = evt.target.value
+
+    }
+    document.getElementById('presets-selector').onchange = function (evt) {
+
+        console.log('selector changed', evt.target.value)
+
+    }
+}
+function loadPresetsFromLocalStorage() {
+
+    var data = JSON.parse(window.localStorage.getItem('laserPresets'))
+    console.log('presets data is ', data)
 }
 function loadFromLocalStorage() {
-
+    loadPresetsFromLocalStorage()
     try {
         var data = JSON.parse(window.localStorage.getItem('laser'))
         console.log('last data is ', data)
@@ -113,6 +165,11 @@ function loadFromLocalStorage() {
         if (data.laserConfig.showGame) {
 
             document.getElementById('showGame').checked = data.laserConfig.showGame
+
+        }
+        if (data.laserConfig.gameIndex) {
+
+            document.getElementById('game-selector').value = data.laserConfig.gameIndex
 
         }
         if (data.laserConfig.showDebug) {
@@ -264,7 +321,6 @@ function setVideoTransform(transform) {
 
 }
 
-loadFromLocalStorage();
 
 var interval = 1000 / 25
 var lastDate = performance.now()
@@ -296,43 +352,8 @@ var canvasSize = {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-    return
-    var canvas = document.getElementById('canvas')
-    canvas.width = canvasSize.x;
-    canvas.height = canvasSize.y;
-    canvas.style.width = canvasSize.x;
-    canvas.style.height = canvasSize.y;
-    var context = canvas.getContext("2d")
-    context.clearRect(0, 0, canvasSize.x, canvasSize.y)
-
-    var video = document.getElementById('video')
-
-    navigator.getUserMedia({
-        video: {
-            width: laserConfig.videoResolution.width,
-            height: laserConfig.videoResolution.height
-        }
-    }, function (stream) {
-
-        console.log('Stream received', stream)
-        video.srcObject = stream;
-        video.onloadedmetadata = function (e) {
-            console.log('Metadata received', this)
-            console.log('Metadata received', e)
-            // Do something with the video here.
-            video.play();
-            animationHandler();
-        };
-
-    }, function () {
-
-    })
-
-    canvas.width = Math.floor(video.videoWidth)
-    canvas.height = Math.floor(video.videoHeight)
-    canvas.style.width = canvas.width;
-    canvas.style.height = canvas.height;
-
+    initHTML()
+    loadFromLocalStorage();
 })
 
 export default{}

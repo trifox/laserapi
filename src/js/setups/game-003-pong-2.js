@@ -188,6 +188,7 @@ const handler = function (grid) {
 }
 
 function init() {
+    PhysicsPong.init(itemCount)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
@@ -209,15 +210,16 @@ function init() {
 
         })
     }
-    console.log('initialised ', knobPositions)
+    console.log('initialised pong ', knobPositions)
 }
 
 var lastResolution = -1
 
 export default {
+
+    name: 'Pong Game 2d',
     init: function () {
         init()
-        PhysicsPong.init(itemCount)
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {
@@ -232,9 +234,10 @@ export default {
 
         // update physics positions
         for (var i = 0; i < itemCount; i++) {
-
-            PhysicsPong.getObstacle(i).position = [knobPositions [i].left + 50, knobPositions[i].top + 50]
-            PhysicsPong.getObstacle(i).color = knobPositions [i].color
+            if (PhysicsPong.getObstacle(i)) {
+                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + 50, knobPositions[i].top + 50]
+                PhysicsPong.getObstacle(i).color = knobPositions [i].color
+            }
 
         }
         PhysicsPong.step()

@@ -48,6 +48,7 @@ const handler = function (laserGrid) {
 
 export default {
 
+    name: 'Debug Grid'    ,
     handle: function (grid) {
         handler(grid)
     }

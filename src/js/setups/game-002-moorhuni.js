@@ -304,6 +304,7 @@ function checkOut() {
 }
 
 export default {
+    name: 'Obstacle Game',
     init: function () {
         init()
         console.log('init game moorhuni ', knobPositions)
