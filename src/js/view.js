@@ -131,15 +131,29 @@ function initHTML() {
         laserConfig.gameIndex = evt.target.value
 
     }
-    document.getElementById('presets-selector').onchange = function (evt) {
+    document.getElementById('game-selector').onclick = function (evt) {
+        for (var i = 0; i < presets.length; i++) {
+            if (document.getElementById('preset-name').value === presets[i].name) {
+                presets.remove(presets[i])
 
-        console.log('selector changed', evt.target.value)
+                window.localStorage.setItem('laserPresets', JSON.stringify({presets: presets}))
+                return;
+            }
+        }
+
+    }
+    document.getElementById('presets-selector').onchange = function (evt) {
+        document.getElementById('preset-name').value = presets[evt.target.value].name
+        console.log('selector changed', evt.target.value, presets[evt.target.value])
+        loadHtmlFromSettings(presets[evt.target.value].config)
+        loadHtmlFromSettings(presets[evt.target.value].config)
 
     }
 }
 function loadPresetsFromLocalStorage() {
 
     var data = JSON.parse(window.localStorage.getItem('laserPresets'))
+    presets = data.presets
     console.log('presets data is ', data)
 }
 function loadFromLocalStorage() {
@@ -148,66 +162,67 @@ function loadFromLocalStorage() {
         var data = JSON.parse(window.localStorage.getItem('laser'))
         console.log('last data is ', data)
 
-        if (data.treshold) {
-            document.getElementById('treshold').value = data.laserConfig.treshold
-        }
-        if (data.testColor) {
-
-            document.getElementById('lasercolor').value = data.testColor
-
-        }
-
-        if (data.laserConfig.debugVideo) {
-
-            document.getElementById('debugVideo').value = data.laserConfig.debugVideo
-
-        }
-        if (data.laserConfig.showGame) {
-
-            document.getElementById('showGame').checked = data.laserConfig.showGame
-
-        }
-        if (data.laserConfig.gameIndex) {
-
-            document.getElementById('game-selector').value = data.laserConfig.gameIndex
-
-        }
-        if (data.laserConfig.showDebug) {
-
-            document.getElementById('showDebug').checked = data.laserConfig.showDebug
-
-        }
-        if (data.laserConfig.debugVideo) {
-
-            document.getElementById('debugVideo').checked = data.laserConfig.debugVideo
-
-        }
-        if (data.laserConfig.gridResolution) {
-
-            document.getElementById('gridResolution').value = data.laserConfig.gridResolution
-
-        }
-
-        if (data.videoTransform) {
-
-            document.getElementById('rotateVideo').value = data.laserConfig.videoTransform.rotate
-            document.getElementById('scaleVideo').value = data.laserConfig.videoTransform.scale
-            document.getElementById('translateVideoX').value = data.laserConfig.videoTransform.translate.x
-            document.getElementById('translateVideoY').value = data.laserConfig.videoTransform.translate.y
-
-        }
-
-        setVideoTransform(data.videoTransform)
-        if (data && data.transform) {
-
-            setCoordinates(data.transform)
-        }
+        loadHtmlFromSettings(data.laserConfig)
     }
     catch (e) {
         console.log('error ', e)
     }
 }
 
+function loadHtmlFromSettings(settings) {
+
+    if (settings.treshold) {
+        document.getElementById('treshold').value = settings.treshold
+    }
+    if (settings.testColor) {
+
+        document.getElementById('lasercolor').value = rgbToHex(settings.testColor[0], settings.testColor[1], settings.testColor[2])
+
+    }
+
+    if (settings.debugVideo) {
+
+        document.getElementById('debugVideo').value = settings.debugVideo
+
+    }
+    if (settings.showGame) {
+
+        document.getElementById('showGame').checked = settings.showGame
+
+    }
+    if (settings.gameIndex) {
+
+        document.getElementById('game-selector').value = settings.gameIndex
+
+    }
+    if (settings.showDebug) {
+
+        document.getElementById('showDebug').checked = settings.showDebug
+
+    }
+    if (settings.debugVideo) {
+
+        document.getElementById('debugVideo').checked = settings.debugVideo
+
+    }
+    if (settings.gridResolution) {
+
+        document.getElementById('gridResolution').value = settings.gridResolution
+
+    }
+
+    if (settings.videoTransform) {
+
+        document.getElementById('rotateVideo').value = settings.videoTransform.rotate
+        document.getElementById('scaleVideo').value = settings.videoTransform.scale
+        document.getElementById('translateVideoX').value = settings.videoTransform.translate.x
+        document.getElementById('translateVideoY').value = settings.videoTransform.translate.y
+
+    }
+
+    setVideoTransform(settings.videoTransform)
+
+}
 function saveToLocalStorage() {
 
     window.localStorage.setItem('laser', JSON.stringify({
@@ -321,7 +336,6 @@ function setVideoTransform(transform) {
 
 }
 
-
 var interval = 1000 / 25
 var lastDate = performance.now()
 
@@ -332,10 +346,12 @@ function animationHandler() {
     laserConfig.debugVideo = document.getElementById('debugVideo').checked
     laserConfig.showDebug = document.getElementById('showDebug').checked
     laserConfig.showGame = document.getElementById('showGame').checked
+    laserConfig.gameIndex = document.getElementById('game-selector').value
     laserConfig.videoTransform = getTransformOfVideoInput()
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
     laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
+    console.log('config is ', laserConfig)
     laserConfig.transform = getCoordinates()
     //     shader.start()
     //  updateKnobs(laserConfig.transform)
@@ -351,9 +367,33 @@ var canvasSize = {
 
 }
 
+function updatePresetSelector() {
+
+    document.getElementById('presets-selector').innerHTML = ''
+
+    var option = document.createElement("option");
+    option.text = 'Select Preset'
+    option.disabled = true
+    option.selected = true
+
+    console.log('game found: ', option.text)
+    document.getElementById('presets-selector').add(option);
+    for (var i = 0; i < presets.length; i++
+    ) {
+        var option = document.createElement("option");
+        option.text = "Preset #" + i + ' - ' + presets[i].name;
+        option.value = i
+
+        console.log('game found: ', option.text)
+        document.getElementById('presets-selector').add(option);
+
+    }
+
+}
 document.addEventListener("DOMContentLoaded", function (event) {
     initHTML()
     loadFromLocalStorage();
+    updatePresetSelector()
 })
 
 export default{}
