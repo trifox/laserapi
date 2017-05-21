@@ -44,14 +44,14 @@ const handler =function (laserGrid)   {
             }
             if (myGrid[gIndex].active) {
 
-                MainCanvas.get2dContext().strokeStyle = "#0000ff";
+                MainCanvas.get2dContext().strokeStyle = "#0088ff";
                 MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
                 MainCanvas.get2dContext().font = "10px Arial";
                 // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
                 if (gIndex % 2 === 0) {
-                    MainCanvas.get2dContext().fillStyle = '#0000ff'
+                    MainCanvas.get2dContext().fillStyle = '#0088ff'
                 } else {
-                    MainCanvas.get2dContext().fillStyle = '#00ff00'
+                    MainCanvas.get2dContext().fillStyle = '#00ff88'
                 }
                 // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 

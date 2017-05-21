@@ -29,6 +29,15 @@ function lerp2d(v0, v1, t) {
     };
 
 }
+function lerp3d(v0, v1, t) {
+
+    return {
+        x: lerp(v0.x, v1.x, t),
+        y: lerp(v0.y, v1.y, t),
+        z: lerp(v0.z, v1.z, t)
+    };
+
+}
 
 // normalized coord in, normalized coord out
 function transformCoordinate(coord, mapping) {
@@ -84,12 +93,16 @@ var lastDate = performance.now()
 
 var LaserApi =
     {
+        lerp: lerp,
+        lerp2d: lerp2d,
+        lerp3d: lerp3d,
+
         gRect: new Array(laserConfig.gridResolution * laserConfig.gridResolution),
         globalImageData: null,
         video: null,
         canvas: null,
 
-        getRectForInputImage:function (canvasColorOriginal)  {
+        getRectForInputImage: function (canvasColorOriginal) {
 
             //     console.log('input image is ', canvasColorOriginal)
             var gwidth = (canvasColorOriginal.width / laserConfig.gridResolution);
@@ -132,7 +145,9 @@ var LaserApi =
                     var gx = Math.floor(x / gwidth);
                     var gy = Math.floor(y / gheight);
                     var gIndex = gy * laserConfig.gridResolution + gx;
-
+                    if (LaserApi.gRect[gIndex] > 0) {
+                        //     break;
+                    }
                     //canvasColor.data[index + 1] = 0;
                     //canvasColor.data[index + 2] = 0;
                     //                    if (canvasColor.data[index] > (canvasColor.data[index + 1] + canvasColor.data[index + 2])) {
@@ -212,7 +227,7 @@ var LaserApi =
 
         },
         // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
-        updateCanvasRegular: function()  {
+        updateCanvasRegular: function () {
 
             var currentDate = performance.now()
             //     console.log('checking ', lastDate, currentDate);
@@ -235,7 +250,7 @@ var LaserApi =
         },
 
         // render canvas
-        updateCanvas:function (options)   {
+        updateCanvas: function (options) {
 
             //    console.log('UpdateCanvas in api ///');
             var transform = getCoordinates();
@@ -351,6 +366,7 @@ var LaserApi =
                         if (LaserApi.gRect[gIndex] > 0) {
                             LaserApi.context.strokeStyle = "#0000ff";
                             LaserApi.context.strokeRect(ggx, ggy, gwidth, gheight)
+                            LaserApi.context.strokeStyle = "#0000ff";
                             LaserApi.context.font = "10px Arial";
                             LaserApi.context.fillStyle = '#ffffff'
                             LaserApi.context.textAlign = 'center'
@@ -377,7 +393,7 @@ var LaserApi =
             }
 
         },
-        registerCallback: function(fn)   {
+        registerCallback: function (fn) {
             // most simple callback saving for now, no events, no unregister nothing
             LaserApi.callback = fn
         }

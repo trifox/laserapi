@@ -12,17 +12,30 @@ var MainCanvas = require('./MasterCanvas').default
 var gameDebug = require('./setups/game-004-debug').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
-    // require('./setups/game-001-play-midi').default,
-    require('./setups/game-002-moorhuni').default,
-    // require('./setups/game-003-pong').default,
-    // require('./setups/game-005-switch').default,
-    //     require('./setups/game-006-fade').default
+    //require('./setups/game-001-play-midi').default,
+    // require('./setups/game-002-moorhuni').default,
+    //  require('./setups/game-003-pong-2').default,
+    //require('./setups/game-005-switch').default,
+    require('./setups/game-006-fade').default
 ]
 /* make sure to use https as the web audio api does not like http */
 
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
-games[0].init();
+
+function startGame(index) {
+
+    if (games[index].init) {
+        games[index].init();
+    }
+}
+function stopGame(index) {
+
+    if (games[index].stop) {
+        games[index].stop();
+    }
+}
+startGame(0)
 
 function skewY(context, angle) {
     context.setTransform(1, Math.tan((angle / 180.0) * Math.PI), 0, 1, 0, 0);
@@ -41,7 +54,7 @@ function frameHandler() {
 
     MainCanvas.clear()
     MainCanvas.get2dContext().save()
-    skewY(MainCanvas.get2dContext(), transform.rotateX)
+    skewY(MainCanvas.get2dContext(), document.getElementById('skewX').value)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
@@ -68,11 +81,15 @@ function frameHandler() {
     if (laserConfig.showDebug) {
         gameDebug.handle(laserGrid)
     }
-    setTimeout(frameHandler, 25)
+    setTimeout(frameHandler, 0)
 }
 
-setTimeout(frameHandler, 25)
+setTimeout(frameHandler, 0)
+var fscreenbutton = document.getElementById('fullscreen_button').onclick = function () {
 
+    console.log('going fullscreen')
+
+}
 function loadFromLocalStorage() {
 
     try {
@@ -317,3 +334,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
     canvas.style.height = canvas.height;
 
 })
+
+export default{}

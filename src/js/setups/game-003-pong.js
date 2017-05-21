@@ -2,7 +2,7 @@ var laserConfig = require('../LaserApiConfig.js').default
 var p2 = require('p2')
 var canvas = document.getElementById('canvas')
 
-const createItem = function(index, size = 75)  {
+const createItem = function (index, size = 75) {
 
     var div1 = document.createElement('div');
     div1.style.position = 'absolute';
@@ -48,6 +48,9 @@ for (var i = 0; i < itemCount / 2; i++) {
 
     }
 }
+
+
+
 var physicsBall = createItem(0, 25);
 
 canvas.parentNode.appendChild(physicsBall)
@@ -56,7 +59,10 @@ physicsBall.style.border = '0px solid white'
 physicsBall.style.backgroundColor = 'green';
 physicsBall.style.left = 10;
 
-const addPlane =function (angle, world, collisionshape) {
+
+
+var lastTime = performance.now()
+const addPlane = function (angle, world, collisionshape) {
 
     // Create a platform that the ball can bounce on
     var platformShape1 = new p2.Plane();
@@ -84,7 +90,7 @@ const addPlane =function (angle, world, collisionshape) {
     }));
 
 }
-const addObstacle =function (world, collisionshape)  {
+const addObstacle = function (world, collisionshape) {
 
     // Create a platform that the ball can bounce on
     var platformShape1 = new p2.Box({
@@ -118,7 +124,7 @@ const addObstacle =function (world, collisionshape)  {
 
 }
 const obstacles = []
-const init2dPhysics = function() {
+const init2dPhysics = function () {
 
     ///////////////////
     // Create a physics world, where bodies and constraints live
@@ -130,7 +136,7 @@ const init2dPhysics = function() {
     var circleBody = new p2.Body({
         mass: 1,
         position: [50, 50],
-        velocity: [10, -10],
+        velocity: [1, -1],
         angle: 0,
         angularVelocity: 0
     });
@@ -172,9 +178,10 @@ const init2dPhysics = function() {
     // The "Game loop". Could be replaced by, for example, requestAnimationFrame.
     setInterval(function () {
 
+        var cTime = performance.now()
         // The step method moves the bodies forward in time.
-        world.step(timeStep);
-
+        world.step(timeStep, cTime - lastTime);
+        lastTime = cTime
         // Print the circle position to console.
         // Could be replaced by a render call.
         //console.log("Circle y position: " + circleBody.position[1]);
@@ -184,7 +191,7 @@ const init2dPhysics = function() {
     ////////////////
 }
 init2dPhysics()
-const isInsideRect =function (rect1, rect2)  {
+const isInsideRect = function (rect1, rect2) {
     //   console.log('comparing ', rect1, rect2)
     var p1 = rect1.topleft.x <= rect2.topright.x
     var p2 = rect1.topright.x >= rect2.topleft.x
@@ -213,7 +220,7 @@ function getDist(rect1, rect2) {
         y: (p1.y - p2.y) / 2
     }
 }
-const getRectangleFromBoundingRect = function(clientBoundingRect)   {
+const getRectangleFromBoundingRect = function (clientBoundingRect) {
     var rect1 = {
 
         topleft: {
@@ -235,7 +242,7 @@ const getRectangleFromBoundingRect = function(clientBoundingRect)   {
     }
     return rect1
 }
-const handler = function(grid)   {
+const handler = function (grid) {
 
     // rect for test object
 
@@ -350,9 +357,10 @@ const handler = function(grid)   {
 }
 
 export default {
+    init: function () {
+    },
 
-
-    handle: function(grid)  {
+    handle: function (grid) {
         handler(grid)
     }
 }
