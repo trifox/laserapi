@@ -8,7 +8,7 @@ var context3d = null
 export default {
     clear: function () {
         context2d.beginPath();
-        context2d.rect(0, 0, canvas.width, canvas.height);
+        context2d.rect(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height);
         context2d.fillStyle = "black";
         context2d.fill();
     },

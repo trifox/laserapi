@@ -116,8 +116,8 @@ var LaserApi =
             }
 
             // lol, room for improvement to make it stop as soon as an adequate pixel has been found in subsection search should continue directly in next section
-            for (var x = 0; x < laserConfig.canvasResolution.width; x++) {
-                for (var y = 0; y < laserConfig.canvasResolution.height; y++) {
+            for (var x = 0; x < laserConfig.testResolution.width; x++) {
+                for (var y = 0; y < laserConfig.testResolution.height; y++) {
 
                     /*var transformed = transformCoordinate({
                      x: x / LaserApi.canvas.width,
@@ -140,8 +140,8 @@ var LaserApi =
                     if (x === 0 && y === 0) {
                         //          console.log("transformed is ", transformed)
                     }
-                    var index = (transformed.y * laserConfig.canvasResolution.width + transformed.x) * 4;
-                    var indexnormal = (y * laserConfig.canvasResolution.width + x) * 4;
+                    var index = (transformed.y * laserConfig.testResolution.width + transformed.x) * 4;
+                    var indexnormal = (y * laserConfig.testResolution.width + x) * 4;
                     var gx = Math.floor(x / gwidth);
                     var gy = Math.floor(y / gheight);
                     var gIndex = gy * laserConfig.gridResolution + gx;

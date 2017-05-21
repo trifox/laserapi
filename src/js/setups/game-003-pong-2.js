@@ -4,8 +4,10 @@ var PhysicsPong = require('./PhysicsPong').default
 
 var knobPositions = []
 
-var moveSpeed = 20
-const itemCount = 6;
+var obstacleSize = 160
+var moveSpeed = 250
+const itemCount = 10;
+var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
     //   console.log('comparing ', rect1, rect2)
@@ -70,6 +72,7 @@ const handler = function (grid) {
         y: 0
 
     }
+    var currentTime = performance.now()
     var directions = []
     for (var k = 0; k < itemCount; k++) {
         directions[k] = {
@@ -147,8 +150,8 @@ const handler = function (grid) {
             // console.log('addd3 is ', length)
             // console.log('addd5 is ', moveSpeed)
 
-            knobPositions[k].left = knobPositions[k].left - directions[k].x / length * moveSpeed
-            knobPositions[k].top = knobPositions[k].top - directions[k].y / length * moveSpeed
+            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * moveSpeed
+            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * moveSpeed
 
         }
 
@@ -175,27 +178,28 @@ const handler = function (grid) {
         }
 
     }
-    for (var k = 0; k < itemCount; k++) {
-
-        MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
-
-        MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
-
-    }
+    // for (var k = 0; k < itemCount; k++) {
+    //
+    //     MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
+    //
+    //     MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
+    //
+    // }
 
     //    console.log(knobPositions)
-
+    lastTime = currentTime
 }
 
 function init() {
+
     PhysicsPong.init(itemCount)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: 100,
-            left: 100,
-            top: 100 + i * 110,
+            width: obstacleSize,
+            left: obstacleSize,
+            top: obstacleSize + (i * (obstacleSize + 10)),
             color: '#00aaff'
 
         })
@@ -203,13 +207,15 @@ function init() {
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: 100,
-            left: laserConfig.canvasResolution.width - 200,
-            top: 100 + i * 110,
+            width: obstacleSize,
+            left: laserConfig.canvasResolution.width - (obstacleSize * 2),
+
+            top: obstacleSize + (i * (obstacleSize + 10)),
             color: '#00aaff'
 
         })
     }
+    lastTime = performance.now()
     console.log('initialised pong ', knobPositions)
 }
 

@@ -3,10 +3,15 @@ var config = {
     debugVideo: true,
     testColor: [255, 32, 32],
     gridResolution: 64,
+
     tickIntervalMilliseconds: 25,
     videoResolution: {
         width: 640,
         height: 480
+    },
+    testResolution: {
+        width: 320,
+        height: 240
     },
     canvasResolution: {
         width: 640,

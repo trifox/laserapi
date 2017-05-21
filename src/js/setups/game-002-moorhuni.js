@@ -3,9 +3,11 @@ var MasterCanvas = require('../MasterCanvas').default
 
 var knobPositions = []
 
-var moveSpeed = 20
-const itemCount = 12;
-const itemSize = 100;
+var moveSpeed = 250
+const itemCount = 20;
+const itemSize = 200;
+
+var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
     //   console.log('comparing ', rect1, rect2)
@@ -63,6 +65,7 @@ const getRectangleFromKnob = function (knobEntry) {
 }
 const handler = function (grid) {
 
+    var currentTime = performance.now()
     // rect for test object
 
     var direction = {
@@ -147,8 +150,10 @@ const handler = function (grid) {
             // console.log('addd3 is ', length)
             // console.log('addd5 is ', moveSpeed)
 
-            knobPositions[k].left = knobPositions[k].left - directions[k].x / length * knobPositions[k].speed
-            knobPositions[k].top = knobPositions[k].top - directions[k].y / length * knobPositions[k].speed
+            // knobPositions[k].left = knobPositions[k].left - directions[k].x / length * knobPositions[k].speed
+            // knobPositions[k].top = knobPositions[k].top - directions[k].y / length * knobPositions[k].speed
+            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * knobPositions[k].speed
+            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * knobPositions[k].speed
 
         }
 
@@ -189,6 +194,7 @@ const handler = function (grid) {
 
     //    console.log(knobPositions)
 
+    lastTime = currentTime
 }
 
 function init() {
@@ -202,7 +208,7 @@ function init() {
         knobPositions.push({
             width: itemSize,
             left: 100,
-            speed: 5,
+            speed: 250,
             top: 100 + i * (itemSize + 10),
             color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
 
@@ -210,8 +216,8 @@ function init() {
 
         knobPositions.push({
             width: itemSize / 2,
-            left: 250,
-            speed: 10,
+            left: 100 + itemSize + 10,
+            speed: 350,
             top: 125 + i * (itemSize + 10),
             color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
 
@@ -222,8 +228,8 @@ function init() {
 
         knobPositions.push({
             width: itemSize,
-            left: laserConfig.canvasResolution.width - 200,
-            speed: 5,
+            left: laserConfig.canvasResolution.width - 100 - itemSize,
+            speed: 250,
             top: 100 + i * (itemSize + 10),
             color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
 
@@ -231,8 +237,8 @@ function init() {
 
         knobPositions.push({
             width: itemSize / 2,
-            left: laserConfig.canvasResolution.width - 300,
-            speed: 10,
+            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize/2 - 10,
+            speed: 350,
             top: 125 + i * (itemSize + 10),
             color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
 

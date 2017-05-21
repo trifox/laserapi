@@ -20,6 +20,8 @@
 
         #canvascontainer {
             background-color: grey;
+            height:100%;
+            width:100%
 
         }
 
@@ -62,17 +64,6 @@
 <body >
 <script >
 
-    function fullscreen() {
-
-        console.log('fullscreen clicked')
-        var elem = document.getElementById("canvascontainer");
-        console.log('element is ', elem)
-
-        if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-        }
-
-    }
 </script >
 <div class="control w3-card-2" >
     <form class="w3-container" >

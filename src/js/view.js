@@ -10,6 +10,7 @@ var MainCanvas = require('./MasterCanvas').default
 //var game01 = require('./setups/game-003-pong').default
 //var game01 = require('./setups/game-004-paint').default
 var gameDebug = require('./setups/game-004-debug').default
+var gameDebugCorners = require('./setups/game-004-debug-corners').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
     require('./setups/game-001-play-midi').default,
@@ -19,7 +20,6 @@ var games = [
     require('./setups/game-006-fade').default
 ]
 /* make sure to use https as the web audio api does not like http */
-
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
 
@@ -43,6 +43,7 @@ function skewY(context, angle) {
 function skewX(context, angle) {
     context.setTransform(Math.tan((angle / 180.0) * Math.PI), 1, 0, 0, 0, 0);
 }
+
 function frameHandler() {
 
     // console.log('Re Rendering');
@@ -53,6 +54,10 @@ function frameHandler() {
     var transform = getTransformOfVideoInput()
 
     MainCanvas.clear()
+    MainCanvas.getCanvas().width = laserConfig.canvasResolution.width
+    MainCanvas.getCanvas().height = laserConfig.canvasResolution.height
+    MainCanvas.getCanvas().style.width = laserConfig.canvasResolution.width
+    MainCanvas.getCanvas().style.height = laserConfig.canvasResolution.height
     MainCanvas.get2dContext().save()
     skewY(MainCanvas.get2dContext(), document.getElementById('skewX').value)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
@@ -63,14 +68,20 @@ function frameHandler() {
     //  console.log('Re rotate', transform.rotate);
     MainCanvas.get2dContext().imageSmoothingEnabled = false
 
-    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), -laserConfig.canvasResolution.width / 2, -laserConfig.canvasResolution.height / 2, MainCanvas.getCanvas().width, MainCanvas.getCanvas().height);
+    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), -laserConfig.testResolution.width / 2, -laserConfig.testResolution.height / 2, laserConfig.testResolution.width, laserConfig.testResolution.height);
 
-    var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height); // rgba e [0,255]
+    var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height); // rgba e [0,255]
 
     MainCanvas.get2dContext().restore()
 
+    MainCanvas.get2dContext().fillStyle = '#006666'
+
+    MainCanvas.get2dContext().strokeStyle = "#0000ff";
+    MainCanvas.get2dContext().strokeRect(0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height)
     if (!laserConfig.debugVideo) {
         MainCanvas.clear()
+    } else {
+        gameDebugCorners.handle(canvasColor)
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColor)
 
@@ -86,14 +97,44 @@ function frameHandler() {
 
 var presets
 setTimeout(frameHandler, 0)
+if (document.addEventListener) {
+    document.addEventListener('webkitfullscreenchange', exitHandler, false);
+   // document.addEventListener('fullscreenchange', exitHandler, false);
+}
 
-function initHTML() {
+function exitHandler(data) {
+    console.log('exitHandler',data)
+    if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null) {
+    } else {
 
-    document.getElementById('fullscreen_button').onclick = function () {
-
-        console.log('going fullscreen')
+        /* Run code on exit */
+        console.log('RESETTING RESOLUTION TO DEFAULT', laserConfig.canvasResolution)
+        laserConfig.canvasResolution.width = 640
+        laserConfig.canvasResolution.height = 480
+        games[laserConfig.gameIndex].init()
 
     }
+}
+function fullscreen() {
+
+    console.log('fullscreen clicked')
+    var elem = document.getElementById("canvas");
+    console.log('element is ', elem)
+    console.log('element is ', elem.getBoundingClientRect())
+
+    laserConfig.canvasResolution.width = screen.width
+    laserConfig.canvasResolution.height = screen.height
+    console.log('resolution is clicked', laserConfig.canvasResolution)
+    if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    }
+
+    games[laserConfig.gameIndex].init()
+
+}
+function initHTML() {
+
+    document.getElementById('fullscreen_button').onclick = fullscreen
     document.getElementById('save-preset-button').onclick = function () {
 
         console.log('saving preset')
@@ -351,7 +392,7 @@ function animationHandler() {
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
     laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
-    console.log('config is ', laserConfig)
+    //  console.log('config is ', laserConfig)
     laserConfig.transform = getCoordinates()
     //     shader.start()
     //  updateKnobs(laserConfig.transform)

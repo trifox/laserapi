@@ -129,7 +129,9 @@ const handler = function (laserGrid) {
 }
 
 export default {
-    name: 'Fade'    ,
+    name: 'Fade',
+    init: function () {
+    },
     handle: function (grid) {
         handler(grid)
     }

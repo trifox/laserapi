@@ -4,22 +4,33 @@ var laserConfig = require('../LaserApiConfig.js').default
 var MasterCanvas = require('../MasterCanvas').default
 var itemCount = 6;
 var intervalId = null;
-var ballSpeed = 100
+var ballSpeed = 250
+var obstacleSize = 150
+
+var planeTop = null
+var planeBottom = null
+var planeLeft = null
+var planeRight = null
+var planes = []
 const addPlane = function (angle, world, collisionshape) {
 
     // Create a platform that the ball can bounce on
     var platformShape1 = new p2.Plane();
-    var platformBody1 = new p2.Body({
+    var planeBody
+        = new p2.Body({
             mass: 0,
             position: [laserConfig.canvasResolution.width, laserConfig.canvasResolution.height],
             angle: angle
         }
     );
 
-    console.log('created ', platformShape1, platformBody1)
+    console.log('created ', platformShape1, planeBody
+    )
 
-    platformBody1.addShape(platformShape1);
-    world.addBody(platformBody1);
+    planeBody
+        .addShape(platformShape1);
+    world.addBody(planeBody
+    );
     // Create material for the platform
     platformShape1.material = new p2.Material();
 
@@ -32,14 +43,16 @@ const addPlane = function (angle, world, collisionshape) {
         stiffness: Number.MAX_VALUE // We need infinite stiffness to get exact restitution
     }));
 
+    return planeBody
+
 }
 const addObstacle = function (world, collisionshape) {
 
     // Create a platform that the ball can bounce on
     var obstacleShape = new p2.Box({
         //  position:[-32.5,-32.5]  ,
-        width: 100,
-        height: 100
+        width: obstacleSize,
+        height: obstacleSize
     });
     var obstacleBody = new p2.Body({
             mass: 0
@@ -66,12 +79,12 @@ const addObstacle = function (world, collisionshape) {
         friction: 0,
         stiffness: Number.MAX_VALUE // We need infinite stiffness to get exact restitution
     }));
-
+    obstacleBody.size = obstacleSize
     return obstacleBody
 
 }
 const obstacles = []
-var timeStep = .1; // seconds
+var timeStep = .01; // seconds
 var circleBody = null
 var circleShape = null
 var world = null
@@ -80,7 +93,7 @@ function onTick() {
     var cTime = performance.now()
     // console.log('diff is ', (cTime - lastTime));
     // The step method moves the bodies forward in time.
-    world.step(timeStep, (cTime - lastTime) / 1000.0, 10);
+    world.step(timeStep, (cTime - lastTime) / 1000.0, 100);
     lastTime = cTime
     //   console.log('ball is ', circleBody);
     render(MasterCanvas.get2dContext())
@@ -133,10 +146,10 @@ const init2dPhysics = function (obstacleCount) {
     world.addBody(circleBody);
 
     //  addPlane(0, world, circleShape)
-    addPlane(0, world, circleShape)
-    addPlane(Math.PI / 2.0, world, circleShape)
-    addPlane(Math.PI, world, circleShape)
-    addPlane(Math.PI + Math.PI / 2.0, world, circleShape)
+    planes.push(addPlane(0, world, circleShape))
+    planes.push(addPlane(Math.PI / 2.0, world, circleShape))
+    planes.push(addPlane(Math.PI, world, circleShape))
+    planes.push(addPlane(Math.PI + Math.PI / 2.0, world, circleShape))
     //  addPlane(Math.PI, world, circleShape)
     //  addPlane(Math.PI   + Math.PI/2, world, circleShape)
     // To get the trajectories of the bodies,
@@ -155,13 +168,22 @@ const init2dPhysics = function (obstacleCount) {
 }
 function render(canvas2d) {
     canvas2d.save()
+    for (var i = 0; i < planes.length; i++) {
+
+        planes[i].position = [
+            laserConfig.canvasResolution.width,
+            laserConfig.canvasResolution.height,
+        ]
+
+    }
+    //console.log('canvas size is ', laserConfig.canvasResolution)
     // canvas2d.translate(50, 50)
     for (var i = 0; i < itemCount; i++) {
 
         //  console.log('rendering obstacle', obstacles [i])
         canvas2d.fillStyle = obstacles[i].color
 
-        canvas2d.fillRect(obstacles[i].position[0] - 50, obstacles[i].position[1] - 50, 100, 100)
+        canvas2d.fillRect(obstacles[i].position[0] - obstacleSize / 2, obstacles[i].position[1] - obstacleSize / 2, obstacleSize, obstacleSize)
 
     }
 
@@ -232,6 +254,7 @@ export default{
     step: onTick,
     init: function (obstacleCount) {
         itemCount = obstacleCount
+        lastTime = performance.now()
         init2dPhysics(obstacleCount);
         console.log('phiscs is', world)
     },

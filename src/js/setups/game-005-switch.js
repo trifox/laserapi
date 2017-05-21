@@ -17,7 +17,7 @@ function init(count) {
     }
 }
 
-const handler =function (laserGrid)   {
+const handler = function (laserGrid) {
 
     if (lastResolution != laserGrid.length) {
 
@@ -68,8 +68,10 @@ const handler =function (laserGrid)   {
 
 export default {
 
-    name: 'Paint'    ,
-    handle: function(grid) {
+    name: 'Paint',
+    init: function () {
+    },
+    handle: function (grid) {
         handler(grid)
     }
 
