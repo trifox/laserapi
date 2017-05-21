@@ -257,6 +257,16 @@ function loadHtmlFromSettings(settings) {
         document.getElementById('gridResolution').value = settings.gridResolution
 
     }
+    if (settings.videoTransform.skew) {
+
+        document.getElementById('skewX').value = settings.videoTransform.skew.x
+
+    }
+    if (settings.videoTransform.skew) {
+
+        document.getElementById('skewY').value = settings.videoTransform.skew.y
+
+    }
 
     if (settings.videoTransform) {
 
@@ -330,7 +340,11 @@ function getTransformOfVideoInput() {
 
     return {
         rotate: document.getElementById('rotateVideo').value,
+        skew: {
+            x: document.getElementById('skewX').value,
+            y: document.getElementById('skewY').value
 
+        },
         scale: document.getElementById('scaleVideo').value,
         translate: {
             x: document.getElementById('translateVideoX').value,
