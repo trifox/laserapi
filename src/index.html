@@ -76,6 +76,50 @@
 </script >
 <div class="control w3-card-2" >
     <form class="w3-container" >
+
+
+        <fieldset >
+            <label > scale</label >
+            <input type="range"
+                   class="w3-input"
+                   id="scaleVideo"
+                   value="1"
+                   step="0.000001"
+                   min="0"
+                   max="10"
+            >
+            <label > rotate</label >
+            <input type="range"
+                   class="w3-input"
+                   id="rotateVideo"
+                   value="0"
+
+                   step="0.000001"
+                   min="0"
+                   max="360"
+            >
+
+            <label > x</label >
+            <input type="range"
+                   id="translateVideoX"
+                   value="0"
+                   class="w3-input"
+
+                   step="0.000001"
+                   min="-1920"
+                   max="1920"
+            >
+            <label >y</label >
+            <input type="range"
+                   id="translateVideoY"
+                   value="0"
+                   class="w3-input"
+                   step="0.000001"
+
+                   min="-1080"
+                   max="1080"
+            >
+        </fieldset >
         <fieldset >
             <label > lasercolor </label >
             <input type="color"
@@ -100,89 +144,43 @@
                    value="fullscreen"
                    onclick="javascript:fullscreen()" >
 
+            <label >gridresolution </label >
+            <input type="range"
+                   id="gridResolution"
+                   value="8"
+                   class="w3-input"
+                   step="1"
+
+                   min="2"
+                   max="128"
+            >
+
+
+            <label >debugVideo</label >
+            <input type="checkbox"
+                   id="debugVideo"
+
+
+                   class="w3-input"
+            >
+
+            <label >showGame</label >
+            <input type="checkbox"
+                   id="showGame"
+                   checked
+                   class="w3-input"
+
+            >
+
+            <label >showDebug</label >
+            <input type="checkbox"
+                   id="showDebug"
+
+                   class="w3-input"
+
+            >
+
         </fieldset >
-
-        <label > scale</label >
-        <input type="range"
-               class="w3-input"
-               id="scaleVideo"
-               value="1"
-               step="0.0001"
-               min="0"
-               max="10"
-        >
-        <label > rotate</label >
-        <input type="range"
-               class="w3-input"
-               id="rotateVideo"
-               value="0"
-
-               step="0.0001"
-               min="0"
-               max="360"
-        >
-        <label > skew</label >
-        <input type="range"
-               class="w3-input"
-               id="skew"
-               value="0"
-
-               step="0.0001"
-               min="0"
-               max="360"
-        >
-        <label > x</label >
-        <input type="range"
-               id="translateVideoX"
-               value="0"
-
-               step="0.0001"
-               min="-1920"
-               max="1920"
-        >
-        <label >y</label >
-        <input type="range"
-               class=" form-control"
-               id="translateVideoY"
-               value="0"
-               step="0.0001"
-
-               min="-1080"
-               max="1080"
-        >
-
-        <label >gridresolution </label >
-        <input type="range"
-               id="gridResolution"
-               value="8"
-               step="1"
-
-               min="2"
-               max="128"
-        >
-
-
-        <label >debugVideo</label >
-        <input type="checkbox"
-               id="debugVideo"
-
-
-        >
-
-        <label >showGame</label >
-        <input type="checkbox"
-               id="showGame"
-
-
-        >
-
-        <label >showDebug</label >
-        <input type="checkbox"
-               id="showDebug"
-
-
-        >
-
     </form >
 </div >
 

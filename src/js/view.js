@@ -23,6 +23,13 @@ var games = [
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
 games[0].init();
+
+function skewY(context, angle) {
+    context.setTransform(1, Math.tan((angle / 180.0) * Math.PI), 0, 1, 0, 0);
+}
+function skewX(context, angle) {
+    context.setTransform(Math.tan((angle / 180.0) * Math.PI), 1, 0, 0, 0, 0);
+}
 function frameHandler() {
 
     // console.log('Re Rendering');
@@ -32,18 +39,18 @@ function frameHandler() {
 
     var transform = getTransformOfVideoInput()
 
+    MainCanvas.clear()
     MainCanvas.get2dContext().save()
-    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
+    skewY(MainCanvas.get2dContext(), transform.rotateX)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
 
+    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
     //  console.log('Re rotate', transform.rotate);
     MainCanvas.get2dContext().imageSmoothingEnabled = false
 
-    MainCanvas.clear()
-
-    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), 0, 0, MainCanvas.getCanvas().width, MainCanvas.getCanvas().height);
+    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), -laserConfig.canvasResolution.width / 2, -laserConfig.canvasResolution.height / 2, MainCanvas.getCanvas().width, MainCanvas.getCanvas().height);
 
     var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height); // rgba e [0,255]
 
@@ -54,11 +61,11 @@ function frameHandler() {
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColor)
 
-    if (!laserConfig.showDebug) {
+    if (laserConfig.showGame) {
 
         games[0].handle(laserGrid)
     }
-    if (laserConfig.showGame) {
+    if (laserConfig.showDebug) {
         gameDebug.handle(laserGrid)
     }
     setTimeout(frameHandler, 25)
@@ -88,17 +95,17 @@ function loadFromLocalStorage() {
         }
         if (data.laserConfig.showGame) {
 
-            document.getElementById('showGame').value = data.laserConfig.showGame
+            document.getElementById('showGame').checked = data.laserConfig.showGame
 
         }
         if (data.laserConfig.showDebug) {
 
-            document.getElementById('showDebug').value = data.laserConfig.showDebug
+            document.getElementById('showDebug').checked = data.laserConfig.showDebug
 
         }
         if (data.laserConfig.debugVideo) {
 
-            document.getElementById('debugVideo').value = data.laserConfig.debugVideo
+            document.getElementById('debugVideo').checked = data.laserConfig.debugVideo
 
         }
         if (data.laserConfig.gridResolution) {
@@ -187,6 +194,7 @@ function getTransformOfVideoInput() {
 
     return {
         rotate: document.getElementById('rotateVideo').value,
+
         scale: document.getElementById('scaleVideo').value,
         translate: {
             x: document.getElementById('translateVideoX').value,

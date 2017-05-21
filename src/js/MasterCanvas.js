@@ -3,6 +3,7 @@
 var laserConfig = require('./LaserApiConfig.js').default
 var canvas = null
 var context2d = null
+var context3d = null
 
 export default {
     clear: function () {
@@ -14,8 +15,11 @@ export default {
     getCanvas: function () {
         return canvas
     },
-    get2dContext: function()   {
+    get2dContext: function () {
         return context2d
+    },
+    get3dContext: function () {
+        return context3d
     },
     init: function (canvasIn) {
         canvas = canvasIn
@@ -24,6 +28,7 @@ export default {
         console.log('Initialising from canvas DOM element', this)
         console.log('Initialising from canvas DOM element', canvas)
         context2d = canvas.getContext("2d");
+        context3d = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 
     },
 

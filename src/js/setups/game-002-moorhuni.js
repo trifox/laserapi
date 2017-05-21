@@ -1,57 +1,18 @@
 var laserConfig = require('../LaserApiConfig.js').default
 var MasterCanvas = require('../MasterCanvas').default
 
-const createItem = function (index) {
-
-    var div = document.createElement('div');
-    div.style.backgroundColor = 'green';
-    div.style.position = 'absolute';
-    div.style.width = 75;
-    div.style.height = 75;
-    div.style.top = 100 + (index % 3 ) * 100;
-    div.style.left = 100 + Math.floor(index / 3) * 100;
-    div.style.zIndex = 1000;
-
-    return div;
-}
-var divs = []
-
 var knobPositions = []
 
 var moveSpeed = 20
 const itemCount = 6;
-//
-// for (var i = 0; i < itemCount / 2; i++) {
-//
-//     var div = createItem(i)
-//     canvas.parentNode.appendChild(div)
-//     divs.push(div);
-//     div.style.borderRadius = '5px'
-//     div.style.border = '5px solid lightgreen'
-//
-// }
-// for (var i = 0; i < itemCount / 2; i++) {
-//
-//     var div = createItem(i)
-//     canvas.parentNode.appendChild(div)
-//     divs.push(div);
-//     if (i < itemCount / 2) {
-//
-//         div.style.borderRadius = '5px'
-//         div.style.border = '5px solid lightblue'
-//         div.style.backgroundColor = 'blue';
-//         div.style.left = 400;
-//
-//     }
-// }
 
 const isInsideRect = function (rect1, rect2) {
     //   console.log('comparing ', rect1, rect2)
-    var p1 = rect1.topleft.x <= rect2.topright.x
-    var p2 = rect1.topright.x >= rect2.topleft.x
+    var p1 = rect1.topleft.x < rect2.topright.x
+    var p2 = rect1.topright.x > rect2.topleft.x
 
-    var p3 = rect1.topleft.y <= rect2.bottomright.y
-    var p4 = rect1.bottomright.y >= rect2.topleft.y
+    var p3 = rect1.topleft.y < rect2.bottomright.y
+    var p4 = rect1.bottomright.y > rect2.topleft.y
 
     var result = p1 && p2 && p3 && p4;
     //    console.log('r======== ', result)
@@ -74,29 +35,9 @@ function getDist(rect1, rect2) {
         y: (p1.y - p2.y) / 2
     }
 }
-const getRectangleFromBoundingRect = function (clientBoundingRect) {
-    var rect1 = {
-
-        topleft: {
-            x: clientBoundingRect.left,
-            y: clientBoundingRect.top,
-        },
-        topright: {
-            x: clientBoundingRect.right,
-            y: clientBoundingRect.top,
-        },
-        bottomleft: {
-            x: clientBoundingRect.left,
-            y: clientBoundingRect.bottom,
-        },
-        bottomright: {
-            x: clientBoundingRect.right,
-            y: clientBoundingRect.bottom,
-        }
-    }
-    return rect1
-}
 const getRectangleFromKnob = function (knobEntry) {
+
+    //   console.log('getting rectangle from knob', knobEntry)
     var rect1 = {
 
         topleft: {
@@ -116,6 +57,7 @@ const getRectangleFromKnob = function (knobEntry) {
             y: knobEntry.top + knobEntry.width,
         }
     }
+    //  console.log('returning ', rect1)
     return rect1
 }
 const handler = function (grid) {
@@ -135,15 +77,14 @@ const handler = function (grid) {
 
         }
     }
-    var scalex = MasterCanvas.width / laserConfig.gridResolution
-    var scaley = MasterCanvas.height / laserConfig.gridResolution
+    var scalex = laserConfig.canvasResolution.width / laserConfig.gridResolution
+    var scaley = laserConfig.canvasResolution.height / laserConfig.gridResolution
     for (var i = 0; i < grid.length; i++) {
 
         if (grid[i] > 0) {
             //  console.log('scale ', canvas.getBoundingClientRect(), laserConfig, scalex, scaley)
             // rect for grid plate object
             for (var k = 0; k < itemCount; k++) {
-                var div = divs[k]
                 //    var clientBoundingRect = div.getBoundingClientRect()
                 //     var rect1 = getRectangleFromBoundingRect(clientBoundingRect)
                 var rect1 = getRectangleFromKnob(knobPositions [k])
@@ -168,9 +109,10 @@ const handler = function (grid) {
                     }
                 }
 
+                //  console.log('testtt ', rect1, rect2)
                 if (isInsideRect(rect1, rect2)) {
-                    //      console.log('intersecting ', rect1, rect2)
-                    //      console.log('dist is ', getDist(rect1, rect2))
+                    //     console.log('intersecting ', rect1, rect2)
+                    //     console.log('dist is ', getDist(rect1, rect2))
 
                     var dist = getDist(rect1, rect2)
                     var length = Math.sqrt(dist.x * dist.x + dist.y * dist.y)
@@ -194,13 +136,21 @@ const handler = function (grid) {
     var oldPositions = []
     for (var k = 0; k < itemCount; k++) {
 
-        if (divs[k]) {
-            //       oldPositions [k] = divs[k].getBoundingClientRect()
+        oldPositions [k] = getRectangleFromKnob(knobPositions [k])
+        //      console.log('direction is ', direction)
+        var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
+        if (length > 0) {
+            // console.log('addd0 is ', knobPositions[k])
+            // console.log('addd1 is ', knobPositions[k].left)
+            // console.log('addd2 is ', directions[k].x)
+            // console.log('addd3 is ', length)
+            // console.log('addd5 is ', moveSpeed)
 
-            //  var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
-            //     divs[k].style.left = divs[k].getBoundingClientRect().left - directions[k].x / length * moveSpeed
-            //     divs[k].style.top = divs[k].getBoundingClientRect().top - directions[k].y / length * moveSpeed
+            knobPositions[k].left = knobPositions[k].left - directions[k].x / length * moveSpeed
+            knobPositions[k].top = knobPositions[k].top - directions[k].y / length * moveSpeed
+
         }
+
     }
 
     for (var i = 0; i < itemCount; i++) {
@@ -213,9 +163,9 @@ const handler = function (grid) {
                 //  console.log('checking ', rect1, rect2)
                 if (isInsideRect(rect1, rect2)) {
                     // anoverlapp occured, move both back!
-                    //  console.log('Overlap ', rect1, rect2)
-                    //             divs[k].style.left = oldPositions [k].left
-                    //              divs[k].style.top = oldPositions [k].top
+                    // console.log('Overlap ', rect1, rect2)
+                    knobPositions[k].left = oldPositions [k].topleft.x
+                    knobPositions[k].top = oldPositions [k].topleft.y
 
                     //               divs[i].style.left = oldPositions [i].left
                     //               divs[i].style.top = oldPositions [i].top
@@ -226,13 +176,13 @@ const handler = function (grid) {
     }
     for (var k = 0; k < itemCount; k++) {
 
-        MasterCanvas.get2dContext().fillStyle = '#0000ff'
+        MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
 
-        MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k], knobPositions [k].width, knobPositions [k].width)
+        MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
 
     }
 
-    console.log(knobPositions)
+    //    console.log(knobPositions)
 
 }
 
@@ -240,22 +190,32 @@ function init() {
     knobPositions = []
     for (var i = 0; i < itemCount; i++) {
 
-        knobPositions [i] = {
+        knobPositions.push({
             width: 100,
-            left: 0,
-            top: 0,
-            color: 'green'
+            left: (i % 2) * 100,
+            top: i * 100,
+            color: (i % 2 === 0) ? '#00ff00' : '#0000ff'
 
-        }
+        })
     }
-
+    console.log('initialised ', knobPositions)
 }
+
+var lastResolution = -1
 
 export default {
     init: function () {
         init()
+        console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {
+
+        if (lastResolution != grid.length) {
+
+            init()
+            lastResolution = grid.length
+        }
+
         handler(grid)
     }
 
