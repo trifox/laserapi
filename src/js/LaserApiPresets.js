@@ -282,25 +282,51 @@ export default [
         config: preset2midi2,
         initData: {}
     }, {
-        name: 'Moorhuni 1',
+        name: 'Moorhuni 2Many',
         config: preset2moorhuni,
-        initData: {}
+        initData: {
+            itemCount: 12,
+            itemSize: 200
+        }
+    }, {
+        name: 'Moorhuni 2 Just Two',
+        config: preset2moorhuni,
+        initData: {
+            itemCount: 4,
+            itemSize: 500
+        }
     }, {
         name: 'Pong1',
         config: preset3pong,
-        initData: {itemCount:6}
-    }
-    ,{
-        name: 'Pong2',
-        config: preset3pong,
         initData: {
-            itemCount:10
+            itemCount: 4,
+            obstacleSize: 160,
+            moveSpeed: 250
+
         }
     }
     , {
-        name: 'Preset Fade1',
+        name: 'Pong2',
+        config: preset3pong,
+        initData: {
+            itemCount: 10,
+            obstacleSize: 160,
+            moveSpeed: 250
+        }
+    }
+    , {
+        name: 'Preset Fade1sec',
         config: preset4fade,
-        initData: {}
+        initData: {
+            fadeDuration: 1,
+        }
+    }
+    , {
+        name: 'Preset Fade10Sec',
+        config: preset4fade,
+        initData: {
+            fadeDuration: 10,
+        }
     }
 
 ]

@@ -85,9 +85,8 @@ function getColorString2(position) {
     var index1 = Math.floor(position * (colors.length - 2))
     var index2 = Math.floor(position * (colors.length - 2)) + 1
 
-   var lerpresult = LaserApi.lerp3d(colors[index1], colors[index2], (position - (index1 * 1 / (colors.length - 2))) * (colors.length - 2))
+    var lerpresult = LaserApi.lerp3d(colors[index1], colors[index2], (position - (index1 * 1 / (colors.length - 2))) * (colors.length - 2))
     return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
-
 
 }
 
@@ -136,7 +135,12 @@ const handler = function (laserGrid) {
 
 export default {
     name: 'Fade',
-    init: function () {
+    init: function (data) {
+        if (data) {
+            if (data.fadeDuration) {
+                fadeDuration = data.fadeDuration
+            }
+        }
     },
     handle: function (grid) {
         handler(grid)

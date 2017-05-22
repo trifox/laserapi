@@ -193,11 +193,16 @@ const handler = function (grid) {
 function init(data) {
     if (data) {
         if (data.itemCount) {
-            console.log('loading itemcount', data)
             itemCount = data.itemCount
         }
+        if (data.moveSpeed) {
+            moveSpeed = data.moveSpeed
+        }
+        if (data.obstacleSize) {
+            obstacleSize = data.obstacleSize
+        }
     }
-    PhysicsPong.init(data || itemCount)
+    PhysicsPong.init(itemCount)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
@@ -246,7 +251,7 @@ export default {
         // update physics positions
         for (var i = 0; i < itemCount; i++) {
             if (PhysicsPong.getObstacle(i)) {
-                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + 50, knobPositions[i].top + 50]
+                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSize / 2, knobPositions[i].top + obstacleSize / 2]
                 PhysicsPong.getObstacle(i).color = knobPositions [i].color
             }
 

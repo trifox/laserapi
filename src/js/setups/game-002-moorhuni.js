@@ -4,8 +4,8 @@ var MasterCanvas = require('../MasterCanvas').default
 var knobPositions = []
 
 var moveSpeed = 250
-const itemCount = 8;
-const itemSize = 200;
+var itemCount = 8;
+var itemSize = 200;
 
 var lastTime = performance.now();
 
@@ -199,7 +199,15 @@ const handler = function (grid) {
     lastTime = currentTime
 }
 
-function init() {
+function init(data) {
+    if (data) {
+        if (data.itemCount) {
+            itemCount = data.itemCount
+        }
+        if (data.itemSize) {
+            itemSize = data.itemSize
+        }
+    }
     knobPositions = []
     pointsTeam1 = 0
     pointsTeam2 = 0
@@ -313,8 +321,8 @@ function checkOut() {
 
 export default {
     name: 'Obstacle Game',
-    init: function () {
-        init()
+    init: function (data) {
+        init(data)
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {
