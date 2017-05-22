@@ -34,54 +34,58 @@ function getColorString(r, g, b) {
 
 function getColorString2(position) {
     // console.log('position is ',position)
-    var col1 = {
+    var green
+
+        = {
         x: 0,
         y: 255,
         z: 0
     }
-    var col2 = {
+    var turkis
+
+        = {
         x: 0,
         y: 255,
         z: 255
     }
-    var col3 = {
+    var blue
+
+        = {
         x: 0,
         y: 0,
         z: 255
     }
-    var col4 = {
+    var darkgrey
+
+        = {
         x: 0,
         y: 128,
         z: 128
     }
-    var col5 = {
+    var black
+        = {
         x: 0,
         y: 0,
         z: 0
     }
-    var lerpresult
-    if (position < 0) {
-        return getColorString(col1.x, col1.y, col1.z)
-    } else if (position > 1) {
-        return getColorString(col5.x, col5.y, col5.z)
-    } else if (position < 0.25) {
-        lerpresult = LaserApi.lerp3d(col1, col2, position * 4)
-        return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
 
-    } else if (position < 0.5) {
+    var colors = [
+        green,
+        turkis,
+        blue,
+        black,
+        turkis,
+        black       ,
+        black
 
-        lerpresult = LaserApi.lerp3d(col2, col3, (position - 0.25) * 4)
-        return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
-    }
-    else if (position < 0.75) {
+    ]
 
-        lerpresult = LaserApi.lerp3d(col3, col4, (position - 0.5) * 4)
-        return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
-    } else {
+    var index1 = Math.floor(position * (colors.length - 2))
+    var index2 = Math.floor(position * (colors.length - 2)) + 1
 
-        lerpresult = LaserApi.lerp3d(col4, col5, (position - 0.75) * 4)
-        return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
-    }
+   var lerpresult = LaserApi.lerp3d(colors[index1], colors[index2], (position - (index1 * 1 / (colors.length - 2))) * (colors.length - 2))
+    return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
+
 
 }
 
