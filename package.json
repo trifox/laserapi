@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server",
     "build": "cross-env NODE_ENV=development webpack -d --verbose",
-    "build:production": "cross-env NODE_ENV=production webpack -p --verbose && npm run build:final",
+    "build:production": "cross-env NODE_ENV=production webpack  --verbose && npm run build:final",
     "build:final": "node ./node_scripts/build_production.js"
   },
   "repository": {
