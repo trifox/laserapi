@@ -11,6 +11,7 @@ var MainCanvas = require('./MasterCanvas').default
 //var game01 = require('./setups/game-004-paint').default
 var gameDebug = require('./setups/game-004-debug').default
 var gameDebugCorners = require('./setups/game-004-debug-corners').default
+var gameDebugTransform = require('./setups/game-004-debug-transform').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
     require('./setups/game-001-play-midi').default,
@@ -82,12 +83,17 @@ function frameHandler() {
 
     MainCanvas.get2dContext().strokeStyle = "#0000ff";
     MainCanvas.get2dContext().strokeRect(0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height)
+    var canvasColorInterest = LaserApi.getInterestReqion(MainCanvas.get2dContext(), canvasColor)
     if (!laserConfig.debugVideo) {
         MainCanvas.clear()
     } else {
+
+        MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
+
         gameDebugCorners.handle(canvasColor)
+        gameDebugTransform.handle(canvasColor)
     }
-    var laserGrid = LaserApi.getRectForInputImage(canvasColor)
+    var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
 
     if (laserConfig.showGame) {
 
@@ -205,15 +211,11 @@ function loadPresetsFromLocalStorage() {
 }
 function loadFromLocalStorage() {
     loadPresetsFromLocalStorage()
-    try {
-        var data = JSON.parse(window.localStorage.getItem('laser'))
-        console.log('last data is ', data)
+    var data = JSON.parse(window.localStorage.getItem('laser'))
+    console.log('last data is ', data)
 
-        loadHtmlFromSettings(data.laserConfig)
-    }
-    catch (e) {
-        console.log('error ', e)
-    }
+    loadHtmlFromSettings(data.laserConfig)
+
 }
 
 function loadHtmlFromSettings(settings) {
@@ -276,26 +278,21 @@ function loadHtmlFromSettings(settings) {
         document.getElementById('translateVideoY').value = settings.videoTransform.translate.y
 
     }
-
+    setCoordinates(settings.transform)
     setVideoTransform(settings.videoTransform)
 
 }
 function saveToLocalStorage() {
 
     window.localStorage.setItem('laser', JSON.stringify({
-        treshold: document.getElementById('treshold').value,
-        testColor: document.getElementById('lasercolor').value,
-        transform: getCoordinates(),
-        videoTransform: getTransformOfVideoInput(),
-        debugVideo: document.getElementById('debugVideo').checked,
         laserConfig: laserConfig
     }))
 }
 
 function getCoordinatesForInputElement(elemprefix) {
 
-    elem1x = document.getElementById(elemprefix + '_x');
-    elem1y = document.getElementById(elemprefix + '_y');
+    var elem1x = document.getElementById(elemprefix + '_x');
+    var elem1y = document.getElementById(elemprefix + '_y');
     return {
         x: elem1x.value / 10000.0,
         y: elem1y.value / 10000.0
@@ -304,8 +301,8 @@ function getCoordinatesForInputElement(elemprefix) {
 
 function setCoordinatesForInputElement(elemprefix, data) {
 
-    elem1x = document.getElementById(elemprefix + '_x');
-    elem1y = document.getElementById(elemprefix + '_y');
+    var elem1x = document.getElementById(elemprefix + '_x');
+    var elem1y = document.getElementById(elemprefix + '_y');
     elem1x.value = data.x * 10000.0;
     elem1y.value = data.y * 10000.0;
 }
@@ -327,7 +324,6 @@ function hexToRgb(hex) {
         } : null;
 }
 function getCoordinates() {
-    return laserConfig.transform
     return {
         topleft: getCoordinatesForInputElement('topleft'),
         topright: getCoordinatesForInputElement('topright'),
@@ -353,7 +349,6 @@ function getTransformOfVideoInput() {
     }
 }
 function setCoordinates(data) {
-    return;
 
     setCoordinatesForInputElement('topleft', data.topleft);
     setCoordinatesForInputElement('topright', data.topright);
@@ -409,11 +404,12 @@ function animationHandler() {
     laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.gameIndex = document.getElementById('game-selector').value
     laserConfig.videoTransform = getTransformOfVideoInput()
+
     laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
     laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
-    //  console.log('config is ', laserConfig)
     laserConfig.transform = getCoordinates()
+    // console.log('config is ', laserConfig)
     //     shader.start()
     //  updateKnobs(laserConfig.transform)
     saveToLocalStorage()
