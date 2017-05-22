@@ -14,13 +14,14 @@ var MainCanvas = require('./MasterCanvas').default
 var gameDebug = require('./setups/game-004-debug').default
 var gameDebugCorners = require('./setups/game-004-debug-corners').default
 var gameDebugTransform = require('./setups/game-004-debug-transform').default
+var GameWrapper = require('./setups/game-wrapper').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
-    require('./setups/game-001-play-midi').default,
-    require('./setups/game-002-moorhuni').default,
-    require('./setups/game-003-pong-2').default,
-    require('./setups/game-005-switch').default,
-    require('./setups/game-006-fade').default
+    new GameWrapper(require('./setups/game-001-play-midi').default),
+    new GameWrapper(require('./setups/game-002-moorhuni').default),
+    new GameWrapper(require('./setups/game-003-pong-2').default),
+    new GameWrapper(require('./setups/game-005-switch').default),
+    new GameWrapper(require('./setups/game-006-fade').default)
 ]
 /* make sure to use https as the web audio api does not like http */
 MainCanvas.init(document.getElementById('canvas'))
@@ -92,7 +93,7 @@ function frameHandler() {
 
         MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
 
-    //    gameDebugCorners.handle(canvasColor)
+        //    gameDebugCorners.handle(canvasColor)
         gameDebugTransform.handle(canvasColor)
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
@@ -220,7 +221,7 @@ function loadPresetsFromLocalStorage() {
 
     presets = LaserApiPresets
     if (data) {
-    //    presets = presets.join(data.presets)
+        //    presets = presets.join(data.presets)
     }
 
     console.log('presets data is ', data)
