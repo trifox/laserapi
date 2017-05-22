@@ -200,7 +200,7 @@ function init() {
             width: obstacleSize,
             left: obstacleSize,
             top: obstacleSize + (i * (obstacleSize + 10)),
-            color: '#00aaff'
+            color: '#0000ff'
 
         })
     }
@@ -211,7 +211,7 @@ function init() {
             left: laserConfig.canvasResolution.width - (obstacleSize * 2),
 
             top: obstacleSize + (i * (obstacleSize + 10)),
-            color: '#00aaff'
+            color: '#0000ff'
 
         })
     }

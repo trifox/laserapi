@@ -120,13 +120,33 @@ var LaserApi =
 
                     coordTransformed.x *= laserConfig.testResolution.width
                     coordTransformed.y *= laserConfig.testResolution.height
+                    //   console.log('coord', coordTransformed)
+                    var indexInput =( Math.floor(coordTransformed.y) * laserConfig.testResolution.width + Math.floor(coordTransformed.x)) * 4;
 
-                    var indexInput = Math.floor(coordTransformed.y * laserConfig.testResolution.width + coordTransformed.x) * 4;
+                    if (getColorDistance(laserConfig.testColor, [
+                            canvasColorOriginal.data[indexInput],
+                            canvasColorOriginal.data[indexInput + 1],
+                            canvasColorOriginal.data[indexInput + 2]
 
-                    resultImage.data[indexnormal] = canvasColorOriginal.data[indexInput];
-                    resultImage.data[indexnormal + 1] = canvasColorOriginal.data[indexInput + 1];
-                    resultImage.data[indexnormal + 2] = canvasColorOriginal.data[indexInput + 2];
-                    resultImage.data[indexnormal + 3] = canvasColorOriginal.data[indexInput + 3];
+                        ]) < laserConfig.treshold) {
+
+
+                        resultImage.data[indexnormal] = canvasColorOriginal.data[indexInput];
+                        resultImage.data[indexnormal + 1] = canvasColorOriginal.data[indexInput + 1];
+                        resultImage.data[indexnormal + 2] = canvasColorOriginal.data[indexInput + 2];
+                        resultImage.data[indexnormal + 3] = canvasColorOriginal.data[indexInput + 3];
+
+                    }    else{
+
+                        resultImage.data[indexnormal] = 0;
+                        resultImage.data[indexnormal + 1] = 0;
+                        resultImage.data[indexnormal + 2] = 0;
+                        resultImage.data[indexnormal + 3] =255;
+                    }
+
+
+
+
                 }
 
             }
