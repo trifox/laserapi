@@ -92,7 +92,7 @@ function frameHandler() {
 
         MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
 
-        gameDebugCorners.handle(canvasColor)
+    //    gameDebugCorners.handle(canvasColor)
         gameDebugTransform.handle(canvasColor)
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
