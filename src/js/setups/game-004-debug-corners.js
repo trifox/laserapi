@@ -1,5 +1,5 @@
 var laserConfig = require('../LaserApiConfig').default
-var Util = require('../Util').default
+var Util = require('../util').default
 var MainCanvas = require('../MasterCanvas').default
 
 var lastResolution = -1
