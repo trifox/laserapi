@@ -183,7 +183,9 @@ function render(canvas2d) {
         //  console.log('rendering obstacle', obstacles [i])
         canvas2d.fillStyle = obstacles[i].color
 
-        canvas2d.fillRect(obstacles[i].position[0] - obstacleSize / 2, obstacles[i].position[1] - obstacleSize / 2, obstacleSize, obstacleSize)
+        canvas2d.lineWidth=10;
+        canvas2d.strokeStyle = '#00ff00'
+        canvas2d.strokeRect(obstacles[i].position[0] - obstacleSize / 2, obstacles[i].position[1] - obstacleSize / 2, obstacleSize, obstacleSize)
 
     }
 

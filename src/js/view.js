@@ -1,5 +1,6 @@
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
+var Util = require('./util').default
 var CanvasVideo = require('./CanvasVideo').default
 var LaserApi = require('./LaserApi.js').default
 var w3 = require('./../css/w3.css').default
@@ -225,7 +226,7 @@ function loadHtmlFromSettings(settings) {
     }
     if (settings.testColor) {
 
-        document.getElementById('lasercolor').value = rgbToHex(settings.testColor[0], settings.testColor[1], settings.testColor[2])
+        document.getElementById('lasercolor').value = Util.rgbToHex(settings.testColor[0], settings.testColor[1], settings.testColor[2])
 
     }
 
@@ -305,23 +306,6 @@ function setCoordinatesForInputElement(elemprefix, data) {
     var elem1y = document.getElementById(elemprefix + '_y');
     elem1x.value = data.x * 10000.0;
     elem1y.value = data.y * 10000.0;
-}
-
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
 }
 function getCoordinates() {
     return {
@@ -405,9 +389,9 @@ function animationHandler() {
     laserConfig.gameIndex = document.getElementById('game-selector').value
     laserConfig.videoTransform = getTransformOfVideoInput()
 
-    laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
-    laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
-    laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
+    laserConfig.testColor[0] = Util.hexToRgb(document.getElementById('lasercolor').value).r
+    laserConfig.testColor[1] = Util.hexToRgb(document.getElementById('lasercolor').value).g
+    laserConfig.testColor[2] = Util.hexToRgb(document.getElementById('lasercolor').value).b
     laserConfig.transform = getCoordinates()
     // console.log('config is ', laserConfig)
     //     shader.start()
