@@ -6,7 +6,7 @@ var knobPositions = []
 
 var obstacleSize = 160
 var moveSpeed = 250
-const itemCount = 10;
+var itemCount = 10;
 var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
@@ -150,8 +150,8 @@ const handler = function (grid) {
             // console.log('addd3 is ', length)
             // console.log('addd5 is ', moveSpeed)
 
-            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * moveSpeed
-            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * moveSpeed
+            knobPositions[k].left = knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * moveSpeed
+            knobPositions[k].top = knobPositions[k].top - ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * moveSpeed
 
         }
 
@@ -190,9 +190,14 @@ const handler = function (grid) {
     lastTime = currentTime
 }
 
-function init() {
-
-    PhysicsPong.init(itemCount)
+function init(data) {
+    if (data) {
+        if (data.itemCount) {
+            console.log('loading itemcount', data)
+            itemCount = data.itemCount
+        }
+    }
+    PhysicsPong.init(data || itemCount)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
@@ -224,8 +229,8 @@ var lastResolution = -1
 export default {
 
     name: 'Pong Game 2d',
-    init: function () {
-        init()
+    init: function (data) {
+        init(data)
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {

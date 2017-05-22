@@ -288,7 +288,14 @@ export default [
     }, {
         name: 'Pong1',
         config: preset3pong,
-        initData: {}
+        initData: {itemCount:6}
+    }
+    ,{
+        name: 'Pong2',
+        config: preset3pong,
+        initData: {
+            itemCount:10
+        }
     }
     , {
         name: 'Preset Fade1',

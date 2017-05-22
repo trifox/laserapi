@@ -23,6 +23,7 @@ var games = [
     new GameWrapper(require('./setups/game-005-switch').default),
     new GameWrapper(require('./setups/game-006-fade').default)
 ]
+console.log('games are', games)
 /* make sure to use https as the web audio api does not like http */
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
@@ -188,7 +189,7 @@ function initHTML() {
     for (var i = 0; i < games.length; i++) {
 
         var option = document.createElement("option");
-        option.text = "Game #" + i + ' - ' + games[i].name;
+        option.text = "Game #" + i + ' - ' + games[i].getName();
         option.value = i
         if (i === laserConfig.gameIndex) {
             option.selected = true
@@ -207,10 +208,12 @@ function initHTML() {
     document.getElementById('presets-selector').onchange = function (evt) {
         document.getElementById('preset-name').value = presets[evt.target.value].name
         console.log('selector changed', evt.target.value, presets[evt.target.value])
-        var config = presets[evt.target.value].config
+        var preset = presets[evt.target.value]
+        var config = preset.config
         delete config.transform
         delete config.videoTransform
         loadHtmlFromSettings(presets[evt.target.value].config)
+        games[laserConfig.gameIndex].init(preset.initData);
 
     }
 }
@@ -465,7 +468,7 @@ function updatePresetSelector() {
         option.text = "Preset #" + i + ' - ' + presets[i].name;
         option.value = i
 
-        console.log('game found: ', option.text)
+        console.log('game preset found: ', option.text)
         document.getElementById('presets-selector').add(option);
 
     }

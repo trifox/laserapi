@@ -6,7 +6,8 @@ class GameWapper {
     }
 
     getName() {
-        if (this.game.getName()) {
+        console.log('this is ', this)
+        if (this.game.getName ) {
             return this.game.getName()
         }
 
@@ -30,8 +31,8 @@ class GameWapper {
     }
 
     handle(grid) {
-        if (this.game.handler) {
-            this.game.handler(grid)
+        if (this.game.handle) {
+            this.game.handle(grid)
         }
     }
 
