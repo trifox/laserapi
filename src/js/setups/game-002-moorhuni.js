@@ -4,7 +4,7 @@ var MasterCanvas = require('../MasterCanvas').default
 var knobPositions = []
 
 var moveSpeed = 250
-const itemCount = 20;
+const itemCount = 8;
 const itemSize = 200;
 
 var lastTime = performance.now();
@@ -152,8 +152,8 @@ const handler = function (grid) {
 
             // knobPositions[k].left = knobPositions[k].left - directions[k].x / length * knobPositions[k].speed
             // knobPositions[k].top = knobPositions[k].top - directions[k].y / length * knobPositions[k].speed
-            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * knobPositions[k].speed
-            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * knobPositions[k].speed
+            knobPositions[k].left = knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * knobPositions[k].speed
+            knobPositions[k].top = knobPositions[k].top - ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * knobPositions[k].speed
 
         }
 
@@ -187,7 +187,9 @@ const handler = function (grid) {
         if (!knobPositions [k].dead) {
             MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
 
-            MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
+            MasterCanvas.get2dContext().lineWidth = 10;
+            MasterCanvas.get2dContext().strokeStyle = knobPositions [k].color
+            MasterCanvas.get2dContext().strokeRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
 
         }
     }
@@ -210,7 +212,7 @@ function init() {
             left: 100,
             speed: 250,
             top: 100 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
+            color: '#00ff88'
 
         })
 
@@ -219,7 +221,7 @@ function init() {
             left: 100 + itemSize + 10,
             speed: 350,
             top: 125 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
+            color: '#00ff88'
 
         })
 
@@ -231,16 +233,16 @@ function init() {
             left: laserConfig.canvasResolution.width - 100 - itemSize,
             speed: 250,
             top: 100 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
+            color: '#0088ff'
 
         })
 
         knobPositions.push({
             width: itemSize / 2,
-            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize/2 - 10,
+            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize / 2 - 10,
             speed: 350,
             top: 125 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
+            color: '#0088ff'
 
         })
 
@@ -260,14 +262,14 @@ function checkOut() {
     for (var i = 0; i < itemCount; i++) {
         if (i < itemCount / 2) {
 
-            if (knobPositions [i].left > laserConfig.canvasResolution.width - 100) {
+            if (knobPositions [i].left > laserConfig.canvasResolution.width - knobPositions [i].width * 2) {
                 if (!knobPositions[i].dead) {
                     knobPositions[i].dead = true
                     pointsTeam1++
                 }
             }
         } else {
-            if (knobPositions [i].left < 50) {
+            if (knobPositions [i].left < knobPositions [i].width) {
                 if (!knobPositions[i].dead) {
                     knobPositions[i].dead = true
                     pointsTeam2++

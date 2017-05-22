@@ -65,6 +65,8 @@ const handler = function (grid) {
 export default {
 
     name: 'MIDI',
+    init: function () {
+    },
     handle: function (grid) {
         handler(grid)
     }

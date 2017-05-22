@@ -3,7 +3,7 @@ var LaserApi = require('../LaserApi').default
 var MainCanvas = require('../MasterCanvas').default
 
 var lastResolution = -1
-var fadeDuration = 25000
+var fadeDuration = 500
 var myGrid = []
 
 function init(count) {
@@ -71,12 +71,14 @@ function getColorString2(position) {
 
     var colors = [
         green,
-        turkis,
-        blue,
         black,
-        turkis,
-        black       ,
-        black
+        black,
+        // turkis,
+        // blue,
+        // black,
+        // turkis,
+        // black       ,
+        // black
 
     ]
 
