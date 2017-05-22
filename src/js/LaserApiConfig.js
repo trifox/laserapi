@@ -17,11 +17,19 @@ var config = {
         width: 640,
         height: 480
     },
+    canvasOriginalResolution: {
+        width: 640,
+        height: 480
+    },
     treshold: 120,
 
     videoTransform: {
         scale: 0,
         rotate: 0,
+        skew: {
+            x: 0,
+            y: 0
+        },
         translate: {
             x: 0,
             y: 0.5

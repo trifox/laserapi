@@ -15,6 +15,8 @@
     <style >
         body {
             margin: 0px;
+            height: 100%;
+            width: 100%;
             position: relative;
             background-color: rgb(128, 128, 128);
         }
@@ -45,13 +47,11 @@
         }
 
         .videocontainer {
-            width: 50%;
             margin: 0px;
             image-rendering: pixelated;
             right: 0px;
             z-index: 0;
             top: 0px;
-            background: red;
             overflow: hidden;
             position: absolute;
         }
@@ -66,253 +66,260 @@
 <script >
 
 </script >
-<div class="control w3-card-2" >
     <form class="w3-container" >
+        <div class="control " >
 
 
-        <label >game</label >
-        <select class="w3-select"
-                name="option"
-                id="game-selector" >
-        </select >
-        <fieldset >
-            <label > scale</label >
-            <input type="range"
-                   class="w3-input"
-                   id="scaleVideo"
-                   value="1"
-                   step="0.000001"
-                   min="0"
-                   max="10"
-            >
-            <label > rotate</label >
-            <input type="range"
-                   class="w3-input"
-                   id="rotateVideo"
-                   value="0"
+            <div class="w3-bar" >
+                <input type="button"
+                       class="w3-input"
+                       id="fullscreen_button"
+                       value="fullscreen" >
 
-                   step="0.000001"
-                   min="0"
-                   max="360"
-            >
-            <label > skewX</label >
-            <input type="range"
-                   class="w3-input"
-                   id="skewX"
-                   value="0"
+                <input type="button"
+                       class="w3-input"
+                       id="fullscreenedit_button"
+                       value="fullscreen edit" >
+            </div >
 
-                   step="0.000001"
-                   min="0"
-                   max="360"
-            >
-            <label > skewY</label >
-            <input type="range"
-                   class="w3-input"
-                   id="skewY"
-                   value="0"
-
-                   step="0.000001"
-                   min="0"
-                   max="360"
-            >
-
-            <label > x</label >
-            <input type="range"
-                   id="translateVideoX"
-                   value="0"
-                   class="w3-input"
-
-                   step="0.000001"
-                   min="-1920"
-                   max="1920"
-            >
-            <label >y</label >
-            <input type="range"
-                   id="translateVideoY"
-                   value="0"
-                   class="w3-input"
-                   step="0.000001"
-
-                   min="-1080"
-                   max="1080"
-            >
-        </fieldset >
-        <fieldset >
-            <label > lasercolor </label >
-            <input type="color"
-                   class="w3-input"
-                   id="lasercolor"
-                   value="#ff6666" />
-
-            <label >treshold
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="treshold"
-                   min="0"
-                   max="255"
-                   value="100" >
-
-            <label >fullscreen
-            </label >
-            <input type="button"
-                   class="w3-input"
-                   id="fullscreen_button"
-                   value="fullscreen"
-                   onclick="javascript:fullscreen()" >
-
-            <label >gridresolution </label >
-            <input type="range"
-                   id="gridResolution"
-                   value="8"
-                   class="w3-input"
-                   step="1"
-
-                   min="2"
-                   max="128"
-            >
-
-
-            <label >debugVideo</label >
-            <input type="checkbox"
-                   id="debugVideo"
-
-
-                   class="w3-input"
-            >
-
-            <label >showGame</label >
-            <input type="checkbox"
-                   id="showGame"
-
-                   class="w3-input"
-
-            >
-
-            <label >showDebug</label >
-            <input type="checkbox"
-                   id="showDebug"
-
-                   class="w3-input"
-
-            >
-
-        </fieldset >
-        <fieldset >
-
-
-            <label >presetname</label >
-            <input type="text"
-                   id="preset-name"
-
-                   class="w3-input"
-
-            >
-
-
-            <label >delete preset</label >
-            <input type="button"
-                   class="w3-input"
-                   id="delete-preset-button"
-                   value="Delete Preset"
-            ><input type="button"
-                    class="w3-input"
-                    id="save-preset-button"
-                    value="Save Preset"
-        >
-            <label >presets</label >
+            <label >game</label >
             <select class="w3-select"
                     name="option"
-                    id="presets-selector" >
-                <option value=""
-                        disabled
-                        selected >Select Preset
-                </option >
-                <option value="1" >Option 1</option >
-                <option value="2" >Option 2</option >
-                <option value="3" >Option 3</option >
+                    id="game-selector" >
             </select >
+            <fieldset >
+                <label > scale</label >
+                <input type="range"
+                       class="w3-input"
+                       id="scaleVideo"
+                       value="1"
+                       step="0.000001"
+                       min="0"
+                       max="10"
+                >
+                <label > rotate</label >
+                <input type="range"
+                       class="w3-input"
+                       id="rotateVideo"
+                       value="0"
 
-        </fieldset >
-        <fieldset >
+                       step="0.000001"
+                       min="0"
+                       max="360"
+                >
+                <label > skewX</label >
+                <input type="range"
+                       class="w3-input"
+                       id="skewX"
+                       value="0"
 
-            <label >topleftx
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="topleft_x"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
-            <label >toplefty
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="topleft_y"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
+                       step="0.000001"
+                       min="0"
+                       max="360"
+                >
+                <label > skewY</label >
+                <input type="range"
+                       class="w3-input"
+                       id="skewY"
+                       value="0"
 
-            <label >toprightx
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="topright_x"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
-            <label >toplefty
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="topright_y"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
+                       step="0.000001"
+                       min="0"
+                       max="360"
+                >
 
-            <label >bottomleftx
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="bottomleft_x"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
-            <label >bottomlefty
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="bottomleft_y"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
+                <label > x</label >
+                <input type="range"
+                       id="translateVideoX"
+                       value="0"
+                       class="w3-input"
 
-            <label >bottomrightx
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="bottomright_x"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
-            <label >bottomrighty
-            </label >
-            <input type="range"
-                   class="w3-input"
-                   id="bottomright_y"
-                   min="0"
-                   step="0.00001"
-                   max="10000"
-                   value="0" >
+                       step="0.000001"
+                       min="-1920"
+                       max="1920"
+                >
+                <label >y</label >
+                <input type="range"
+                       id="translateVideoY"
+                       value="0"
+                       class="w3-input"
+                       step="0.000001"
 
-        </fieldset >
+                       min="-1080"
+                       max="1080"
+                >
+            </fieldset >
+            <fieldset >
+                <label > lasercolor </label >
+                <input type="color"
+                       class="w3-input"
+                       id="lasercolor"
+                       value="#ff6666" />
+
+                <label >treshold
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="treshold"
+                       min="0"
+                       max="255"
+                       value="100" >
+
+                <label >gridresolution </label >
+                <input type="range"
+                       id="gridResolution"
+                       value="8"
+                       class="w3-input"
+                       step="1"
+
+                       min="2"
+                       max="128"
+                >
+
+
+                <label >debugVideo</label >
+                <input type="checkbox"
+                       id="debugVideo"
+
+
+                       class="w3-check"
+                >
+
+                <label >showGame</label >
+                <input type="checkbox"
+                       id="showGame"
+
+                       class="w3-check"
+
+                >
+
+                <label >showDebug</label >
+                <input type="checkbox"
+                       id="showDebug"
+
+                       class="w3-check"
+
+                >
+
+            </fieldset >
+
+            <fieldset >
+
+                <label >topleftx
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="topleft_x"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+                <label >toplefty
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="topleft_y"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+
+                <label >toprightx
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="topright_x"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+                <label >toplefty
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="topright_y"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+
+                <label >bottomleftx
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="bottomleft_x"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+                <label >bottomlefty
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="bottomleft_y"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+
+                <label >bottomrightx
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="bottomright_x"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+                <label >bottomrighty
+                </label >
+                <input type="range"
+                       class="w3-input"
+                       id="bottomright_y"
+                       min="0"
+                       step="0.00001"
+                       max="10000"
+                       value="0" >
+
+            </fieldset >
+
+            <fieldset >
+
+
+                <label >presetname</label >
+                <input type="text"
+                       id="preset-name"
+
+                       class="w3-input"
+
+                >
+
+
+                <label >delete preset</label >
+                <input type="button"
+                       class="w3-input"
+                       id="delete-preset-button"
+                       value="Delete Preset"
+                ><input type="button"
+                        class="w3-input"
+                        id="save-preset-button"
+                        value="Save Preset"
+            >
+                <label >presets</label >
+                <select class="w3-select"
+                        name="option"
+                        id="presets-selector" >
+                    <option value=""
+                            disabled
+                            selected >Select Preset
+                    </option >
+                    <option value="1" >Option 1</option >
+                    <option value="2" >Option 2</option >
+                    <option value="3" >Option 3</option >
+                </select >
+
+            </fieldset >
+        </div >
     </form >
 </div >
 
