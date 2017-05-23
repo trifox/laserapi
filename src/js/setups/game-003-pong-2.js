@@ -4,9 +4,11 @@ var PhysicsPong = require('./PhysicsPong').default
 
 var knobPositions = []
 
-var obstacleSize = 160
+var obstacleSizeY = 160
+var obstacleSizeX = 160
 var moveSpeed = 250
-const itemCount = 10;
+var itemCount = 10;
+var clampMovementX = true
 var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
@@ -53,11 +55,11 @@ const getRectangleFromKnob = function (knobEntry) {
         },
         bottomleft: {
             x: knobEntry.left,
-            y: knobEntry.top + knobEntry.width,
+            y: knobEntry.top + knobEntry.height,
         },
         bottomright: {
             x: knobEntry.left + knobEntry.width,
-            y: knobEntry.top + knobEntry.width,
+            y: knobEntry.top + knobEntry.height,
         }
     }
     //  console.log('returning ', rect1)
@@ -142,6 +144,14 @@ const handler = function (grid) {
 
         oldPositions [k] = getRectangleFromKnob(knobPositions [k])
         //      console.log('direction is ', direction)
+
+
+        if (clampMovementX) {
+            // clamp out horizontal movemenbt
+            directions[k].x = 0
+        }
+
+
         var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
         if (length > 0) {
             // console.log('addd0 is ', knobPositions[k])
@@ -150,8 +160,8 @@ const handler = function (grid) {
             // console.log('addd3 is ', length)
             // console.log('addd5 is ', moveSpeed)
 
-            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * moveSpeed
-            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * moveSpeed
+            knobPositions[k].left = knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * moveSpeed
+            knobPositions[k].top = knobPositions[k].top - ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * moveSpeed
 
         }
 
@@ -190,28 +200,49 @@ const handler = function (grid) {
     lastTime = currentTime
 }
 
-function init() {
+function init(data) {
+    if (data) {
+        if (data.itemCount) {
+            itemCount = data.itemCount
+        }
+        if (data.moveSpeed) {
+            moveSpeed = data.moveSpeed
+        }
+        if (data.obstacleSize) {
+            obstacleSizeX = data.obstacleSize
+            obstacleSizeY = data.obstacleSize
+        }
 
-    PhysicsPong.init(itemCount)
+        if (data.obstacleSizeX) {
+            obstacleSizeX = data.obstacleSizeX
+        }
+
+        if (data.obstacleSizeY) {
+            obstacleSizeY = data.obstacleSizeY
+        }
+    }
+    PhysicsPong.init(data)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: obstacleSize,
-            left: obstacleSize,
-            top: obstacleSize + (i * (obstacleSize + 10)),
-            color: '#00aaff'
+            width: obstacleSizeX,
+            left: obstacleSizeX,
+            height: obstacleSizeY,
+            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
+            color: '#0000ff'
 
         })
     }
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: obstacleSize,
-            left: laserConfig.canvasResolution.width - (obstacleSize * 2),
+            width: obstacleSizeX,
+            height: obstacleSizeY,
+            left: laserConfig.canvasResolution.width - (obstacleSizeX * 2),
 
-            top: obstacleSize + (i * (obstacleSize + 10)),
-            color: '#00aaff'
+            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
+            color: '#0000ff'
 
         })
     }
@@ -224,8 +255,8 @@ var lastResolution = -1
 export default {
 
     name: 'Pong Game 2d',
-    init: function () {
-        init()
+    init: function (data) {
+        init(data)
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {
@@ -241,7 +272,8 @@ export default {
         // update physics positions
         for (var i = 0; i < itemCount; i++) {
             if (PhysicsPong.getObstacle(i)) {
-                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + 50, knobPositions[i].top + 50]
+                console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
+                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSizeX / 2, knobPositions[i].top + obstacleSizeX / 2]
                 PhysicsPong.getObstacle(i).color = knobPositions [i].color
             }
 

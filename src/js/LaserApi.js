@@ -102,6 +102,57 @@ var LaserApi =
         video: null,
         canvas: null,
 
+        getInterestReqion: function (context, canvasColorOriginal) {
+
+            var resultImage = context.createImageData(laserConfig.testResolution.width, laserConfig.testResolution.height)
+
+            //  resultImage.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            for (var x = 0; x < laserConfig.testResolution.width; x++) {
+                for (var y = 0; y < laserConfig.testResolution.height; y++) {
+
+                    var indexnormal = (y * laserConfig.testResolution.width + x) * 4;
+
+                    var coordTransformed = transformCoordinate({
+                        x: x / laserConfig.testResolution.width,
+                        y: y / laserConfig.testResolution.height
+                    }, laserConfig.transform)
+
+                    coordTransformed.x *= laserConfig.testResolution.width
+                    coordTransformed.y *= laserConfig.testResolution.height
+                    //   console.log('coord', coordTransformed)
+                    var indexInput =( Math.floor(coordTransformed.y) * laserConfig.testResolution.width + Math.floor(coordTransformed.x)) * 4;
+
+                    if (getColorDistance(laserConfig.testColor, [
+                            canvasColorOriginal.data[indexInput],
+                            canvasColorOriginal.data[indexInput + 1],
+                            canvasColorOriginal.data[indexInput + 2]
+
+                        ]) < laserConfig.treshold) {
+
+
+                        resultImage.data[indexnormal] = canvasColorOriginal.data[indexInput];
+                        resultImage.data[indexnormal + 1] = canvasColorOriginal.data[indexInput + 1];
+                        resultImage.data[indexnormal + 2] = canvasColorOriginal.data[indexInput + 2];
+                        resultImage.data[indexnormal + 3] = canvasColorOriginal.data[indexInput + 3];
+
+                    }    else{
+
+                        resultImage.data[indexnormal] = 0;
+                        resultImage.data[indexnormal + 1] = 0;
+                        resultImage.data[indexnormal + 2] = 0;
+                        resultImage.data[indexnormal + 3] =255;
+                    }
+
+
+
+
+                }
+
+            }
+            return resultImage
+
+        },
         getRectForInputImage: function (canvasColorOriginal) {
 
             //     console.log('input image is ', canvasColorOriginal)

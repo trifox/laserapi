@@ -1,7 +1,9 @@
 var helper = require('./helper.js')
 var laserConfig = require('./LaserApiConfig').default
+var Util = require('./util').default
 var CanvasVideo = require('./CanvasVideo').default
 var LaserApi = require('./LaserApi.js').default
+var LaserApiPresets = require('./LaserApiPresets').default
 var w3 = require('./../css/w3.css').default
 //var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
@@ -11,14 +13,17 @@ var MainCanvas = require('./MasterCanvas').default
 //var game01 = require('./setups/game-004-paint').default
 var gameDebug = require('./setups/game-004-debug').default
 var gameDebugCorners = require('./setups/game-004-debug-corners').default
+var gameDebugTransform = require('./setups/game-004-debug-transform').default
+var GameWrapper = require('./setups/game-wrapper').default
 //var game01 = require('./setups/game-005-switch').default
 var games = [
-    require('./setups/game-001-play-midi').default,
-    require('./setups/game-002-moorhuni').default,
-    require('./setups/game-003-pong-2').default,
-    require('./setups/game-005-switch').default,
-    require('./setups/game-006-fade').default
+    new GameWrapper(require('./setups/game-001-play-midi').default),
+    new GameWrapper(require('./setups/game-002-moorhuni').default),
+    new GameWrapper(require('./setups/game-003-pong-2').default),
+    new GameWrapper(require('./setups/game-005-switch').default),
+    new GameWrapper(require('./setups/game-006-fade').default)
 ]
+console.log('games are', games)
 /* make sure to use https as the web audio api does not like http */
 MainCanvas.init(document.getElementById('canvas'))
 CanvasVideo.init(document.getElementById('video'))
@@ -41,7 +46,10 @@ function skewY(context, angle) {
     context.setTransform(1, Math.tan((angle / 180.0) * Math.PI), 0, 1, 0, 0);
 }
 function skewX(context, angle) {
-    context.setTransform(Math.tan((angle / 180.0) * Math.PI), 1, 0, 0, 0, 0);
+    context.setTransform(1, 0, Math.tan((angle / 180.0) * Math.PI), 1, 1, 0, 0);
+}
+function skewXY(context, angle1, angle2) {
+    context.setTransform(1, Math.tan((angle1 / 180.0) * Math.PI), Math.tan((angle2 / 180.0) * Math.PI), 1, 1, 0, 0);
 }
 
 function frameHandler() {
@@ -59,7 +67,8 @@ function frameHandler() {
     MainCanvas.getCanvas().style.width = laserConfig.canvasResolution.width
     MainCanvas.getCanvas().style.height = laserConfig.canvasResolution.height
     MainCanvas.get2dContext().save()
-    skewY(MainCanvas.get2dContext(), document.getElementById('skewX').value)
+    skewXY(MainCanvas.get2dContext(), document.getElementById('skewY').value, document.getElementById('skewX').value)
+    //skewX(MainCanvas.get2dContext(), document.getElementById('skewX').value)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
     MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
@@ -78,12 +87,17 @@ function frameHandler() {
 
     MainCanvas.get2dContext().strokeStyle = "#0000ff";
     MainCanvas.get2dContext().strokeRect(0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height)
+    var canvasColorInterest = LaserApi.getInterestReqion(MainCanvas.get2dContext(), canvasColor)
     if (!laserConfig.debugVideo) {
         MainCanvas.clear()
     } else {
-        gameDebugCorners.handle(canvasColor)
+
+        MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
+
+        //    gameDebugCorners.handle(canvasColor)
+        gameDebugTransform.handle(canvasColor)
     }
-    var laserGrid = LaserApi.getRectForInputImage(canvasColor)
+    var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
 
     if (laserConfig.showGame) {
 
@@ -96,10 +110,39 @@ function frameHandler() {
 }
 
 var presets = []
-setTimeout(frameHandler, 0)
+setTimeout(frameHandler, 1000)
 if (document.addEventListener) {
     document.addEventListener('webkitfullscreenchange', exitHandler, false);
     // document.addEventListener('fullscreenchange', exitHandler, false);
+}
+
+document.onkeydown = function (evt) {
+    if (isNaN(evt.key)) {
+        console.log(evt.key)
+        switch (evt.key) {
+            case 'd':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.showDebug = !laserConfig.showDebug
+                document.getElementById('showDebug').checked = laserConfig.showDebug
+                break;
+            case 'f':
+
+                fullscreen()
+
+                break;
+            case 'F':
+
+                fullscreenEdit()
+
+                break;
+        }
+
+        laserConfig
+    }
+    else {
+        document.getElementById('presets-selector').value = evt.key
+        loadPreset(presets [evt.key])
+    }
 }
 
 function exitHandler(data) {
@@ -132,9 +175,27 @@ function fullscreen() {
     games[laserConfig.gameIndex].init()
 
 }
+function fullscreenEdit() {
+
+    console.log('fullscreenedit clicked')
+    var elem = document.body;
+    console.log('element is ', elem)
+    console.log('element is ', elem.getBoundingClientRect())
+
+    // laserConfig.canvasResolution.width = 640
+    // laserConfig.canvasResolution.height = 480
+    console.log('resolution is clicked', laserConfig.canvasResolution)
+    if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    }
+
+    games[laserConfig.gameIndex].init()
+
+}
 function initHTML() {
 
     document.getElementById('fullscreen_button').onclick = fullscreen
+    document.getElementById('fullscreenedit_button').onclick = fullscreenEdit
     document.getElementById('save-preset-button').onclick = function () {
 
         console.log('saving preset')
@@ -157,7 +218,7 @@ function initHTML() {
     for (var i = 0; i < games.length; i++) {
 
         var option = document.createElement("option");
-        option.text = "Game #" + i + ' - ' + games[i].name;
+        option.text = "Game #" + i + ' - ' + games[i].getName();
         option.value = i
         if (i === laserConfig.gameIndex) {
             option.selected = true
@@ -172,116 +233,154 @@ function initHTML() {
         laserConfig.gameIndex = evt.target.value
 
     }
-    document.getElementById('game-selector').onclick = function (evt) {
-        for (var i = 0; i < presets.length; i++) {
-            if (document.getElementById('preset-name').value === presets[i].name) {
-                presets.remove(presets[i])
 
-                window.localStorage.setItem('laserPresets', JSON.stringify({presets: presets}))
-                return;
-            }
-        }
-
-    }
     document.getElementById('presets-selector').onchange = function (evt) {
         document.getElementById('preset-name').value = presets[evt.target.value].name
         console.log('selector changed', evt.target.value, presets[evt.target.value])
+        var preset = presets[evt.target.value]
+        var config = preset.config
+        delete config.transform
+        delete config.videoTransform
         loadHtmlFromSettings(presets[evt.target.value].config)
-        loadHtmlFromSettings(presets[evt.target.value].config)
+        games[laserConfig.gameIndex].init(preset.initData);
 
     }
 }
+
+function loadPreset(preset) {
+    if (preset === undefined) {
+        return
+    }
+    if (preset === null) {
+        return
+    }
+    var config = preset.config
+    delete config.transform
+    delete config.videoTransform
+    loadHtmlFromSettings(config)
+    games[laserConfig.gameIndex].init(preset.initData);
+
+}
+
 function loadPresetsFromLocalStorage() {
 
     var data = JSON.parse(window.localStorage.getItem('laserPresets'))
+
+    presets = LaserApiPresets
     if (data) {
-        presets = data.presets
+        //    presets = presets.join(data.presets)
     }
+
     console.log('presets data is ', data)
 }
 function loadFromLocalStorage() {
     loadPresetsFromLocalStorage()
-    try {
-        var data = JSON.parse(window.localStorage.getItem('laser'))
+    var data = JSON.parse(window.localStorage.getItem('laser'))
+    if (data !== null) {
         console.log('last data is ', data)
 
         loadHtmlFromSettings(data.laserConfig)
     }
-    catch (e) {
-        console.log('error ', e)
-    }
+
 }
 
 function loadHtmlFromSettings(settings) {
 
-    if (settings.treshold) {
+    console.log('loading settings', settings)
+    if (settings.treshold !== undefined) {
         document.getElementById('treshold').value = settings.treshold
+        laserConfig.treshold = settings.treshold
     }
-    if (settings.testColor) {
+    if (settings.testColor !== undefined) {
 
-        document.getElementById('lasercolor').value = rgbToHex(settings.testColor[0], settings.testColor[1], settings.testColor[2])
+        document.getElementById('lasercolor').value = Util.rgbToHex(settings.testColor[0], settings.testColor[1], settings.testColor[2])
 
+        laserConfig.testColor = settings.testColor
     }
-
-    if (settings.debugVideo) {
+    if (settings.debugVideo !== undefined) {
 
         document.getElementById('debugVideo').value = settings.debugVideo
+        laserConfig.debugVideo = settings.debugVideo
 
     }
-    if (settings.showGame) {
+    if (settings.showGame !== undefined) {
 
         document.getElementById('showGame').checked = settings.showGame
+        laserConfig.showGame = settings.showGame
 
     }
-    if (settings.gameIndex) {
+    if (settings.gameIndex !== undefined) {
 
+        console.log('loading settings gameIndex', settings)
+        laserConfig.gameIndex = settings.gameIndex
         document.getElementById('game-selector').value = settings.gameIndex
 
     }
-    if (settings.showDebug) {
+    if (settings.showDebug !== undefined) {
 
         document.getElementById('showDebug').checked = settings.showDebug
+        laserConfig.showDebug = settings.showDebug
 
     }
-    if (settings.debugVideo) {
+    if (settings.debugVideo !== undefined) {
 
         document.getElementById('debugVideo').checked = settings.debugVideo
+        laserConfig.debugVideo = settings.debugVideo
 
     }
-    if (settings.gridResolution) {
+    if (settings.gridResolution !== undefined) {
 
         document.getElementById('gridResolution').value = settings.gridResolution
+        laserConfig.gridResolution = settings.gridResolution
+
+    }
+    if (settings.videoTransform !== undefined) {
+        if (settings.videoTransform.skew !== undefined) {
+
+            document.getElementById('skewX').value = settings.videoTransform.skew.x
+            laserConfig.videoTransform.skew.x = settings.videoTransform.skew.x
+
+        }
+    }
+    if (settings.videoTransform !== undefined && settings.videoTransform.skew !== undefined) {
+
+        document.getElementById('skewY').value = settings.videoTransform.skew.y
+        laserConfig.videoTransform.skew.y = settings.videoTransform.skew.y
 
     }
 
-    if (settings.videoTransform) {
+    if (settings.videoTransform !== undefined) {
 
         document.getElementById('rotateVideo').value = settings.videoTransform.rotate
         document.getElementById('scaleVideo').value = settings.videoTransform.scale
         document.getElementById('translateVideoX').value = settings.videoTransform.translate.x
         document.getElementById('translateVideoY').value = settings.videoTransform.translate.y
+        laserConfig.videoTransform.rotateVideo = settings.videoTransform.rotateVideo
+        laserConfig.videoTransform.translateVideoX = settings.videoTransform.translateVideoX
+        laserConfig.videoTransform.scaleVideo = settings.videoTransform.scaleVideo
+        laserConfig.videoTransform.translateVideoY = settings.videoTransform.translateVideoY
 
+        setVideoTransform(settings.videoTransform)
     }
 
-    setVideoTransform(settings.videoTransform)
+    if (settings.transform !== undefined) {
+
+        setCoordinates(settings.transform)
+    }
 
 }
 function saveToLocalStorage() {
-
-    window.localStorage.setItem('laser', JSON.stringify({
-        treshold: document.getElementById('treshold').value,
-        testColor: document.getElementById('lasercolor').value,
-        transform: getCoordinates(),
-        videoTransform: getTransformOfVideoInput(),
-        debugVideo: document.getElementById('debugVideo').checked,
+    var data = JSON.stringify({
         laserConfig: laserConfig
-    }))
+    })
+    // console.log('Saving to localstorage', data)
+    window.localStorage.setItem('laser', data)
 }
 
 function getCoordinatesForInputElement(elemprefix) {
 
-    elem1x = document.getElementById(elemprefix + '_x');
-    elem1y = document.getElementById(elemprefix + '_y');
+    var elem1x = document.getElementById(elemprefix + '_x');
+    var elem1y = document.getElementById(elemprefix + '_y');
     return {
         x: elem1x.value / 10000.0,
         y: elem1y.value / 10000.0
@@ -290,30 +389,12 @@ function getCoordinatesForInputElement(elemprefix) {
 
 function setCoordinatesForInputElement(elemprefix, data) {
 
-    elem1x = document.getElementById(elemprefix + '_x');
-    elem1y = document.getElementById(elemprefix + '_y');
+    var elem1x = document.getElementById(elemprefix + '_x');
+    var elem1y = document.getElementById(elemprefix + '_y');
     elem1x.value = data.x * 10000.0;
     elem1y.value = data.y * 10000.0;
 }
-
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-}
 function getCoordinates() {
-    return laserConfig.transform
     return {
         topleft: getCoordinatesForInputElement('topleft'),
         topright: getCoordinatesForInputElement('topright'),
@@ -326,7 +407,11 @@ function getTransformOfVideoInput() {
 
     return {
         rotate: document.getElementById('rotateVideo').value,
+        skew: {
+            x: document.getElementById('skewX').value,
+            y: document.getElementById('skewY').value
 
+        },
         scale: document.getElementById('scaleVideo').value,
         translate: {
             x: document.getElementById('translateVideoX').value,
@@ -335,7 +420,6 @@ function getTransformOfVideoInput() {
     }
 }
 function setCoordinates(data) {
-    return;
 
     setCoordinatesForInputElement('topleft', data.topleft);
     setCoordinatesForInputElement('topright', data.topright);
@@ -391,15 +475,16 @@ function animationHandler() {
     laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.gameIndex = document.getElementById('game-selector').value
     laserConfig.videoTransform = getTransformOfVideoInput()
-    laserConfig.testColor[0] = hexToRgb(document.getElementById('lasercolor').value).r
-    laserConfig.testColor[1] = hexToRgb(document.getElementById('lasercolor').value).g
-    laserConfig.testColor[2] = hexToRgb(document.getElementById('lasercolor').value).b
-    //  console.log('config is ', laserConfig)
+
+    laserConfig.testColor[0] = Util.hexToRgb(document.getElementById('lasercolor').value).r
+    laserConfig.testColor[1] = Util.hexToRgb(document.getElementById('lasercolor').value).g
+    laserConfig.testColor[2] = Util.hexToRgb(document.getElementById('lasercolor').value).b
     laserConfig.transform = getCoordinates()
+    // console.log('config is ', laserConfig)
     //     shader.start()
     //  updateKnobs(laserConfig.transform)
-    saveToLocalStorage()
     setVideoTransform(getTransformOfVideoInput());
+    saveToLocalStorage()
 
 }
 
@@ -427,7 +512,7 @@ function updatePresetSelector() {
         option.text = "Preset #" + i + ' - ' + presets[i].name;
         option.value = i
 
-        console.log('game found: ', option.text)
+        console.log('game preset found: ', option.text)
         document.getElementById('presets-selector').add(option);
 
     }

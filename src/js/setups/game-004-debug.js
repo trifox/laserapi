@@ -17,13 +17,14 @@ const handler = function (laserGrid) {
             var gIndex = y * laserConfig.gridResolution + x;
 
             if (laserGrid[gIndex] > 0) {
-                MainCanvas.get2dContext().strokeStyle = "#0000ff";
-                MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
+            //    MainCanvas.get2dContext().strokeStyle = "#0000ff";
+            //    MainCanvas.get2dContext().strokeRect(ggx, ggy, gwidth, gheight)
                 MainCanvas.get2dContext().font = "10px Arial";
                 // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
 
                 MainCanvas.get2dContext().fillStyle = '#00ffff'
 
+                MainCanvas.get2dContext().lineWidth = 0;
                 MainCanvas.get2dContext().textAlign = 'center'
                 // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
 

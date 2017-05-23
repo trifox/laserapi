@@ -11,18 +11,21 @@ function init(count) {
     if (synths.length) {
 
         for (var i = 0; i < synths.length; i++) {
+            if (synths[i]) {
+                synths[i].triggerRelease();
+            }
 
-            synths[i].triggerRelease();
         }
 
     }
 
     synths = []
-    playTones = {}
+    playTones = []
 
     for (var i = 0; i < count; i++) {
 
         synths.push(new Tone.Synth().toMaster());
+        playTones[i] = false
     }
 }
 
@@ -47,13 +50,17 @@ const handler = function (grid) {
             else {
 
                 playTones[i % maxSynths] = true
-                synths[i % maxSynths].triggerAttack(20 + i * 8.7);
+                if (synths[i % maxSynths]) {
+                    synths[i % maxSynths].triggerAttack(60 + i * 8.7);
+                }
             }
 
         } else {
             if (playTones[i % maxSynths]) {
                 playTones[i % maxSynths] = false
-                synths[i % maxSynths].triggerRelease();
+                if (synths[i % maxSynths]) {
+                    synths[i % maxSynths].triggerRelease();
+                }
             }
 
         }
@@ -65,6 +72,11 @@ const handler = function (grid) {
 export default {
 
     name: 'MIDI',
+    init: function () {
+
+        init()
+
+    },
     handle: function (grid) {
         handler(grid)
     }

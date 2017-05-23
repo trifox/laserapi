@@ -4,9 +4,13 @@ var MasterCanvas = require('../MasterCanvas').default
 var knobPositions = []
 
 var moveSpeed = 250
-const itemCount = 20;
-const itemSize = 200;
+var itemCount = 8;
+var itemSize = 200;
 
+const MODE_LEFTRIGHT = 'leftright'
+const MODE_BOTH = 'both'
+var gameMode = MODE_BOTH
+var center = true
 var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
@@ -152,8 +156,8 @@ const handler = function (grid) {
 
             // knobPositions[k].left = knobPositions[k].left - directions[k].x / length * knobPositions[k].speed
             // knobPositions[k].top = knobPositions[k].top - directions[k].y / length * knobPositions[k].speed
-            knobPositions[k].left =  knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * knobPositions[k].speed
-            knobPositions[k].top =knobPositions[k].top -  ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * knobPositions[k].speed
+            knobPositions[k].left = knobPositions[k].left - ((directions[k].x) / length) * ((currentTime - lastTime ) / 1000) * knobPositions[k].speed
+            knobPositions[k].top = knobPositions[k].top - ((directions[k].y) / length) * ((currentTime - lastTime ) / 1000   ) * knobPositions[k].speed
 
         }
 
@@ -187,7 +191,9 @@ const handler = function (grid) {
         if (!knobPositions [k].dead) {
             MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
 
-            MasterCanvas.get2dContext().fillRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
+            MasterCanvas.get2dContext().lineWidth = 10;
+            MasterCanvas.get2dContext().strokeStyle = knobPositions [k].color
+            MasterCanvas.get2dContext().strokeRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
 
         }
     }
@@ -197,9 +203,29 @@ const handler = function (grid) {
     lastTime = currentTime
 }
 
-function init() {
+function init(data) {
+    if (data) {
+        if (data.itemCount !== undefined) {
+            itemCount = data.itemCount
+        }
+        if (data.itemSize !== undefined) {
+            itemSize = data.itemSize
+        }
+ if (data.moveSpeed !== undefined) {
+            itemSize = data.moveSpeed
+        }
+
+        if (data.gameMode !== undefined) {
+            gameMode = data.gameMode
+        }
+        if (data.center != undefined) {
+            center = data.center
+        }
+
+    }
     knobPositions = []
     pointsTeam1 = 0
+
     pointsTeam2 = 0
     var teamSize = itemCount / 2
 
@@ -209,17 +235,17 @@ function init() {
             width: itemSize,
             left: 100,
             speed: 250,
-            top: 100 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
+            top: 100 + i * (itemSize + 20),
+            color: '#00ff88'
 
         })
 
         knobPositions.push({
             width: itemSize / 2,
-            left: 100 + itemSize + 10,
+            left: 100 + itemSize + 20,
             speed: 350,
-            top: 125 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#00ff88' : '#00ff44'
+            top: 100 + i * (itemSize + 20) + itemSize / 4,
+            color: '#00ff88'
 
         })
 
@@ -230,19 +256,29 @@ function init() {
             width: itemSize,
             left: laserConfig.canvasResolution.width - 100 - itemSize,
             speed: 250,
-            top: 100 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
+            top: 100 + i * (itemSize + 20),
+            color: '#0088ff'
 
         })
 
         knobPositions.push({
             width: itemSize / 2,
-            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize/2 - 10,
+            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize / 2 - 20,
             speed: 350,
-            top: 125 + i * (itemSize + 10),
-            color: (i % 2 === 0) ? '#0088ff' : '#0044ff'
+            top: 100 + i * (itemSize + 20) + itemSize / 4,
+            color: '#0088ff'
 
         })
+
+    }
+
+    if (center) {
+
+        for (var i = 0; i < knobPositions.length; i++) {
+
+            knobPositions [i].left = laserConfig.canvasResolution.width / 2 - knobPositions [i].width / 2
+
+        }
 
     }
     console.log('initialised ', knobPositions)
@@ -258,27 +294,30 @@ var winPpointsTeam2 = 0
 function checkOut() {
 
     for (var i = 0; i < itemCount; i++) {
-        if (i < itemCount / 2) {
-
-            if (knobPositions [i].left > laserConfig.canvasResolution.width - 100) {
+        if ((i < itemCount / 2) || gameMode === MODE_BOTH) {
+            if (knobPositions [i].left > laserConfig.canvasResolution.width - knobPositions [i].width / 2 - knobPositions [i].width) {
                 if (!knobPositions[i].dead) {
                     knobPositions[i].dead = true
                     pointsTeam1++
                 }
             }
-        } else {
-            if (knobPositions [i].left < 50) {
-                if (!knobPositions[i].dead) {
-                    knobPositions[i].dead = true
-                    pointsTeam2++
-                }
+        }
 
+        if ((i > itemCount / 2) || gameMode === MODE_BOTH) {
+            {
+                if (knobPositions [i].left < knobPositions [i].width / 2) {
+                    if (!knobPositions[i].dead) {
+                        knobPositions[i].dead = true
+                        pointsTeam2++
+                    }
+
+                }
             }
         }
-    }
 
+    }
     var oneAliveTeam1 = false;
-    for (var i = 0; i < itemCount / 2; i++) {
+    for (var i = 0; i < Math.ceil(itemCount / 2); i++) {
 
         if (!knobPositions [i].dead) {
             oneAliveTeam1 = true
@@ -293,8 +332,8 @@ function checkOut() {
     }
 
     var oneAliveTeam2 = false;
-    for (var i = itemCount / 2; i < itemCount; i++) {
-
+    for (var i = Math.floor(itemCount / 2); i < itemCount; i++) {
+        //   console.log('i is ', i)
         if (!knobPositions [i].dead) {
             oneAliveTeam2 = true
             break;
@@ -311,8 +350,9 @@ function checkOut() {
 
 export default {
     name: 'Obstacle Game',
-    init: function () {
-        init()
+    init: function (data) {
+        init(data)
+
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {
