@@ -116,6 +116,35 @@ if (document.addEventListener) {
     // document.addEventListener('fullscreenchange', exitHandler, false);
 }
 
+document.onkeydown = function (evt) {
+    if (isNaN(evt.key)) {
+        console.log(evt.key)
+        switch (evt.key) {
+            case 'd':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.showDebug = !laserConfig.showDebug
+                document.getElementById('showDebug').checked = laserConfig.showDebug
+                break;
+            case 'f':
+
+                fullscreen()
+
+                break;
+            case 'F':
+
+                fullscreenEdit()
+
+                break;
+        }
+
+        laserConfig
+    }
+    else {
+        document.getElementById('presets-selector').value = evt.key
+        loadPreset(presets [evt.key])
+    }
+}
+
 function exitHandler(data) {
     console.log('exitHandler', data)
     if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null) {
@@ -216,6 +245,21 @@ function initHTML() {
         games[laserConfig.gameIndex].init(preset.initData);
 
     }
+}
+
+function loadPreset(preset) {
+    if (preset === undefined) {
+        return
+    }
+    if (preset === null) {
+        return
+    }
+    var config = preset.config
+    delete config.transform
+    delete config.videoTransform
+    loadHtmlFromSettings(config)
+    games[laserConfig.gameIndex].init(preset.initData);
+
 }
 
 function loadPresetsFromLocalStorage() {

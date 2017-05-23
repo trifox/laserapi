@@ -4,9 +4,11 @@ var PhysicsPong = require('./PhysicsPong').default
 
 var knobPositions = []
 
-var obstacleSize = 160
+var obstacleSizeY = 160
+var obstacleSizeX = 160
 var moveSpeed = 250
 var itemCount = 10;
+var clampMovementX = true
 var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
@@ -53,11 +55,11 @@ const getRectangleFromKnob = function (knobEntry) {
         },
         bottomleft: {
             x: knobEntry.left,
-            y: knobEntry.top + knobEntry.width,
+            y: knobEntry.top + knobEntry.height,
         },
         bottomright: {
             x: knobEntry.left + knobEntry.width,
-            y: knobEntry.top + knobEntry.width,
+            y: knobEntry.top + knobEntry.height,
         }
     }
     //  console.log('returning ', rect1)
@@ -142,6 +144,14 @@ const handler = function (grid) {
 
         oldPositions [k] = getRectangleFromKnob(knobPositions [k])
         //      console.log('direction is ', direction)
+
+
+        if (clampMovementX) {
+            // clamp out horizontal movemenbt
+            directions[k].x = 0
+        }
+
+
         var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
         if (length > 0) {
             // console.log('addd0 is ', knobPositions[k])
@@ -199,17 +209,27 @@ function init(data) {
             moveSpeed = data.moveSpeed
         }
         if (data.obstacleSize) {
-            obstacleSize = data.obstacleSize
+            obstacleSizeX = data.obstacleSize
+            obstacleSizeY = data.obstacleSize
+        }
+
+        if (data.obstacleSizeX) {
+            obstacleSizeX = data.obstacleSizeX
+        }
+
+        if (data.obstacleSizeY) {
+            obstacleSizeY = data.obstacleSizeY
         }
     }
-    PhysicsPong.init(itemCount)
+    PhysicsPong.init(data)
     knobPositions = []
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: obstacleSize,
-            left: obstacleSize,
-            top: obstacleSize + (i * (obstacleSize + 10)),
+            width: obstacleSizeX,
+            left: obstacleSizeX,
+            height: obstacleSizeY,
+            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
             color: '#0000ff'
 
         })
@@ -217,10 +237,11 @@ function init(data) {
     for (var i = 0; i < itemCount / 2; i++) {
 
         knobPositions.push({
-            width: obstacleSize,
-            left: laserConfig.canvasResolution.width - (obstacleSize * 2),
+            width: obstacleSizeX,
+            height: obstacleSizeY,
+            left: laserConfig.canvasResolution.width - (obstacleSizeX * 2),
 
-            top: obstacleSize + (i * (obstacleSize + 10)),
+            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
             color: '#0000ff'
 
         })
@@ -251,7 +272,8 @@ export default {
         // update physics positions
         for (var i = 0; i < itemCount; i++) {
             if (PhysicsPong.getObstacle(i)) {
-                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSize / 2, knobPositions[i].top + obstacleSize / 2]
+                console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
+                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSizeX / 2, knobPositions[i].top + obstacleSizeX / 2]
                 PhysicsPong.getObstacle(i).color = knobPositions [i].color
             }
 

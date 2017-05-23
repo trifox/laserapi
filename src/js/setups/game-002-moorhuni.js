@@ -7,6 +7,10 @@ var moveSpeed = 250
 var itemCount = 8;
 var itemSize = 200;
 
+const MODE_LEFTRIGHT = 'leftright'
+const MODE_BOTH = 'both'
+var gameMode = MODE_BOTH
+var center = true
 var lastTime = performance.now();
 
 const isInsideRect = function (rect1, rect2) {
@@ -201,15 +205,27 @@ const handler = function (grid) {
 
 function init(data) {
     if (data) {
-        if (data.itemCount) {
+        if (data.itemCount !== undefined) {
             itemCount = data.itemCount
         }
-        if (data.itemSize) {
+        if (data.itemSize !== undefined) {
             itemSize = data.itemSize
         }
+ if (data.moveSpeed !== undefined) {
+            itemSize = data.moveSpeed
+        }
+
+        if (data.gameMode !== undefined) {
+            gameMode = data.gameMode
+        }
+        if (data.center != undefined) {
+            center = data.center
+        }
+
     }
     knobPositions = []
     pointsTeam1 = 0
+
     pointsTeam2 = 0
     var teamSize = itemCount / 2
 
@@ -219,16 +235,16 @@ function init(data) {
             width: itemSize,
             left: 100,
             speed: 250,
-            top: 100 + i * (itemSize + 10),
+            top: 100 + i * (itemSize + 20),
             color: '#00ff88'
 
         })
 
         knobPositions.push({
             width: itemSize / 2,
-            left: 100 + itemSize + 10,
+            left: 100 + itemSize + 20,
             speed: 350,
-            top: 125 + i * (itemSize + 10),
+            top: 100 + i * (itemSize + 20) + itemSize / 4,
             color: '#00ff88'
 
         })
@@ -240,19 +256,29 @@ function init(data) {
             width: itemSize,
             left: laserConfig.canvasResolution.width - 100 - itemSize,
             speed: 250,
-            top: 100 + i * (itemSize + 10),
+            top: 100 + i * (itemSize + 20),
             color: '#0088ff'
 
         })
 
         knobPositions.push({
             width: itemSize / 2,
-            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize / 2 - 10,
+            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize / 2 - 20,
             speed: 350,
-            top: 125 + i * (itemSize + 10),
+            top: 100 + i * (itemSize + 20) + itemSize / 4,
             color: '#0088ff'
 
         })
+
+    }
+
+    if (center) {
+
+        for (var i = 0; i < knobPositions.length; i++) {
+
+            knobPositions [i].left = laserConfig.canvasResolution.width / 2 - knobPositions [i].width / 2
+
+        }
 
     }
     console.log('initialised ', knobPositions)
@@ -268,27 +294,30 @@ var winPpointsTeam2 = 0
 function checkOut() {
 
     for (var i = 0; i < itemCount; i++) {
-        if (i < itemCount / 2) {
-
-            if (knobPositions [i].left > laserConfig.canvasResolution.width - knobPositions [i].width * 2) {
+        if ((i < itemCount / 2) || gameMode === MODE_BOTH) {
+            if (knobPositions [i].left > laserConfig.canvasResolution.width - knobPositions [i].width / 2 - knobPositions [i].width) {
                 if (!knobPositions[i].dead) {
                     knobPositions[i].dead = true
                     pointsTeam1++
                 }
             }
-        } else {
-            if (knobPositions [i].left < knobPositions [i].width) {
-                if (!knobPositions[i].dead) {
-                    knobPositions[i].dead = true
-                    pointsTeam2++
-                }
+        }
 
+        if ((i > itemCount / 2) || gameMode === MODE_BOTH) {
+            {
+                if (knobPositions [i].left < knobPositions [i].width / 2) {
+                    if (!knobPositions[i].dead) {
+                        knobPositions[i].dead = true
+                        pointsTeam2++
+                    }
+
+                }
             }
         }
-    }
 
+    }
     var oneAliveTeam1 = false;
-    for (var i = 0; i < itemCount / 2; i++) {
+    for (var i = 0; i < Math.ceil(itemCount / 2); i++) {
 
         if (!knobPositions [i].dead) {
             oneAliveTeam1 = true
@@ -303,8 +332,8 @@ function checkOut() {
     }
 
     var oneAliveTeam2 = false;
-    for (var i = itemCount / 2; i < itemCount; i++) {
-
+    for (var i = Math.floor(itemCount / 2); i < itemCount; i++) {
+        //   console.log('i is ', i)
         if (!knobPositions [i].dead) {
             oneAliveTeam2 = true
             break;
@@ -323,6 +352,7 @@ export default {
     name: 'Obstacle Game',
     init: function (data) {
         init(data)
+
         console.log('init game moorhuni ', knobPositions)
     },
     handle: function (grid) {

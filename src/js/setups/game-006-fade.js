@@ -34,6 +34,12 @@ function getColorString(r, g, b) {
 
 function getColorString2(position) {
     // console.log('position is ',position)
+    if (position > 1) {
+        position = 1
+    }
+    if (position < 0) {
+        position = 0
+    }
     var green
 
         = {
@@ -84,7 +90,7 @@ function getColorString2(position) {
 
     var index1 = Math.floor(position * (colors.length - 2))
     var index2 = Math.floor(position * (colors.length - 2)) + 1
-
+    console.log('lerping colors', colors, index1, index2)
     var lerpresult = LaserApi.lerp3d(colors[index1], colors[index2], (position - (index1 * 1 / (colors.length - 2))) * (colors.length - 2))
     return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
 
@@ -141,6 +147,7 @@ export default {
                 fadeDuration = data.fadeDuration
             }
         }
+
     },
     handle: function (grid) {
         handler(grid)

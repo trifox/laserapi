@@ -2,11 +2,15 @@ var p2 = require('p2')
 var lastTime = performance.now()
 var laserConfig = require('../LaserApiConfig.js').default
 var MasterCanvas = require('../MasterCanvas').default
-var itemCount = 6;
+
 var intervalId = null;
 var ballSpeed = 250
 var obstacleSize = 150
 
+var obstacleSizeY = 160
+var obstacleSizeX = 160
+var moveSpeed = 250
+var itemCount = 10;
 var planeTop = null
 var planeBottom = null
 var planeLeft = null
@@ -51,8 +55,8 @@ const addObstacle = function (world, collisionshape) {
     // Create a platform that the ball can bounce on
     var obstacleShape = new p2.Box({
         //  position:[-32.5,-32.5]  ,
-        width: obstacleSize,
-        height: obstacleSize
+        width: obstacleSizeX,
+        height: obstacleSizeY
     });
     var obstacleBody = new p2.Body({
             mass: 0
@@ -79,7 +83,6 @@ const addObstacle = function (world, collisionshape) {
         friction: 0,
         stiffness: Number.MAX_VALUE // We need infinite stiffness to get exact restitution
     }));
-    obstacleBody.size = obstacleSize
     return obstacleBody
 
 }
@@ -185,7 +188,7 @@ function render(canvas2d) {
 
         canvas2d.lineWidth = 10;
         canvas2d.strokeStyle = '#00ff88'
-        canvas2d.strokeRect(obstacles[i].position[0] - obstacleSize / 2, obstacles[i].position[1] - obstacleSize / 2, obstacleSize, obstacleSize)
+        canvas2d.strokeRect(obstacles[i].position[0] - obstacleSizeX / 2, obstacles[i].position[1] - obstacleSizeY / 2, obstacles[i].shapes[0].width, obstacles[i].shapes[0].height)
 
     }
 
@@ -254,10 +257,37 @@ export default{
         return obstacles [index]
     },
     step: onTick,
-    init: function (obstacleCount) {
-        itemCount = obstacleCount
+    init: function (data) {
+
+        if (data) {
+            if (data.itemCount) {
+                itemCount = data.itemCount
+            }
+            if (data.moveSpeed) {
+                moveSpeed = data.moveSpeed
+            }
+            if (data.obstacleSize) {
+                obstacleSizeX = data.obstacleSize
+                obstacleSizeY = data.obstacleSize
+            }
+
+            if (data.obstacleSizeX) {
+                obstacleSizeX = data.obstacleSizeX
+            }
+
+            if (data.obstacleSizeY) {
+                obstacleSizeY = data.obstacleSizeY
+            }
+            if (data.ballSpeed) {
+                obstacleSizeY = data.ballSpeed
+            }
+        }
         lastTime = performance.now()
-        init2dPhysics(obstacleCount);
+        init2dPhysics(itemCount );
+
+
+        circleBody.position = [laserConfig.canvasResolution.width / 2, laserConfig.canvasResolution.height / 2]
+        circleBody.velocity = getRandomBallSpeed()
         console.log('phiscs is', world)
     },
     stop: function () {
