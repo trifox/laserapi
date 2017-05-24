@@ -1,6 +1,8 @@
 var preset1midi1 = {
     gameIndex: 0,
     debugVideo: false,
+    showDebug: false,
+    showGame: true,
     testColor: [255, 32, 32],
     gridResolution: 4,
 
@@ -55,6 +57,8 @@ var preset1midi1 = {
 var preset2midi2 = {
     gameIndex: 0,
     debugVideo: false,
+    showDebug: false,
+    showGame: true,
     testColor: [255, 0, 0],
     gridResolution: 6,
 
@@ -110,6 +114,8 @@ var preset2midi2 = {
 var preset2moorhuni = {
     gameIndex: 1,
     debugVideo: false,
+    showDebug: false,
+    showGame: true,
     testColor: [255, 0, 0],
     gridResolution: 128,
 
@@ -164,6 +170,8 @@ var preset2moorhuni = {
 var preset3pong = {
     gameIndex: 2,
     debugVideo: false,
+    showDebug: false,
+    showGame: true,
     testColor: [255, 0, 0],
     gridResolution: 64,
 
@@ -219,6 +227,8 @@ var preset3pong = {
 var preset4fade = {
     gameIndex: 4,
     debugVideo: false,
+    showDebug: false,
+    showGame: true,
     testColor: [255, 0, 0],
     gridResolution: 64,
 
