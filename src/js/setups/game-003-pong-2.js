@@ -145,12 +145,10 @@ const handler = function (grid) {
         oldPositions [k] = getRectangleFromKnob(knobPositions [k])
         //      console.log('direction is ', direction)
 
-
         if (clampMovementX) {
             // clamp out horizontal movemenbt
             directions[k].x = 0
         }
-
 
         var length = Math.sqrt(directions[k].x * directions[k].x + directions[k].y * directions[k].y)
         if (length > 0) {
@@ -202,22 +200,26 @@ const handler = function (grid) {
 
 function init(data) {
     if (data) {
-        if (data.itemCount) {
+        if (data.itemCount !== undefined) {
             itemCount = data.itemCount
         }
-        if (data.moveSpeed) {
+        if (data.moveSpeed !== undefined) {
             moveSpeed = data.moveSpeed
         }
-        if (data.obstacleSize) {
+        if (data.obstacleSize !== undefined) {
             obstacleSizeX = data.obstacleSize
             obstacleSizeY = data.obstacleSize
         }
 
-        if (data.obstacleSizeX) {
+        if (data.obstacleSizeX !== undefined) {
             obstacleSizeX = data.obstacleSizeX
         }
 
-        if (data.obstacleSizeY) {
+        if (data.clampMovementX !== undefined) {
+            clampMovementX = data.clampMovementX
+        }
+
+        if (data.obstacleSizeY !== undefined) {
             obstacleSizeY = data.obstacleSizeY
         }
     }
