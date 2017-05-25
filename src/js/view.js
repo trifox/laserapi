@@ -94,18 +94,20 @@ function frameHandler() {
 
         MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
 
-        //    gameDebugCorners.handle(canvasColor)
+        gameDebugCorners.handle(canvasColor)
         gameDebugTransform.handle(canvasColor)
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
+
+    if (laserConfig.showDebug) {
+        gameDebug.handle(laserGrid)
+    }
 
     if (laserConfig.showGame) {
 
         games[laserConfig.gameIndex].handle(laserGrid)
     }
-    if (laserConfig.showDebug) {
-        gameDebug.handle(laserGrid)
-    }
+
     setTimeout(frameHandler, 0)
 }
 
@@ -124,6 +126,16 @@ document.onkeydown = function (evt) {
                 //   console.log('doing it ',laserConfig.showDebug )
                 laserConfig.showDebug = !laserConfig.showDebug
                 document.getElementById('showDebug').checked = laserConfig.showDebug
+                break;
+            case 'v':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.debugVideo = !laserConfig.debugVideo
+                document.getElementById('debugVideo').checked = laserConfig.debugVideo
+                break;
+            case 'g':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.showGame = !laserConfig.showGame
+                document.getElementById('debugVideo').showGame = laserConfig.showGame
                 break;
             case 'f':
 
@@ -162,14 +174,19 @@ function fullscreen() {
 
     console.log('fullscreen clicked')
     var elem = document.getElementById("canvas");
+    var canvascontainer = document.getElementById("canvascontainer");
+    var editor = document.getElementById("editor");
     console.log('element is ', elem)
+    editor.style.display = 'none'
     console.log('element is ', elem.getBoundingClientRect())
 
-    laserConfig.canvasResolution.width = screen.width
-    laserConfig.canvasResolution.height = screen.height
+    laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
+    laserConfig.canvasResolution.height = screen.height * document.getElementById('playfieldScale').value
+    canvas.style.left = (screen.width - laserConfig.canvasResolution.width) / 2
+    canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2
     console.log('resolution is clicked', laserConfig.canvasResolution)
-    if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
+    if (canvascontainer.webkitRequestFullscreen) {
+        canvascontainer.webkitRequestFullscreen();
     }
 
     games[laserConfig.gameIndex].init()
@@ -179,14 +196,24 @@ function fullscreenEdit() {
 
     console.log('fullscreenedit clicked')
     var elem = document.body;
+    var canvascontainer = document.getElementById("canvascontainer");
     console.log('element is ', elem)
+    editor.style.display = 'block'
+    var canvas = document.getElementById("canvas");
+    console.log('element is ', elem)
+    console.log('element is ', canvascontainer)
     console.log('element is ', elem.getBoundingClientRect())
 
     // laserConfig.canvasResolution.width = 640
     // laserConfig.canvasResolution.height = 480
+
+    laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
+    laserConfig.canvasResolution.height = screen.height * document.getElementById('playfieldScale').value
+    canvas.style.left = (screen.width - laserConfig.canvasResolution.width) / 2
+    canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2
     console.log('resolution is clicked', laserConfig.canvasResolution)
-    if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
+    if (canvascontainer.webkitRequestFullscreen) {
+        canvascontainer.webkitRequestFullscreen();
     }
 
     games[laserConfig.gameIndex].init()
@@ -301,6 +328,12 @@ function loadHtmlFromSettings(settings) {
 
         document.getElementById('debugVideo').value = settings.debugVideo
         laserConfig.debugVideo = settings.debugVideo
+
+    }
+    if (settings.playfieldScale !== undefined) {
+
+        document.getElementById('playfieldScale').value = settings.playfieldScale
+        laserConfig.debugVideo = settings.playfieldScale
 
     }
     if (settings.showGame !== undefined) {
@@ -474,6 +507,7 @@ function animationHandler() {
     laserConfig.showDebug = document.getElementById('showDebug').checked
     laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.gameIndex = document.getElementById('game-selector').value
+    laserConfig.playfieldScale = document.getElementById('playfieldScale').value
     laserConfig.videoTransform = getTransformOfVideoInput()
 
     laserConfig.testColor[0] = Util.hexToRgb(document.getElementById('lasercolor').value).r
@@ -487,7 +521,6 @@ function animationHandler() {
     saveToLocalStorage()
 
 }
-
 var canvasSize = {
 
     x: 512,
@@ -521,7 +554,11 @@ function updatePresetSelector() {
 document.addEventListener("DOMContentLoaded", function (event) {
     initHTML()
     loadFromLocalStorage();
-    updatePresetSelector()
+    updatePresetSelector()             ;
+    fullscreen()
+    fullscreenEdit()
+
+
 })
 
 export default{}

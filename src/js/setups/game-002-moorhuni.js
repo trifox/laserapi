@@ -7,6 +7,9 @@ var moveSpeed = 250
 var itemCount = 8;
 var itemSize = 200;
 
+function getItemSize() {
+    return itemSize * laserConfig.playfieldScale
+}
 const MODE_LEFTRIGHT = 'leftright'
 const MODE_BOTH = 'both'
 var gameMode = MODE_BOTH
@@ -211,7 +214,7 @@ function init(data) {
         if (data.itemSize !== undefined) {
             itemSize = data.itemSize
         }
- if (data.moveSpeed !== undefined) {
+        if (data.moveSpeed !== undefined) {
             itemSize = data.moveSpeed
         }
 
@@ -232,19 +235,19 @@ function init(data) {
     for (var i = 0; i < teamSize / 2; i++) {
 
         knobPositions.push({
-            width: itemSize,
+            width: getItemSize(),
             left: 100,
             speed: 250,
-            top: 100 + i * (itemSize + 20),
+            top: 100 + i * (getItemSize() + 20),
             color: '#00ff88'
 
         })
 
         knobPositions.push({
-            width: itemSize / 2,
-            left: 100 + itemSize + 20,
+            width: getItemSize() / 2,
+            left: 100 + getItemSize() + 20,
             speed: 350,
-            top: 100 + i * (itemSize + 20) + itemSize / 4,
+            top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
             color: '#00ff88'
 
         })
@@ -253,19 +256,19 @@ function init(data) {
     for (var i = 0; i < teamSize / 2; i++) {
 
         knobPositions.push({
-            width: itemSize,
-            left: laserConfig.canvasResolution.width - 100 - itemSize,
+            width: getItemSize(),
+            left: laserConfig.canvasResolution.width - 100 - getItemSize(),
             speed: 250,
-            top: 100 + i * (itemSize + 20),
+            top: 100 + i * (getItemSize() + 20),
             color: '#0088ff'
 
         })
 
         knobPositions.push({
-            width: itemSize / 2,
-            left: laserConfig.canvasResolution.width - 100 - itemSize - itemSize / 2 - 20,
+            width: getItemSize() / 2,
+            left: laserConfig.canvasResolution.width - 100 - getItemSize() - getItemSize() / 2 - 20,
             speed: 350,
-            top: 100 + i * (itemSize + 20) + itemSize / 4,
+            top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
             color: '#0088ff'
 
         })
