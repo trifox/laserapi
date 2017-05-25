@@ -127,6 +127,16 @@ document.onkeydown = function (evt) {
                 laserConfig.showDebug = !laserConfig.showDebug
                 document.getElementById('showDebug').checked = laserConfig.showDebug
                 break;
+            case 'v':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.debugVideo = !laserConfig.debugVideo
+                document.getElementById('debugVideo').checked = laserConfig.debugVideo
+                break;
+                case 'g':
+                //   console.log('doing it ',laserConfig.showDebug )
+                laserConfig.showGame  = !laserConfig.showGame
+                document.getElementById('debugVideo').showGame  = laserConfig.showGame
+                    break;
             case 'f':
 
                 fullscreen()
