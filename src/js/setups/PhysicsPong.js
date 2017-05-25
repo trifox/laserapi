@@ -279,12 +279,11 @@ export default{
                 obstacleSizeY = data.obstacleSizeY
             }
             if (data.ballSpeed) {
-                obstacleSizeY = data.ballSpeed
+                ballSpeed = data.ballSpeed
             }
         }
         lastTime = performance.now()
-        init2dPhysics(itemCount );
-
+        init2dPhysics(itemCount);
 
         circleBody.position = [laserConfig.canvasResolution.width / 2, laserConfig.canvasResolution.height / 2]
         circleBody.velocity = getRandomBallSpeed()

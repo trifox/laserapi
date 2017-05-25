@@ -162,6 +162,7 @@ function fullscreen() {
 
     console.log('fullscreen clicked')
     var elem = document.getElementById("canvas");
+    var canvascontainer = document.getElementById("canvascontainer");
     console.log('element is ', elem)
     console.log('element is ', elem.getBoundingClientRect())
 
@@ -184,6 +185,9 @@ function fullscreenEdit() {
 
     // laserConfig.canvasResolution.width = 640
     // laserConfig.canvasResolution.height = 480
+
+    laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
+    laserConfig.canvasResolution.height = screen.height  * document.getElementById('playfieldScale')   .value
     console.log('resolution is clicked', laserConfig.canvasResolution)
     if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();

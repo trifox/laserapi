@@ -24,8 +24,6 @@ var preset1midi1 = {
         height: 480
     },
 
-
-
 };
 var preset2midi2 = {
     gameIndex: 0,
@@ -80,8 +78,6 @@ var preset2moorhuni = {
         width: 640,
         height: 480
     },
-
-
 
 };
 var preset3pong = {
@@ -200,7 +196,8 @@ export default [
             itemCount: 2,
             obstacleSizeX: 120,
             obstacleSizeY: 360,
-            moveSpeed: 350
+            moveSpeed: 350,
+            clampMovementX: true
         }
     }, {
         name: 'Pong1',
@@ -208,7 +205,8 @@ export default [
         initData: {
             itemCount: 10,
             obstacleSize: 160,
-            moveSpeed: 250
+            moveSpeed: 250,
+            clampMovementX: false
 
         }
     }
