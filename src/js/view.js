@@ -132,11 +132,11 @@ document.onkeydown = function (evt) {
                 laserConfig.debugVideo = !laserConfig.debugVideo
                 document.getElementById('debugVideo').checked = laserConfig.debugVideo
                 break;
-                case 'g':
+            case 'g':
                 //   console.log('doing it ',laserConfig.showDebug )
-                laserConfig.showGame  = !laserConfig.showGame
-                document.getElementById('debugVideo').showGame  = laserConfig.showGame
-                    break;
+                laserConfig.showGame = !laserConfig.showGame
+                document.getElementById('debugVideo').showGame = laserConfig.showGame
+                break;
             case 'f':
 
                 fullscreen()
@@ -177,7 +177,7 @@ function fullscreen() {
     var canvascontainer = document.getElementById("canvascontainer");
     var editor = document.getElementById("editor");
     console.log('element is ', elem)
-    editor.style.display='none'
+    editor.style.display = 'none'
     console.log('element is ', elem.getBoundingClientRect())
 
     laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
@@ -198,7 +198,7 @@ function fullscreenEdit() {
     var elem = document.body;
     var canvascontainer = document.getElementById("canvascontainer");
     console.log('element is ', elem)
-    editor.style.display='block'
+    editor.style.display = 'block'
     var canvas = document.getElementById("canvas");
     console.log('element is ', elem)
     console.log('element is ', canvascontainer)
@@ -521,7 +521,6 @@ function animationHandler() {
     saveToLocalStorage()
 
 }
-
 var canvasSize = {
 
     x: 512,
@@ -555,7 +554,11 @@ function updatePresetSelector() {
 document.addEventListener("DOMContentLoaded", function (event) {
     initHTML()
     loadFromLocalStorage();
-    updatePresetSelector()
+    updatePresetSelector()             ;
+    fullscreen()
+    fullscreenEdit()
+
+
 })
 
 export default{}
