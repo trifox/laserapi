@@ -287,7 +287,7 @@ export default{
 
         circleBody.position = [laserConfig.canvasResolution.width / 2, laserConfig.canvasResolution.height / 2]
         circleBody.velocity = getRandomBallSpeed()
-        console.log('phiscs is', world)
+     //   console.log('phiscs is', world)
     },
     stop: function () {
         clearInterval(intervalId)

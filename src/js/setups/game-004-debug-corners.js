@@ -32,12 +32,15 @@ function createDiv() {
 const handler = function (laserGrid) {
 
     // paint markers in the corners
-    var size = 25
-    MainCanvas.get2dContext().fillStyle = Util.rgbToHex(laserConfig .testColor[0],laserConfig .testColor[1],laserConfig .testColor[2])
+    var size = 50
+    MainCanvas.get2dContext().fillStyle = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
+    MainCanvas.get2dContext().strokeStyle = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
+    MainCanvas.get2dContext().lineWidth = 20
     MainCanvas.get2dContext().fillRect(0, 0, size, size)
     MainCanvas.get2dContext().fillRect(laserConfig.canvasResolution.width - size, 0, size, size)
-    MainCanvas.get2dContext().fillRect(laserConfig.canvasResolution.width - size, laserConfig.canvasResolution.height - size, size, size)
     MainCanvas.get2dContext().fillRect(0, laserConfig.canvasResolution.height - size, size, size)
+    MainCanvas.get2dContext().fillRect(laserConfig.canvasResolution.width - size, laserConfig.canvasResolution.height - size, size, size)
+    MainCanvas.get2dContext().strokeRect(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height)
     //
     // bottomright.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
     // bottomleft.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])

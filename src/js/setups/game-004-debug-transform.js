@@ -26,6 +26,7 @@ const handler = function (laserGrid) {
 
     // paint markers in the corners
     MainCanvas.get2dContext().fillStyle = '#ffffff'
+    MainCanvas.get2dContext().lineWidth = 1
     var size = 4
     MainCanvas.get2dContext().fillRect(laserConfig.transform.topleft.x * laserConfig.testResolution.width - size / 2, laserConfig.transform.topleft.y * laserConfig.testResolution.height - size / 2, size, size)
     MainCanvas.get2dContext().fillRect(laserConfig.transform.topright.x * laserConfig.testResolution.width - size / 2, laserConfig.transform.topright.y * laserConfig.testResolution.height - size / 2, size, size)

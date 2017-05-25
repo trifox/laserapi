@@ -46,20 +46,20 @@ const getRectangleFromKnob = function (knobEntry) {
     var rect1 = {
 
         topleft: {
-            x: knobEntry.left,
-            y: knobEntry.top,
+            x: knobEntry.left-knobEntry.width/2,
+            y: knobEntry.top-knobEntry.height/2,
         },
         topright: {
-            x: knobEntry.left + knobEntry.width,
-            y: knobEntry.top,
+            x: knobEntry.left + knobEntry.width-knobEntry.width/2,
+            y: knobEntry.top-knobEntry.height/2,
         },
         bottomleft: {
-            x: knobEntry.left,
-            y: knobEntry.top + knobEntry.height,
+            x: knobEntry.left-knobEntry.width/2,
+            y: knobEntry.top + knobEntry.height-knobEntry.height/2,
         },
         bottomright: {
-            x: knobEntry.left + knobEntry.width,
-            y: knobEntry.top + knobEntry.height,
+            x: knobEntry.left + knobEntry.width-knobEntry.width/2,
+            y: knobEntry.top + knobEntry.height-knobEntry.height/2,
         }
     }
     //  console.log('returning ', rect1)
@@ -125,7 +125,7 @@ const handler = function (grid) {
 
                     directions[k].x += getDist(rect1, rect2).x
                     directions[k].y += getDist(rect1, rect2).y
-                    //      console.log('moving ', direction)
+                    console.log('moving ', rect1, rect2, direction)
                 } else {
 
                     //    console.log('not intersectiong ', rect1, rect2)
@@ -274,7 +274,7 @@ export default {
         // update physics positions
         for (var i = 0; i < itemCount; i++) {
             if (PhysicsPong.getObstacle(i)) {
-                console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
+                //  console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
                 PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSizeX / 2, knobPositions[i].top + obstacleSizeX / 2]
                 PhysicsPong.getObstacle(i).color = knobPositions [i].color
             }
