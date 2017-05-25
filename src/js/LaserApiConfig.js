@@ -3,7 +3,7 @@ var config = {
     debugVideo: true,
     testColor: [255, 32, 32],
     gridResolution: 64,
-
+    playfieldScale: 1,
     tickIntervalMilliseconds: 25,
     videoResolution: {
         width: 640,

@@ -94,7 +94,7 @@ function frameHandler() {
 
         MainCanvas.get2dContext().putImageData(canvasColorInterest, laserConfig.testResolution.width, 0);
 
-        //    gameDebugCorners.handle(canvasColor)
+        gameDebugCorners.handle(canvasColor)
         gameDebugTransform.handle(canvasColor)
     }
     var laserGrid = LaserApi.getRectForInputImage(canvasColorInterest)
@@ -165,8 +165,8 @@ function fullscreen() {
     console.log('element is ', elem)
     console.log('element is ', elem.getBoundingClientRect())
 
-    laserConfig.canvasResolution.width = screen.width
-    laserConfig.canvasResolution.height = screen.height
+    laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
+    laserConfig.canvasResolution.height = screen.height  * document.getElementById('playfieldScale')   .value
     console.log('resolution is clicked', laserConfig.canvasResolution)
     if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();
@@ -301,6 +301,12 @@ function loadHtmlFromSettings(settings) {
 
         document.getElementById('debugVideo').value = settings.debugVideo
         laserConfig.debugVideo = settings.debugVideo
+
+    }
+    if (settings.playfieldScale !== undefined) {
+
+        document.getElementById('playfieldScale').value = settings.playfieldScale
+        laserConfig.debugVideo = settings.playfieldScale
 
     }
     if (settings.showGame !== undefined) {
@@ -474,6 +480,7 @@ function animationHandler() {
     laserConfig.showDebug = document.getElementById('showDebug').checked
     laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.gameIndex = document.getElementById('game-selector').value
+    laserConfig.playfieldScale = document.getElementById('playfieldScale').value
     laserConfig.videoTransform = getTransformOfVideoInput()
 
     laserConfig.testColor[0] = Util.hexToRgb(document.getElementById('lasercolor').value).r

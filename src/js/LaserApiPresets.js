@@ -23,35 +23,8 @@ var preset1midi1 = {
         width: 640,
         height: 480
     },
-    treshold: 120,
 
-    videoTransform: {
-        scale: 0,
-        rotate: 0,
-        translate: {
-            x: 0,
-            y: 0.5
-        }
-    },
-    transform: {
-        topleft: {
-            x: 0,
-            y: 0.5
-        },
-        topright: {
-            x: 1,
-            y: 0
-        },
-        bottomleft: {
-            x: 0,
-            y: 1
-        },
-        bottomright: {
-            x: 1,
-            y: 1
-        }
 
-    }
 
 };
 var preset2midi2 = {
@@ -79,35 +52,6 @@ var preset2midi2 = {
         width: 640,
         height: 480
     },
-    treshold: 120,
-
-    videoTransform: {
-        scale: 0,
-        rotate: 0,
-        translate: {
-            x: 0,
-            y: 0.5
-        }
-    },
-    transform: {
-        topleft: {
-            x: 0,
-            y: 0.5
-        },
-        topright: {
-            x: 1,
-            y: 0
-        },
-        bottomleft: {
-            x: 0,
-            y: 1
-        },
-        bottomright: {
-            x: 1,
-            y: 1
-        }
-
-    }
 
 };
 
@@ -136,35 +80,8 @@ var preset2moorhuni = {
         width: 640,
         height: 480
     },
-    treshold: 120,
 
-    videoTransform: {
-        scale: 0,
-        rotate: 0,
-        translate: {
-            x: 0,
-            y: 0.5
-        }
-    },
-    transform: {
-        topleft: {
-            x: 0,
-            y: 0.5
-        },
-        topright: {
-            x: 1,
-            y: 0
-        },
-        bottomleft: {
-            x: 0,
-            y: 1
-        },
-        bottomright: {
-            x: 1,
-            y: 1
-        }
 
-    }
 
 };
 var preset3pong = {
@@ -192,35 +109,6 @@ var preset3pong = {
         width: 640,
         height: 480
     },
-    treshold: 120,
-
-    videoTransform: {
-        scale: 0,
-        rotate: 0,
-        translate: {
-            x: 0,
-            y: 0.5
-        }
-    },
-    transform: {
-        topleft: {
-            x: 0,
-            y: 0.5
-        },
-        topright: {
-            x: 1,
-            y: 0
-        },
-        bottomleft: {
-            x: 0,
-            y: 1
-        },
-        bottomright: {
-            x: 1,
-            y: 1
-        }
-
-    }
 
 };
 
@@ -249,35 +137,6 @@ var preset4fade = {
         width: 640,
         height: 480
     },
-    treshold: 120,
-
-    videoTransform: {
-        scale: 0,
-        rotate: 0,
-        translate: {
-            x: 0,
-            y: 0.5
-        }
-    },
-    transform: {
-        topleft: {
-            x: 0,
-            y: 0.5
-        },
-        topright: {
-            x: 1,
-            y: 0
-        },
-        bottomleft: {
-            x: 0,
-            y: 1
-        },
-        bottomright: {
-            x: 1,
-            y: 1
-        }
-
-    }
 
 };
 
