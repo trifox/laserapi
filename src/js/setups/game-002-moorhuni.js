@@ -306,7 +306,7 @@ function checkOut() {
             }
         }
 
-        if ((i > itemCount / 2) || gameMode === MODE_BOTH) {
+        if ((i >= itemCount / 2) || gameMode === MODE_BOTH) {
             {
                 if (knobPositions [i].left < knobPositions [i].width / 2) {
                     if (!knobPositions[i].dead) {
