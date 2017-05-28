@@ -52,6 +52,8 @@ function skewXY(context, angle1, angle2) {
     context.setTransform(1, Math.tan((angle1 / 180.0) * Math.PI), Math.tan((angle2 / 180.0) * Math.PI), 1, 1, 0, 0);
 }
 
+var lastGameIndex = -1
+
 function frameHandler() {
 
     // console.log('Re Rendering');
@@ -103,6 +105,12 @@ function frameHandler() {
         gameDebug.handle(laserGrid)
     }
 
+    if (lastGameIndex !== laserConfig.gameIndex) {
+
+        if (games[lastGameIndex] && games[lastGameIndex].stop)
+            games[lastGameIndex].stop(laserGrid)
+        lastGameIndex = laserConfig.gameIndex
+    }
     if (laserConfig.showGame) {
 
         games[laserConfig.gameIndex].handle(laserGrid)
@@ -145,6 +153,33 @@ document.onkeydown = function (evt) {
             case 'F':
 
                 fullscreenEdit()
+
+                break;
+            case 's':
+                // make snapshot
+
+                var canvas = document.getElementById('canvas')
+                var snapshotCanvasHtml = document.getElementById('snapshotCanvas')
+                var video = document.getElementById('video')
+                var canvasVideo = document.getElementById('canvasVideo')
+                var context2dVideo = canvasVideo.getContext("2d");
+
+                canvasVideo.width = 1920
+                canvasVideo.height = 1080
+
+                // draw snapshot im,age
+
+                context2dVideo.drawImage(video, 0, 0, 1920, 1080);
+                gameDebugTransform.drawQuad(canvasVideo.width, canvasVideo.height, context2dVideo, laserConfig.transform)
+
+                var snapshotVideoHtml = document.getElementById('snapshotVideo')
+                var snapshotImage = canvas.toDataURL('image/png')
+                snapshotCanvasHtml.src = snapshotImage
+
+                var snapshotVideoImage = canvasVideo.toDataURL('image/png')
+                snapshotVideoHtml.src = snapshotVideoImage
+
+                //     console.log('video image is ', snapshotVideoImage)
 
                 break;
         }

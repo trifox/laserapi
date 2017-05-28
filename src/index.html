@@ -49,7 +49,7 @@
             position: absolute;
         }
 
-        .videocontainer {
+        #videocontainer {
             display: none;
             margin: 0px;
             image-rendering: pixelated;
@@ -60,9 +60,6 @@
             position: absolute;
         }
 
-        .slider[type='range'] {
-            width: 1000px;
-        }
     </style >
 </head >
 
@@ -335,15 +332,24 @@
         </div >
     </form >
 </div >
-<div class="videocontainer"
-     id="videocontainer" >
+<div
+        id="videocontainer" >
     <video id="video"
            width="512"
            height="512" ></video >
 
 </div >
 </div >
+<div id="snapshots" >
 
+    screenshots
+    <img id="snapshotCanvas" />
+    <img id="snapshotVideo" />
+    <canvas id="canvasVideo"
+            style="display:none" />
+
+
+</div >
 
 </body >
 

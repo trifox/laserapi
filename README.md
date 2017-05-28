@@ -18,5 +18,15 @@ https://laser-dev.froso.de/
 ## License
 
 Licensed under MIT
+ 
+ ### Snapshot of Setup
+ 
+ This playfield is controlled via the red laser dot you see in the next image, the turkis area is what the api provides to the LaserApi application interface, as often as possible :)
+             
+![snapshot-playfield](misc/snapshot-playfield.png "Logo Title Text 1") 
+
+here you see the raw video/webcam input the marked ared with the "X" is what is scanned for desired color and then filtered out and normalized to above grid playfield input
+
+![snapshot-video](misc/snapshot-video.png "Logo Title Text 1") 
 
 Copyright (c) 2017 [Christian Kleinhuis](https://github.com/alexanderthurn)   [Alexander Thurn](https://github.com/alexanderthurn)
