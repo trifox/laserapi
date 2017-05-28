@@ -51,7 +51,7 @@ const handler = function (grid) {
 
                 playTones[i % maxSynths] = true
                 if (synths[i % maxSynths]) {
-                //    console.log('trigger',i)
+                    //    console.log('trigger',i)
                     synths[i % maxSynths].triggerAttack(60 + i * 8.7);
                 }
             }
@@ -60,7 +60,7 @@ const handler = function (grid) {
             if (playTones[i % maxSynths]) {
                 playTones[i % maxSynths] = false
                 if (synths[i % maxSynths]) {
-                   // console.log('releasing',i)
+                    // console.log('releasing',i)
                     synths[i % maxSynths].triggerRelease();
                 }
             }
@@ -81,6 +81,11 @@ export default {
     },
     handle: function (grid) {
         handler(grid)
+    },
+    stop: function () {
+
+        // for stopping we just reinit ;-)
+        init()
     }
 
 }
