@@ -50,16 +50,16 @@ const getRectangleFromKnob = function (knobEntry) {
             y: knobEntry.top - knobEntry.height / 2,
         },
         topright: {
-            x: knobEntry.left + knobEntry.width - knobEntry.width / 2,
+            x: knobEntry.left + knobEntry.width,
             y: knobEntry.top - knobEntry.height / 2,
         },
         bottomleft: {
             x: knobEntry.left - knobEntry.width / 2,
-            y: knobEntry.top + knobEntry.height - knobEntry.height / 2,
+            y: knobEntry.top + knobEntry.height ,
         },
         bottomright: {
-            x: knobEntry.left + knobEntry.width - knobEntry.width / 2,
-            y: knobEntry.top + knobEntry.height - knobEntry.height / 2,
+            x: knobEntry.left + knobEntry.width ,
+            y: knobEntry.top + knobEntry.height ,
         }
     }
     //  console.log('returning ', rect1)
