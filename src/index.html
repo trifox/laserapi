@@ -50,6 +50,7 @@
         }
 
         .videocontainer {
+            display: none;
             margin: 0px;
             image-rendering: pixelated;
             right: 0px;
@@ -70,7 +71,8 @@
 <div id="canvascontainer" >
     <canvas id="canvas" ></canvas >
 
-    <form class="w3-container" id="editor" >
+    <form class="w3-container"
+          id="editor" >
         <div class="control " >
 
 
@@ -99,7 +101,7 @@
                     name="option"
                     id="game-selector" >
             </select >
-            <fieldset >
+            <fieldset >-->
                 <label > scalePlafield</label >
                 <input type="range"
                        class="w3-input"
@@ -107,69 +109,70 @@
                        value="1"
                        step="0.000001"
                        min="0"
-                       max="1"
-                >
-                <label > scale</label >
-                <input type="range"
-                       class="w3-input"
-                       id="scaleVideo"
-                       value="1"
-                       step="0.000001"
-                       min="0"
-                       max="10"
-                >
-                <label > rotate</label >
-                <input type="range"
-                       class="w3-input"
-                       id="rotateVideo"
-                       value="0"
-
-                       step="0.000001"
-                       min="0"
-                       max="360"
-                >
-                <label > skewX</label >
-                <input type="range"
-                       class="w3-input"
-                       id="skewX"
-                       value="0"
-
-                       step="0.000001"
-                       min="0"
-                       max="360"
-                >
-                <label > skewY</label >
-                <input type="range"
-                       class="w3-input"
-                       id="skewY"
-                       value="0"
-
-                       step="0.000001"
-                       min="0"
-                       max="360"
-                >
-
-                <label > x</label >
-                <input type="range"
-                       id="translateVideoX"
-                       value="0"
-                       class="w3-input"
-
-                       step="0.000001"
-                       min="-1920"
-                       max="1920"
-                >
-                <label >y</label >
-                <input type="range"
-                       id="translateVideoY"
-                       value="0"
-                       class="w3-input"
-                       step="0.000001"
-
-                       min="-1080"
-                       max="1080"
-                >
+                       max="1" />
             </fieldset >
+            <!--     <!--&gt;-->
+            <!--<label > scale</label >-->
+            <!--<input type="range"-->
+            <!--class="w3-input"-->
+            <!--id="scaleVideo"-->
+            <!--value="1"-->
+            <!--step="0.000001"-->
+            <!--min="0"-->
+            <!--max="10"-->
+            <!--&gt;-->
+            <!--<label > rotate</label >-->
+            <!--<input type="range"-->
+            <!--class="w3-input"-->
+            <!--id="rotateVideo"-->
+            <!--value="0"-->
+
+            <!--step="0.000001"-->
+            <!--min="0"-->
+            <!--max="360"-->
+            <!--&gt;-->
+            <!--<label > skewX</label >-->
+            <!--<input type="range"-->
+            <!--class="w3-input"-->
+            <!--id="skewX"-->
+            <!--value="0"-->
+
+            <!--step="0.000001"-->
+            <!--min="0"-->
+            <!--max="360"-->
+            <!--&gt;-->
+            <!--<label > skewY</label >-->
+            <!--<input type="range"-->
+            <!--class="w3-input"-->
+            <!--id="skewY"-->
+            <!--value="0"-->
+
+            <!--step="0.000001"-->
+            <!--min="0"-->
+            <!--max="360"-->
+            <!--&gt;-->
+
+            <!--<label > x</label >-->
+            <!--<input type="range"-->
+            <!--id="translateVideoX"-->
+            <!--value="0"-->
+            <!--class="w3-input"-->
+
+            <!--step="0.000001"-->
+            <!--min="-1920"-->
+            <!--max="1920"-->
+            <!--&gt;-->
+            <!--<label >y</label >-->
+            <!--<input type="range"-->
+            <!--id="translateVideoY"-->
+            <!--value="0"-->
+            <!--class="w3-input"-->
+            <!--step="0.000001"-->
+
+            <!--min="-1080"-->
+            <!--max="1080"-->
+            <!--&gt;-->
+            <!--</fieldset >-->
             <fieldset >
                 <label > lasercolor </label >
                 <input type="color"
