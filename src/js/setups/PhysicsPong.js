@@ -267,16 +267,16 @@ export default{
                 moveSpeed = data.moveSpeed
             }
             if (data.obstacleSize) {
-                obstacleSizeX = data.obstacleSize
-                obstacleSizeY = data.obstacleSize
+                obstacleSizeX = data.obstacleSize * laserConfig.playfieldScale
+                obstacleSizeY = data.obstacleSize * laserConfig.playfieldScale
             }
 
             if (data.obstacleSizeX) {
-                obstacleSizeX = data.obstacleSizeX
+                obstacleSizeX = data.obstacleSizeX * laserConfig.playfieldScale
             }
 
             if (data.obstacleSizeY) {
-                obstacleSizeY = data.obstacleSizeY
+                obstacleSizeY = data.obstacleSizeY * laserConfig.playfieldScale
             }
             if (data.ballSpeed) {
                 ballSpeed = data.ballSpeed
@@ -287,7 +287,7 @@ export default{
 
         circleBody.position = [laserConfig.canvasResolution.width / 2, laserConfig.canvasResolution.height / 2]
         circleBody.velocity = getRandomBallSpeed()
-     //   console.log('phiscs is', world)
+        //   console.log('phiscs is', world)
     },
     stop: function () {
         clearInterval(intervalId)

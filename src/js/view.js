@@ -19,7 +19,7 @@ var GameWrapper = require('./setups/game-wrapper').default
 var games = [
     new GameWrapper(require('./setups/game-001-play-midi').default),
     new GameWrapper(require('./setups/game-002-moorhuni').default),
-    new GameWrapper(require('./setups/game-003-pong-2').default),
+    new GameWrapper(require('./setups/game-003-pong').default),
     new GameWrapper(require('./setups/game-005-switch').default),
     new GameWrapper(require('./setups/game-006-fade').default)
 ]
