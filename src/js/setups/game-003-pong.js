@@ -46,20 +46,20 @@ const getRectangleFromKnob = function (knobEntry) {
     var rect1 = {
 
         topleft: {
-            x: knobEntry.left - knobEntry.width / 2,
-            y: knobEntry.top - knobEntry.height / 2,
+            x: knobEntry.left,
+            y: knobEntry.top,
         },
         topright: {
             x: knobEntry.left + knobEntry.width,
-            y: knobEntry.top - knobEntry.height / 2,
+            y: knobEntry.top,
         },
         bottomleft: {
-            x: knobEntry.left - knobEntry.width / 2,
-            y: knobEntry.top + knobEntry.height ,
+            x: knobEntry.left,
+            y: knobEntry.top + knobEntry.height,
         },
         bottomright: {
-            x: knobEntry.left + knobEntry.width ,
-            y: knobEntry.top + knobEntry.height ,
+            x: knobEntry.left + knobEntry.width,
+            y: knobEntry.top + knobEntry.height,
         }
     }
     //  console.log('returning ', rect1)
@@ -231,7 +231,7 @@ function init(data) {
             width: obstacleSizeX,
             left: obstacleSizeX,
             height: obstacleSizeY,
-            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
+            top: obstacleSizeY + (i * (obstacleSizeX + 15)),
             color: '#0000ff'
 
         })
@@ -243,7 +243,7 @@ function init(data) {
             height: obstacleSizeY,
             left: laserConfig.canvasResolution.width - (obstacleSizeX * 2),
 
-            top: obstacleSizeY + (i * (obstacleSizeX + 10)),
+            top: obstacleSizeY + (i * (obstacleSizeX + 15)),
             color: '#0000ff'
 
         })
@@ -275,12 +275,13 @@ export default {
         for (var i = 0; i < itemCount; i++) {
             if (PhysicsPong.getObstacle(i)) {
                 //  console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
-                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + obstacleSizeX / 2, knobPositions[i].top + obstacleSizeX / 2]
+                PhysicsPong.getObstacle(i).position = [knobPositions [i].left + knobPositions [i].width / 2, knobPositions[i].top + knobPositions [i].height / 2]
                 PhysicsPong.getObstacle(i).color = knobPositions [i].color
             }
 
         }
         PhysicsPong.step()
+
         // console.log('physics pong is ', PhysicsPong)
         PhysicsPong.render(MasterCanvas.get2dContext())
     }
