@@ -59,7 +59,7 @@ function frameHandler() {
 
     animationHandler();
 
-    var transform = getTransformOfVideoInput()
+    //var transform = getTransformOfVideoInput()
 
     MainCanvas.clear()
     MainCanvas.getCanvas().width = laserConfig.canvasResolution.width
@@ -67,17 +67,17 @@ function frameHandler() {
     MainCanvas.getCanvas().style.width = laserConfig.canvasResolution.width
     MainCanvas.getCanvas().style.height = laserConfig.canvasResolution.height
     MainCanvas.get2dContext().save()
-    skewXY(MainCanvas.get2dContext(), document.getElementById('skewY').value, document.getElementById('skewX').value)
+    //   skewXY(MainCanvas.get2dContext(), document.getElementById('skewY').value, document.getElementById('skewX').value)
     //skewX(MainCanvas.get2dContext(), document.getElementById('skewX').value)
-    MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
-    MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
-    MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
+    //   MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
+    //   MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
+    //   MainCanvas.get2dContext().rotate((transform.rotate / 180.0) * Math.PI)
 
-    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
+    //    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
     //  console.log('Re rotate', transform.rotate);
     MainCanvas.get2dContext().imageSmoothingEnabled = false
 
-    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), -laserConfig.testResolution.width / 2, -laserConfig.testResolution.height / 2, laserConfig.testResolution.width, laserConfig.testResolution.height);
+    MainCanvas.get2dContext().drawImage(CanvasVideo.getVideo(), 0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height);
 
     var canvasColor = MainCanvas.get2dContext().getImageData(0, 0, laserConfig.testResolution.width, laserConfig.testResolution.height); // rgba e [0,255]
 
@@ -133,9 +133,9 @@ document.onkeydown = function (evt) {
                 document.getElementById('debugVideo').checked = laserConfig.debugVideo
                 break;
             case 'g':
-                //   console.log('doing it ',laserConfig.showDebug )
+                console.log('doing it ', laserConfig.showGame)
                 laserConfig.showGame = !laserConfig.showGame
-                document.getElementById('debugVideo').showGame = laserConfig.showGame
+                document.getElementById('showGame').checked = laserConfig.showGame
                 break;
             case 'f':
 
@@ -367,35 +367,36 @@ function loadHtmlFromSettings(settings) {
         laserConfig.gridResolution = settings.gridResolution
 
     }
-    if (settings.videoTransform !== undefined) {
-        if (settings.videoTransform.skew !== undefined) {
+    /*
+     if (settings.videoTransform !== undefined) {
+     if (settings.videoTransform.skew !== undefined) {
 
-            document.getElementById('skewX').value = settings.videoTransform.skew.x
-            laserConfig.videoTransform.skew.x = settings.videoTransform.skew.x
+     document.getElementById('skewX').value = settings.videoTransform.skew.x
+     laserConfig.videoTransform.skew.x = settings.videoTransform.skew.x
 
-        }
-    }
-    if (settings.videoTransform !== undefined && settings.videoTransform.skew !== undefined) {
+     }
+     }
+     if (settings.videoTransform !== undefined && settings.videoTransform.skew !== undefined) {
 
-        document.getElementById('skewY').value = settings.videoTransform.skew.y
-        laserConfig.videoTransform.skew.y = settings.videoTransform.skew.y
+     document.getElementById('skewY').value = settings.videoTransform.skew.y
+     laserConfig.videoTransform.skew.y = settings.videoTransform.skew.y
 
-    }
+     }
 
-    if (settings.videoTransform !== undefined) {
+     if (settings.videoTransform !== undefined) {
 
-        document.getElementById('rotateVideo').value = settings.videoTransform.rotate
-        document.getElementById('scaleVideo').value = settings.videoTransform.scale
-        document.getElementById('translateVideoX').value = settings.videoTransform.translate.x
-        document.getElementById('translateVideoY').value = settings.videoTransform.translate.y
-        laserConfig.videoTransform.rotateVideo = settings.videoTransform.rotateVideo
-        laserConfig.videoTransform.translateVideoX = settings.videoTransform.translateVideoX
-        laserConfig.videoTransform.scaleVideo = settings.videoTransform.scaleVideo
-        laserConfig.videoTransform.translateVideoY = settings.videoTransform.translateVideoY
+     document.getElementById('rotateVideo').value = settings.videoTransform.rotate
+     document.getElementById('scaleVideo').value = settings.videoTransform.scale
+     document.getElementById('translateVideoX').value = settings.videoTransform.translate.x
+     document.getElementById('translateVideoY').value = settings.videoTransform.translate.y
+     laserConfig.videoTransform.rotateVideo = settings.videoTransform.rotateVideo
+     laserConfig.videoTransform.translateVideoX = settings.videoTransform.translateVideoX
+     laserConfig.videoTransform.scaleVideo = settings.videoTransform.scaleVideo
+     laserConfig.videoTransform.translateVideoY = settings.videoTransform.translateVideoY
 
-        setVideoTransform(settings.videoTransform)
-    }
-
+     setVideoTransform(settings.videoTransform)
+     }
+     */
     if (settings.transform !== undefined) {
 
         setCoordinates(settings.transform)
@@ -508,7 +509,7 @@ function animationHandler() {
     laserConfig.showGame = document.getElementById('showGame').checked
     laserConfig.gameIndex = document.getElementById('game-selector').value
     laserConfig.playfieldScale = document.getElementById('playfieldScale').value
-    laserConfig.videoTransform = getTransformOfVideoInput()
+    //  laserConfig.videoTransform = getTransformOfVideoInput()
 
     laserConfig.testColor[0] = Util.hexToRgb(document.getElementById('lasercolor').value).r
     laserConfig.testColor[1] = Util.hexToRgb(document.getElementById('lasercolor').value).g
@@ -517,7 +518,7 @@ function animationHandler() {
     // console.log('config is ', laserConfig)
     //     shader.start()
     //  updateKnobs(laserConfig.transform)
-    setVideoTransform(getTransformOfVideoInput());
+    // setVideoTransform(getTransformOfVideoInput());
     saveToLocalStorage()
 
 }
@@ -554,10 +555,9 @@ function updatePresetSelector() {
 document.addEventListener("DOMContentLoaded", function (event) {
     initHTML()
     loadFromLocalStorage();
-    updatePresetSelector()             ;
+    updatePresetSelector();
     fullscreen()
     fullscreenEdit()
-
 
 })
 
