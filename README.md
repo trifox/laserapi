@@ -1,7 +1,8 @@
 # Laser Api
 
+[Developer Documentation](HOW_TO.md) 
 
-## Short summary
+## summary
 
 Idea is to use laser pointers as input, for that this api provides an output raster that is configured with a laser color and provides information if laser is pointing to that direction. 
 

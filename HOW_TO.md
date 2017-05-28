@@ -9,7 +9,7 @@ This project is meant as platform for applications using laser pointers as input
 
 for retrieving information on the current configuration, mainly the canvas to paint on and the grid resolution and playfield scale may be obtained like this:
 
-     var laserConfig = require('../LaserApiConfig').default
+     var laserConfig = require('LaserApiConfig').default
      
 to get the current gridresolution, be aware that for now the presented grid is rectangular
 
@@ -21,14 +21,13 @@ to get the pixel resolution of the main canvas use:
     laserConfig.canvasResolution.width
     laserConfig.canvasResolution.height
 
-## 2d Canvas to pain
- ![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+## 2d Canvas for paiting
 
 for now brutally obtain the main drawing canvas like this
 
 
     
-    var MainCanvas = require('../MasterCanvas').default
+    var MainCanvas = require('MasterCanvas').default
 
 and obtain canvas like so
 
