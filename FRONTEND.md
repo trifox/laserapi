@@ -2,6 +2,17 @@
 
 this is current frontend roundup documentation
 
+## buttons
+
+### fullscreen
+
+show only the application in fullscreen
+
+### fullscreen edit
+
+show controls visible in fullscreen
+
+     NOTE: use debugVideo checkbox for actually seeing the area of relevance for inputting the other relevant controls
 ## selectboxes
 ### presets
 
