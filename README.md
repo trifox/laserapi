@@ -1,6 +1,8 @@
 # Laser Api
 
-[Developer Documentation](HOW_TO.md) 
+[Developer Documentation](LASER_API.md) 
+
+[Actual frontend usage](FRONTEND.md) 
 
 ## summary
 
