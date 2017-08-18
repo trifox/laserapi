@@ -6,7 +6,7 @@ var lastResolution = -1
 var fadeDuration = 500
 var myGrid = []
 
-var myImage1 = require("../../img/c64_intro_evoke17_000.png");
+var myImage1 = require("../../img/c64_intro_evoke17.png");
 
 var imageObj = new Image();
 imageObj.src = myImage1;

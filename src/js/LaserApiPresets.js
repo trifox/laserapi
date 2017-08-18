@@ -126,32 +126,6 @@ var preset4fade = {
 
 };
 
-var presetC64 = {
-    gameIndex: 5,
-    showGame: true,
-    testColor: [255, 0, 0],
-    gridResolution: 40,
-
-    tickIntervalMilliseconds: 25,
-    videoResolution: {
-        width: 640,
-        height: 480
-    },
-    testResolution: {
-        width: 320,
-        height: 240
-    },
-    canvasResolution: {
-        width: 640,
-        height: 480
-    },
-    canvasOriginalResolution: {
-        width: 640,
-        height: 480
-    },
-
-};
-
 export default [
     {
         name: 'Preset Midi',
@@ -161,7 +135,62 @@ export default [
     }
     , {
         name: 'Preset c64',
-        config: presetC64,
+        config: {
+            gameIndex: 6,
+            showGame: true,
+            testColor: [255, 0, 0],
+            gridResolution: 40,
+
+            tickIntervalMilliseconds: 25,
+            videoResolution: {
+                width: 640,
+                height: 480
+            },
+            testResolution: {
+                width: 320,
+                height: 240
+            },
+            canvasResolution: {
+                width: 640,
+                height: 480
+            },
+            canvasOriginalResolution: {
+                width: 640,
+                height: 480
+            },
+
+        },
+        initData: {
+            fadeDuration: 1000,
+        }
+    }
+    , {
+        name: 'Preset c64 2',
+        config: {
+            gameIndex: 5,
+            showGame: true,
+            testColor: [255, 0, 0],
+            gridResolution: 40,
+
+            tickIntervalMilliseconds: 25,
+            videoResolution: {
+                width: 640,
+                height: 480
+            },
+            testResolution: {
+                width: 320,
+                height: 240
+            },
+            canvasResolution: {
+                width: 640,
+                height: 480
+            },
+            canvasOriginalResolution: {
+                width: 640,
+                height: 480
+            },
+
+        },
         initData: {
             fadeDuration: 1000,
         }
