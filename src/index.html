@@ -13,6 +13,7 @@
     <meta name="viewport"
           content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes" >
     <style >
+
         body {
             margin: 0px;
             height: 100%;
@@ -24,20 +25,29 @@
         }
 
         #canvascontainer {
+
+        }
+
+        .c64 {
+            background-color: #a5a5ff;
+        }
+
+        #canvascontainer {
             height: 100%;
             width: 100%;
 
-            background-color: rgb(0, 0, 0);
-            border: solid lightgreen 4px;
+            background-color: #a5a5ff;
+            border: solid lightgreen 0px;
         }
 
         #canvas {
             overflow: hidden;
             position: absolute;
             margin: 0 auto;
-            border: solid green 4px;
+            border: solid green 0px;
             width: 640px;
             height: 640px;
+            background-color: #000000;
         }
 
         .control {
@@ -348,6 +358,11 @@
     <canvas id="canvasVideo"
             style="display:none" />
 
+
+</div >
+<div id="stuff" >
+
+    <div class="c64" />
 
 </div >
 

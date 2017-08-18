@@ -21,7 +21,8 @@ var games = [
     new GameWrapper(require('./setups/game-002-moorhuni').default),
     new GameWrapper(require('./setups/game-003-pong').default),
     new GameWrapper(require('./setups/game-005-switch').default),
-    new GameWrapper(require('./setups/game-006-fade').default)
+    new GameWrapper(require('./setups/game-006-fade').default),
+    new GameWrapper(require('./setups/game-007-c64').default),
 ]
 console.log('games are', games)
 /* make sure to use https as the web audio api does not like http */
@@ -37,6 +38,7 @@ function startGame(index) {
 function stopGame(index) {
 
     if (games[index].stop) {
+        f
         games[index].stop();
     }
 }
@@ -183,8 +185,6 @@ document.onkeydown = function (evt) {
 
                 break;
         }
-
-        laserConfig
     }
     else {
         document.getElementById('presets-selector').value = evt.key

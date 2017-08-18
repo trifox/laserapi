@@ -11,7 +11,6 @@ Object.keys(intlJSON).map(function (key) {
 });
 intlJSON = intlJSONStringified;
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-
 var isProduction = process.env.NODE_ENV === 'production';
 
 console.log('Building with NODE_ENV', process.env.NODE_ENV, path.join(__dirname, "dist"));
@@ -35,7 +34,13 @@ var config = {
         filename: "bundle.js"
     },
     module: {
-        rules: [
+        rules: [  {
+            test: /\.(jpe?g|png|gif|svg)$/i,
+            loaders: [
+                'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+                'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
+            ]
+        },
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
@@ -43,8 +48,9 @@ var config = {
                     use: "css-loader"
                 })
             }
-        ] ,
+        ],
         loaders: [
+
             {
                 test: /\.html$/,
                 loader: 'ejs-loader'
