@@ -22,8 +22,8 @@ var games = [
     new GameWrapper(require('./setups/game-003-pong').default),
     new GameWrapper(require('./setups/game-005-switch').default),
     new GameWrapper(require('./setups/game-006-fade').default),
-    new GameWrapper(require('./setups/game-007-c64').default),
     new GameWrapper(require('./setups/game-007-c64-evoke17').default),
+    new GameWrapper(require('./setups/game-007-c64').default),
 ]
 console.log('games are', games)
 /* make sure to use https as the web audio api does not like http */
@@ -110,8 +110,9 @@ function frameHandler() {
 
     if (lastGameIndex !== laserConfig.gameIndex) {
 
-        if (games[lastGameIndex] && games[lastGameIndex].stop)
+        if (games[lastGameIndex] && games[lastGameIndex].stop) {
             games[lastGameIndex].stop(laserGrid)
+        }
         lastGameIndex = laserConfig.gameIndex
     }
     if (laserConfig.showGame) {
@@ -129,7 +130,7 @@ if (document.addEventListener) {
     // document.addEventListener('fullscreenchange', exitHandler, false);
 }
 
-document.onkeydown = function (evt) {
+document.onkeydown = function(evt) {
     if (isNaN(evt.key)) {
         console.log(evt.key)
         switch (evt.key) {
@@ -259,7 +260,7 @@ function initHTML() {
 
     document.getElementById('fullscreen_button').onclick = fullscreen
     document.getElementById('fullscreenedit_button').onclick = fullscreenEdit
-    document.getElementById('save-preset-button').onclick = function () {
+    document.getElementById('save-preset-button').onclick = function() {
 
         console.log('saving preset')
 
@@ -271,9 +272,9 @@ function initHTML() {
         }
 
         presets.presets.push({
-            name: document.getElementById('preset-name').value,
-            config: laserConfig
-        })
+                                 name: document.getElementById('preset-name').value,
+                                 config: laserConfig
+                             })
 
         window.localStorage.setItem('laserPresets', JSON.stringify(presets))
     }
@@ -291,13 +292,13 @@ function initHTML() {
 
     }
 
-    document.getElementById('game-selector').onchange = function (evt) {
+    document.getElementById('game-selector').onchange = function(evt) {
 
         laserConfig.gameIndex = evt.target.value
 
     }
 
-    document.getElementById('presets-selector').onchange = function (evt) {
+    document.getElementById('presets-selector').onchange = function(evt) {
         document.getElementById('preset-name').value = presets[evt.target.value].name
         console.log('selector changed', evt.target.value, presets[evt.target.value])
         var preset = presets[evt.target.value]
@@ -441,8 +442,8 @@ function loadHtmlFromSettings(settings) {
 }
 function saveToLocalStorage() {
     var data = JSON.stringify({
-        laserConfig: laserConfig
-    })
+                                  laserConfig: laserConfig
+                              })
     // console.log('Saving to localstorage', data)
     window.localStorage.setItem('laser', data)
 }
@@ -588,7 +589,7 @@ function updatePresetSelector() {
     }
 
 }
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function(event) {
     initHTML()
     loadFromLocalStorage();
     updatePresetSelector();
