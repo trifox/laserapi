@@ -16,7 +16,7 @@ var gameMode = MODE_BOTH
 var center = true
 var lastTime = performance.now();
 
-const isInsideRect = function (rect1, rect2) {
+const isInsideRect = function(rect1, rect2) {
     //   console.log('comparing ', rect1, rect2)
     var p1 = rect1.topleft.x < rect2.topright.x
     var p2 = rect1.topright.x > rect2.topleft.x
@@ -45,7 +45,7 @@ function getDist(rect1, rect2) {
         y: (p1.y - p2.y) / 2
     }
 }
-const getRectangleFromKnob = function (knobEntry) {
+const getRectangleFromKnob = function(knobEntry) {
 
     //   console.log('getting rectangle from knob', knobEntry)
     var rect1 = {
@@ -70,7 +70,7 @@ const getRectangleFromKnob = function (knobEntry) {
     //  console.log('returning ', rect1)
     return rect1
 }
-const handler = function (grid) {
+const handler = function(grid) {
 
     var currentTime = performance.now()
     // rect for test object
@@ -194,7 +194,7 @@ const handler = function (grid) {
         if (!knobPositions [k].dead) {
             MasterCanvas.get2dContext().fillStyle = knobPositions [k].color
 
-            MasterCanvas.get2dContext().lineWidth = 10;
+            MasterCanvas.get2dContext().lineWidth = knobPositions [k].lineWidth;
             MasterCanvas.get2dContext().strokeStyle = knobPositions [k].color
             MasterCanvas.get2dContext().strokeRect(knobPositions [k].left, knobPositions [k].top, knobPositions [k].width, knobPositions [k].width)
 
@@ -235,43 +235,47 @@ function init(data) {
     for (var i = 0; i < teamSize / 2; i++) {
 
         knobPositions.push({
-            width: getItemSize(),
-            left: 100,
-            speed: 250,
-            top: 100 + i * (getItemSize() + 20),
-            color: '#00ff88'
+                               width: getItemSize(),
+                               left: 100,
+                               speed: 250,
+                               top: 100 + i * (getItemSize() + 20),
+                               color: '#00ff88',
+                               lineWidth: 2
 
-        })
+                           })
 
         knobPositions.push({
-            width: getItemSize() / 2,
-            left: 100 + getItemSize() + 20,
-            speed: 350,
-            top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
-            color: '#00ff88'
-
-        })
+                               width: getItemSize() / 2,
+                               left: 100 + getItemSize() + 20,
+                               speed: 350,
+                               top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
+                               color: '#00ff88'
+                               ,
+                               lineWidth: 2
+                           })
 
     }
     for (var i = 0; i < teamSize / 2; i++) {
 
         knobPositions.push({
-            width: getItemSize(),
-            left: laserConfig.canvasResolution.width - 100 - getItemSize(),
-            speed: 250,
-            top: 100 + i * (getItemSize() + 20),
-            color: '#0088ff'
-
-        })
+                               width: getItemSize(),
+                               left: laserConfig.canvasResolution.width - 100 - getItemSize(),
+                               speed: 250,
+                               top: 100 + i * (getItemSize() + 20),
+                               color: '#00ff88'
+                               ,
+                               lineWidth: 1
+                           })
 
         knobPositions.push({
-            width: getItemSize() / 2,
-            left: laserConfig.canvasResolution.width - 100 - getItemSize() - getItemSize() / 2 - 20,
-            speed: 350,
-            top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
-            color: '#0088ff'
-
-        })
+                               width: getItemSize() / 2,
+                               left: laserConfig.canvasResolution.width - 100 - getItemSize() - getItemSize() / 2 - 20,
+                               speed: 350,
+                               top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
+                               color: '#00ff88'
+                               ,
+                               lineWidth: 1
+                           })
 
     }
 
@@ -353,12 +357,12 @@ function checkOut() {
 
 export default {
     name: 'Obstacle Game',
-    init: function (data) {
+    init: function(data) {
         init(data)
 
         console.log('init game moorhuni ', knobPositions)
     },
-    handle: function (grid) {
+    handle: function(grid) {
 
         if (lastResolution != grid.length) {
 
