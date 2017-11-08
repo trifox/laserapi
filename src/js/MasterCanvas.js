@@ -5,7 +5,23 @@ var canvas = null
 var context2d = null
 var context3d = null
 
+
+var imageObj = new Image();
+
+var myImage = require("../img/C64_startup_animiert.gif");
+imageObj.src = myImage;
+
 export default {
+
+    showC64:function(){
+
+            console.log('Loaded C64', laserConfig.canvasResolution.width, laserConfig.canvasResolution.height)
+            context2d.drawImage(imageObj, 0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height);
+
+
+
+    }   ,
+
     clear: function () {
         context2d.beginPath();
         context2d.rect(0, 0, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height);
@@ -29,6 +45,7 @@ export default {
         console.log('Initialising from canvas DOM element', canvas)
         context2d = canvas.getContext("2d");
         context3d = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
 
     },
 

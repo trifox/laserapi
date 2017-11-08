@@ -1,14 +1,24 @@
 var laserConfig = require('../LaserApiConfig.js').default
 var Tone = require('tone')
-var playTones = {}
-
-var synths = []
+var playTones
+var synths
 
 var lastResolution = -1
 const maxSynths = 16
-function init(count) {
 
-    if (synths.length) {
+function init(count = maxSynths) {
+
+    if (!synths) {
+        synths = []
+        playTones = []
+        for (var i = 0; i < count; i++) {
+
+            synths.push(new Tone.Synth().toMaster());
+            playTones[i] = false
+        }
+    }
+    if (
+        synths.length) {
 
         for (var i = 0; i < synths.length; i++) {
             if (synths[i]) {
@@ -19,14 +29,6 @@ function init(count) {
 
     }
 
-    synths = []
-    playTones = []
-
-    for (var i = 0; i < count; i++) {
-
-        synths.push(new Tone.Synth().toMaster());
-        playTones[i] = false
-    }
 }
 
 const handler = function (grid) {
@@ -76,7 +78,7 @@ export default {
     name: 'MIDI',
     init: function () {
 
-        init()
+        init(maxSynths)
 
     },
     handle: function (grid) {
@@ -85,7 +87,7 @@ export default {
     stop: function () {
 
         // for stopping we just reinit ;-)
-        init()
+        init(maxSynths)
     }
 
 }

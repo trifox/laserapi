@@ -78,7 +78,7 @@ function getColorString2(position) {
 
     var colors = [
         green,
-      turkis,
+        turkis,
         black,
         black,
         // turkis,
@@ -92,7 +92,7 @@ function getColorString2(position) {
 
     var index1 = Math.floor(position * (colors.length - 2))
     var index2 = Math.floor(position * (colors.length - 2)) + 1
- // console.log('lerping colors', position, colors, index1, index2)
+    // console.log('lerping colors', position, colors, index1, index2)
     var lerpresult = LaserApi.lerp3d(colors[index1], colors[index2], (position - (index1 * 1 / (colors.length - 2))) * (colors.length - 2))
     return getColorString(lerpresult.x, lerpresult.y, lerpresult.z)
 
@@ -120,7 +120,7 @@ const handler = function (laserGrid) {
 
                 myGrid[gIndex].active = currentDate - myGrid[gIndex].time < fadeDuration
                 // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
-            //    console.log('diff is ', currentDate, myGrid[gIndex].time, currentDate - myGrid[gIndex].time)
+                //    console.log('diff is ', currentDate, myGrid[gIndex].time, currentDate - myGrid[gIndex].time)
                 //    MainCanvas.get2dContext().fillStyle = getColorString(0, 255 - ((currentDate - myGrid[gIndex].time) / fadeDuration) * 255, 0, 255)
                 MainCanvas.get2dContext().fillStyle = getColorString2(((currentDate - myGrid[gIndex].time) / fadeDuration))
                 // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
@@ -139,11 +139,13 @@ const handler = function (laserGrid) {
             }
         }
     }
+
 }
 
 export default {
     name: 'Fade',
     init: function (data) {
+
         if (data) {
             if (data.fadeDuration) {
                 fadeDuration = data.fadeDuration
