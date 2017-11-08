@@ -21,7 +21,9 @@ var games = [
     new GameWrapper(require('./setups/game-002-moorhuni').default),
     new GameWrapper(require('./setups/game-003-pong').default),
     new GameWrapper(require('./setups/game-005-switch').default),
-    new GameWrapper(require('./setups/game-006-fade').default)
+    new GameWrapper(require('./setups/game-006-fade').default),
+    new GameWrapper(require('./setups/game-007-c64-evoke17').default),
+    new GameWrapper(require('./setups/game-007-c64').default),
 ]
 console.log('games are', games)
 /* make sure to use https as the web audio api does not like http */
@@ -37,6 +39,7 @@ function startGame(index) {
 function stopGame(index) {
 
     if (games[index].stop) {
+        f
         games[index].stop();
     }
 }
@@ -107,8 +110,9 @@ function frameHandler() {
 
     if (lastGameIndex !== laserConfig.gameIndex) {
 
-        if (games[lastGameIndex] && games[lastGameIndex].stop)
+        if (games[lastGameIndex] && games[lastGameIndex].stop) {
             games[lastGameIndex].stop(laserGrid)
+        }
         lastGameIndex = laserConfig.gameIndex
     }
     if (laserConfig.showGame) {
@@ -126,7 +130,7 @@ if (document.addEventListener) {
     // document.addEventListener('fullscreenchange', exitHandler, false);
 }
 
-document.onkeydown = function (evt) {
+document.onkeydown = function(evt) {
     if (isNaN(evt.key)) {
         console.log(evt.key)
         switch (evt.key) {
@@ -183,8 +187,6 @@ document.onkeydown = function (evt) {
 
                 break;
         }
-
-        laserConfig
     }
     else {
         document.getElementById('presets-selector').value = evt.key
@@ -213,6 +215,7 @@ function fullscreen() {
     var editor = document.getElementById("editor");
     console.log('element is ', elem)
     editor.style.display = 'none'
+
     console.log('element is ', elem.getBoundingClientRect())
 
     laserConfig.canvasResolution.width = screen.width * document.getElementById('playfieldScale').value
@@ -231,9 +234,11 @@ function fullscreenEdit() {
 
     console.log('fullscreenedit clicked')
     var elem = document.body;
+    var editor = document.getElementById("editor");
     var canvascontainer = document.getElementById("canvascontainer");
     console.log('element is ', elem)
     editor.style.display = 'block'
+
     var canvas = document.getElementById("canvas");
     console.log('element is ', elem)
     console.log('element is ', canvascontainer)
@@ -258,7 +263,7 @@ function initHTML() {
 
     document.getElementById('fullscreen_button').onclick = fullscreen
     document.getElementById('fullscreenedit_button').onclick = fullscreenEdit
-    document.getElementById('save-preset-button').onclick = function () {
+    document.getElementById('save-preset-button').onclick = function() {
 
         console.log('saving preset')
 
@@ -270,9 +275,9 @@ function initHTML() {
         }
 
         presets.presets.push({
-            name: document.getElementById('preset-name').value,
-            config: laserConfig
-        })
+                                 name: document.getElementById('preset-name').value,
+                                 config: laserConfig
+                             })
 
         window.localStorage.setItem('laserPresets', JSON.stringify(presets))
     }
@@ -290,13 +295,13 @@ function initHTML() {
 
     }
 
-    document.getElementById('game-selector').onchange = function (evt) {
+    document.getElementById('game-selector').onchange = function(evt) {
 
         laserConfig.gameIndex = evt.target.value
 
     }
 
-    document.getElementById('presets-selector').onchange = function (evt) {
+    document.getElementById('presets-selector').onchange = function(evt) {
         document.getElementById('preset-name').value = presets[evt.target.value].name
         console.log('selector changed', evt.target.value, presets[evt.target.value])
         var preset = presets[evt.target.value]
@@ -440,8 +445,8 @@ function loadHtmlFromSettings(settings) {
 }
 function saveToLocalStorage() {
     var data = JSON.stringify({
-        laserConfig: laserConfig
-    })
+                                  laserConfig: laserConfig
+                              })
     // console.log('Saving to localstorage', data)
     window.localStorage.setItem('laser', data)
 }
@@ -587,7 +592,7 @@ function updatePresetSelector() {
     }
 
 }
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function(event) {
     initHTML()
     loadFromLocalStorage();
     updatePresetSelector();

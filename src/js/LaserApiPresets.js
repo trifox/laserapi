@@ -104,7 +104,7 @@ var preset4fade = {
     gameIndex: 4,
     showGame: true,
     testColor: [255, 0, 0],
-    gridResolution: 64,
+    gridResolution: 40,
 
     tickIntervalMilliseconds: 25,
     videoResolution: {
@@ -132,10 +132,68 @@ export default [
         config: preset1midi1,
         initData: {}
 
-    }, {
-        name: 'Preset Midi2',
-        config: preset2midi2,
-        initData: {}
+    }
+    , {
+        name: 'Preset c64',
+        config: {
+            gameIndex: 6,
+            showGame: true,
+            testColor: [255, 0, 0],
+            gridResolution: 40,
+
+            tickIntervalMilliseconds: 25,
+            videoResolution: {
+                width: 640,
+                height: 480
+            },
+            testResolution: {
+                width: 320,
+                height: 240
+            },
+            canvasResolution: {
+                width: 640,
+                height: 480
+            },
+            canvasOriginalResolution: {
+                width: 640,
+                height: 480
+            },
+
+        },
+        initData: {
+            fadeDuration: 1000,
+        }
+    }
+    , {
+        name: 'Preset c64 2',
+        config: {
+            gameIndex: 5,
+            showGame: true,
+            testColor: [255, 0, 0],
+            gridResolution: 40,
+
+            tickIntervalMilliseconds: 25,
+            videoResolution: {
+                width: 640,
+                height: 480
+            },
+            testResolution: {
+                width: 320,
+                height: 240
+            },
+            canvasResolution: {
+                width: 640,
+                height: 480
+            },
+            canvasOriginalResolution: {
+                width: 640,
+                height: 480
+            },
+
+        },
+        initData: {
+            fadeDuration: 1000,
+        }
     }
     , {
         name: 'Preset Fade1sec',
@@ -144,13 +202,18 @@ export default [
             fadeDuration: 1000,
         }
     }
-    , {
-        name: 'Preset Fade10Sec',
-        config: preset4fade,
-        initData: {
-            fadeDuration: 10000,
-        }
-    }
+    // , {
+    //     name: 'Preset Midi2',
+    //     config: preset2midi2,
+    //     initData: {}
+    // }
+    // , {
+    //     name: 'Preset Fade10Sec',
+    //     config: preset4fade,
+    //     initData: {
+    //         fadeDuration: 10000,
+    //     }
+    // }
 
     , {
         name: 'Moorhuni One Block',
@@ -161,16 +224,20 @@ export default [
             itemCount: 1,
             itemSize: 500
         }
-    }, {
-        name: 'Moorhuni 2 Just Two',
-        config: preset2moorhuni,
-        initData: {
-            center: false,
-            gameMode: 'leftright',
-            itemCount: 4,
-            itemSize: 200
-        }
-    }, {
+    }
+    ,
+    // {
+    //     name: 'Moorhuni 2 Just Two',
+    //     config: preset2moorhuni,
+    //     initData: {
+    //         center: false,
+    //         gameMode: 'leftright',
+    //         itemCount: 4,
+    //         itemSize: 200
+    //     }
+    // },
+
+    {
         name: 'Moorhuni 8 Blocks',
         config: preset2moorhuni,
         initData: {

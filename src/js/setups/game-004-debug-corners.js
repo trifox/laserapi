@@ -32,7 +32,7 @@ function createDiv() {
 const handler = function (laserGrid) {
 
     // paint markers in the corners
-    var size = 50
+    var size = 75
     MainCanvas.get2dContext().fillStyle = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
     MainCanvas.get2dContext().strokeStyle = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
     MainCanvas.get2dContext().lineWidth = 20
