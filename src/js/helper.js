@@ -1,43 +1,42 @@
 function getCursorPosition(canvas, event) {
-    var rect = canvas.getBoundingClientRect()
-    return {x: event.clientX - rect.left, y: event.clientY - rect.top}
+  var rect = canvas.getBoundingClientRect();
+  return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
 function getAverageValue(array) {
-    var values = 0
-    var average
+  var values = 0;
+  var average;
 
-    var length = array.length
+  var length = array.length;
 
-    for (var i = 0; i < length; i++) {
-        values += array[i]
-    }
+  for (var i = 0; i < length; i++) {
+    values += array[i];
+  }
 
-    average = values / length
-    return average
+  average = values / length;
+  return average;
 }
 
-
 function getUserMedia() {
-    return ( navigator.getUserMedia ||
+  return (
+    navigator.getUserMedia ||
     navigator.webkitGetUserMedia ||
     navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia)
-
-
+    navigator.msGetUserMedia
+  );
 }
 
 function getAudioContext() {
-    return ( window.AudioContext ||
+  return (
+    window.AudioContext ||
     window.webkitAudioContext ||
     window.mozAudioContext ||
-    window.msAudioContext)
+    window.msAudioContext
+  );
 }
 module.exports = {
-    getCursorPosition: getCursorPosition,
-    getAverageValue: getAverageValue,
-    getUserMedia: getUserMedia,
-    getAudioContext: getAudioContext
-}
-
-
+  getCursorPosition: getCursorPosition,
+  getAverageValue: getAverageValue,
+  getUserMedia: getUserMedia,
+  getAudioContext: getAudioContext,
+};

@@ -13,7 +13,9 @@ show only the application in fullscreen
 show controls visible in fullscreen
 
      NOTE: use debugVideo checkbox for actually seeing the area of relevance for inputting the other relevant controls
+
 ## selectboxes
+
 ### presets
 
 choose from hard coded presets taken from LaserApiPresets.js
@@ -39,31 +41,47 @@ allowed tolerance for being considered as valid after doing vector distance of c
 ### gridresolution
 
 internal grid resolution, really because to just have one slider for thisa its rectangular
-       
+
 ### checkboxes
 
 #### debugVideo
+
 show input video and filtered for valid color
+
 #### showGame
+
 shows current application
+
 #### showDebug
 
 shows internal raster
-       
+
 ### topleftx
+
 guesswhat
+
 ### toplefty
+
 guesswhat
+
 ### toprightx
+
 guesswhat
+
 ### toprighty
+
 ### bottomleftx
+
 guesswhat
+
 ### bottomlefty
+
 guesswhat
+
 ### bottomrightx
 
 guesswhat
+
 ### bottomrighty
 
 guesswhat
@@ -76,7 +94,7 @@ goes fullscreen of main raster
 
 ### SHIFT-f
 
-goes fullscreen with all input controls accessible 
+goes fullscreen with all input controls accessible
 
     HINT: ONLY IN THIS MODE THE CONFIGURATION CAN BE DONE!
 
@@ -88,10 +106,9 @@ loads hard coded preset
 
 shows the internal result raster
 
-### g - game 
+### g - game
 
 shows the actual application
-
 
 ### v - show input video and filtered by lasercolor
 
@@ -101,4 +118,4 @@ shows the actual application
 
 Licensed under MIT
 
-Copyright (c) 2017 [Christian Kleinhuis](https://github.com/alexanderthurn)   [Alexander Thurn](https://github.com/alexanderthurn)
+Copyright (c) 2017 [Christian Kleinhuis](https://github.com/alexanderthurn) [Alexander Thurn](https://github.com/alexanderthurn)

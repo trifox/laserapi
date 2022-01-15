@@ -1,2 +1,1 @@
-
-console.log('game starting')
+console.log("game starting");

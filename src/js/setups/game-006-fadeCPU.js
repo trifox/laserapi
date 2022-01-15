@@ -2,9 +2,6 @@ var laserConfig = require("../LaserApiConfig").default;
 var LaserApi = require("../LaserApi").default;
 var MainCanvas = require("../MasterCanvas").default;
 
-var GPU = require("gpu.js").GPU;
-
-const gpu = new GPU();
 var lastResolution = -1;
 var fadeDuration = 1500;
 var myGrid = [];
@@ -142,7 +139,7 @@ const handler = function (laserGrid) {
 };
 
 export default {
-  name: "FadeGPU",
+  name: "Fadexxx",
   init: function (data) {
     if (data) {
       if (data.fadeDuration) {

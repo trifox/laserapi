@@ -1,41 +1,38 @@
 class GameWapper {
+  constructor(gameIn) {
+    this.game = gameIn;
+  }
 
-    constructor(gameIn) {
-        this.game = gameIn
-
+  getName() {
+    console.log("this is ", this);
+    if (this.game.getName) {
+      return this.game.getName();
     }
 
-    getName() {
-        console.log('this is ', this)
-        if (this.game.getName ) {
-            return this.game.getName()
-        }
-
-        if (this.game.name) {
-            return this.game.name
-        }
-
-        return 'defaultName'
+    if (this.game.name) {
+      return this.game.name;
     }
 
-    init(data) {
-        if (this.game.init) {
-            this.game.init(data)
-        }
-    }
+    return "defaultName";
+  }
 
-    stop() {
-        if (this.game.stop) {
-            this.game.stop()
-        }
+  init(data) {
+    if (this.game.init) {
+      this.game.init(data);
     }
+  }
 
-    handle(grid) {
-        if (this.game.handle) {
-            this.game.handle(grid)
-        }
+  stop() {
+    if (this.game.stop) {
+      this.game.stop();
     }
+  }
 
+  handle(grid) {
+    if (this.game.handle) {
+      this.game.handle(grid);
+    }
+  }
 }
 
-export default  GameWapper
+export default GameWapper;
