@@ -46,6 +46,8 @@
   },
   "dependencies": {
     "css-loader": "^0.28",
+    "cubic-hermite": "^1.0.0",
+    "easing": "^1.2.1",
     "extract-text-webpack-plugin": "^2",
     "gl-now": "^1",
     "gl-shader": "^4",

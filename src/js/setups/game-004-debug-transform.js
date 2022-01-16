@@ -1,6 +1,11 @@
 var laserConfig = require("../LaserApiConfig").default;
+
+var hermite = require("cubic-hermite");
 var MainCanvas = require("../MasterCanvas").default;
 
+function lerp(v0, v1, t) {
+  return (1 - t) * v0 + t * v1;
+}
 var lastResolution = -1;
 function drawLineNormalized(areaWidth, areaHeight, context, p1, p2, color) {
   drawLine(
@@ -13,8 +18,42 @@ function drawLineNormalized(areaWidth, areaHeight, context, p1, p2, color) {
       x: p2.x * areaWidth,
       y: p2.y * areaHeight,
     },
-    "#00ffff"
+    color
   );
+}
+function drawLineNormalizedExtended(
+  areaWidth,
+  areaHeight,
+  context,
+  p1,
+  p2,
+  color,
+  sl1 = 1,
+  sl2 = 1
+) {
+  drawLineNormalized(areaWidth, areaHeight, context, p1, p2, color);
+  // make funny dots along line
+  // console.log("HERMITE SLOPES ARE", sl1, sl2);
+  for (var i = 0; i < 10; i++) {
+    var size = 8;
+    context.strokeRect(
+      lerp(
+        p1.x * areaWidth,
+        p2.x * areaWidth,
+        hermite(0, sl1, 1, sl2, i / 10)
+      ) -
+        size / 2,
+      lerp(
+        p1.y * areaHeight,
+        p2.y * areaHeight,
+        hermite(0, sl1, 1, sl2, i / 10)
+      ) -
+        size / 2,
+
+      size,
+      size
+    );
+  }
 }
 function drawLine(context, p1, p2, color) {
   context.strokeStyle = color;
@@ -26,35 +65,50 @@ function drawLine(context, p1, p2, color) {
 
 function drawQuad(areaWidth, areaHeight, context, transform) {
   MainCanvas.get2dContext().fillStyle = "#ffffff";
-  MainCanvas.get2dContext().lineWidth = 2;
-  drawLineNormalized(
+  // console.log("drawing transform ", transform);
+  drawLineNormalizedExtended(
     areaWidth,
     areaHeight,
     context,
     transform.topleft,
-    transform.topright
+    transform.topright,
+    "#00ffff",
+    transform.topleft.slopex * 2,
+    transform.topright.slopex * 2
   );
-  drawLineNormalized(
+  drawLineNormalizedExtended(
     areaWidth,
     areaHeight,
     context,
     transform.topleft,
-    transform.bottomleft
+    transform.bottomleft,
+    "#00ffff",
+    transform.topleft.slopey * 2,
+    transform.bottomleft.slopey * 2
   );
-  drawLineNormalized(
+  drawLineNormalizedExtended(
     areaWidth,
     areaHeight,
     context,
     transform.bottomleft,
-    transform.bottomright
+    transform.bottomright,
+    "#00ffff",
+    transform.bottomleft.slopex * 2,
+    transform.bottomright.slopex * 2
   );
-  drawLineNormalized(
+  drawLineNormalizedExtended(
     areaWidth,
     areaHeight,
     context,
     transform.bottomright,
-    transform.topright
+    transform.topright,
+    "#00ffff",
+    transform.bottomright.slopey * 2,
+    transform.topright.slopey * 2
   );
+  //
+  // diagonal lines following
+  // ...
   drawLineNormalized(
     areaWidth,
     areaHeight,
@@ -74,9 +128,10 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
 const handler = function (laserGrid) {
   // paint markers in the corners
   MainCanvas.get2dContext().fillStyle = "#ffffff";
-  MainCanvas.get2dContext().lineWidth = 1;
-  var size = 4;
-  MainCanvas.get2dContext().fillRect(
+  MainCanvas.get2dContext().strokeStyle = "#ffffff";
+  MainCanvas.get2dContext().lineWidth = 1.25;
+  var size = 8;
+  MainCanvas.get2dContext().strokeRect(
     laserConfig.transform.topleft.x * laserConfig.testResolution.width -
       size / 2,
     laserConfig.transform.topleft.y * laserConfig.testResolution.height -
@@ -84,7 +139,8 @@ const handler = function (laserGrid) {
     size,
     size
   );
-  MainCanvas.get2dContext().fillRect(
+
+  MainCanvas.get2dContext().strokeRect(
     laserConfig.transform.topright.x * laserConfig.testResolution.width -
       size / 2,
     laserConfig.transform.topright.y * laserConfig.testResolution.height -
@@ -92,7 +148,7 @@ const handler = function (laserGrid) {
     size,
     size
   );
-  MainCanvas.get2dContext().fillRect(
+  MainCanvas.get2dContext().strokeRect(
     laserConfig.transform.bottomleft.x * laserConfig.testResolution.width -
       size / 2,
     laserConfig.transform.bottomleft.y * laserConfig.testResolution.height -
@@ -100,7 +156,7 @@ const handler = function (laserGrid) {
     size,
     size
   );
-  MainCanvas.get2dContext().fillRect(
+  MainCanvas.get2dContext().strokeRect(
     laserConfig.transform.bottomright.x * laserConfig.testResolution.width -
       size / 2,
     laserConfig.transform.bottomright.y * laserConfig.testResolution.height -
@@ -110,8 +166,8 @@ const handler = function (laserGrid) {
   );
 
   drawQuad(
-    laserConfig.testResolution.width,
-    laserConfig.testResolution.height,
+    laserConfig.videoResolution.width,
+    laserConfig.videoResolution.height,
     MainCanvas.get2dContext(),
     laserConfig.transform
   );

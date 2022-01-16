@@ -2,7 +2,9 @@
   <head>
     <title><%= INTL_TITLE %></title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="./styles.css" />
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <!-- <link rel="stylesheet" href="./styles.css" />  -->
     <meta
       id="meta-description"
       name="description"
@@ -23,7 +25,8 @@
         color: white;
       }
 
-      #canvascontainer {
+      #editor2 {
+        background-color: rgb(78, 67, 0) !important;
       }
 
       .c64 {
@@ -34,8 +37,8 @@
         height: 100%;
         width: 100%;
 
-        background-color: #6c5eb5;
-        border: solid lightgreen 0px;
+        background-color: #0000bb;
+        border: solid gold 10px;
       }
 
       #canvas {
@@ -43,13 +46,14 @@
         position: absolute;
         margin: 0 auto;
         border: solid green 0px;
-        width: 640px;
-        height: 640px;
+        width: 1920px;
+        height: 1080px;
         background-color: #000000;
       }
 
       .control {
-        width: 100%;
+        width: 50%;
+        left: 25%;
         bottom: 0px;
         z-index: 10000;
         overflow: scroll;
@@ -75,7 +79,13 @@
       <canvas id="canvas"></canvas>
 
       <form class="w3-container" id="editor">
-        <div class="control">
+        <div class="control" id="editor2">
+          <p>
+            General Usage Shortcuts: key "d" - debug mode switch key "v" - video
+            edit mode switch key "g" - game mode switch key "f" - fullscreen
+            switch
+          </p>
+
           <select class="w3-select" name="option" id="presets-selector">
             <option value="" disabled selected>Select Preset</option>
           </select>
@@ -98,7 +108,6 @@
           <label>game</label>
           <select class="w3-select" name="option" id="game-selector"></select>
           <fieldset>
-            -->
             <label> scalePlafield</label>
             <input
               type="range"
@@ -181,11 +190,11 @@
               value="#ff6666"
             />
 
-            <label>treshold </label>
+            <label>threshold </label>
             <input
               type="range"
               class="w3-input"
-              id="treshold"
+              id="threshold"
               min="0"
               max="255"
               value="100"
@@ -210,6 +219,10 @@
 
             <label>showDebug</label>
             <input type="checkbox" id="showDebug" class="w3-check" />
+            <label>showMapping</label>
+            <input type="checkbox" id="showMapping" class="w3-check" />
+            <label>showGrid</label>
+            <input type="checkbox" id="showGrid" class="w3-check" />
           </fieldset>
 
           <fieldset style="display: grid; grid-template-columns: 1fr 1fr">
@@ -231,6 +244,30 @@
                 type="range"
                 class="w3-input"
                 id="topleft_y"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope topleftx </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopetopleft_x"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope toplefty </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopetopleft_y"
                 min="0"
                 step="0.00001"
                 max="10000"
@@ -261,6 +298,30 @@
                 value="0"
               />
             </div>
+            <div class="w3-blue-grey">
+              <label>slope toprightx </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopetopright_x"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope toprighty </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopetopright_y"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
             <div>
               <label>bottomleftx </label>
               <input
@@ -285,6 +346,30 @@
                 value="0"
               />
             </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomleftx </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopebottomleft_x"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomlefty </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopebottomleft_y"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
             <div>
               <label>bottomrightx </label>
               <input
@@ -303,6 +388,30 @@
                 type="range"
                 class="w3-input"
                 id="bottomright_y"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomrightx </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopebottomright_x"
+                min="0"
+                step="0.00001"
+                max="10000"
+                value="0"
+              />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomrighty </label>
+              <input
+                type="range"
+                class="w3-input"
+                id="slopebottomright_y"
                 min="0"
                 step="0.00001"
                 max="10000"

@@ -5,12 +5,30 @@
  * YES I KNOW THIS CAN NOT USED WITH STATIC REFERENCES< IT WILL CONTINUE PROVIDING BETTER API INSTANCING FUNCTIONALITY IN FUTURE
  *
  */
-
+var hermite = require("cubic-hermite");
 var helper = require("./helper.js");
 var GPU = require("gpu.js").GPU;
 
 const gpu = new GPU();
-
+gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
+  var ti = t - 1,
+    t2 = t * t,
+    ti2 = ti * ti,
+    h00 = (1 + 2 * t) * ti2,
+    h10 = t * ti2,
+    h01 = t2 * (3 - 2 * t),
+    h11 = t2 * ti;
+  //   if(p0.length) {
+  //     if(!f) {
+  //       f = new Array(p0.length)
+  //     }
+  //     for(var i=p0.length-1; i>=0; --i) {
+  //       f[i] = h00*p0[i] + h10*v0[i] + h01*p1[i] + h11*v1[i]
+  //     }
+  //     return f
+  //   }
+  return h00 * p0 + h10 * v0 + h01 * p1 + h11 * v1;
+});
 gpu.addFunction(
   function getColorDistance(col1, col2) {
     var diff = [col1[0] - col2[0], col1[1] - col2[1], col1[2] - col2[2]];
@@ -25,6 +43,9 @@ gpu.addFunction(
   { argumentTypes: { col1: "Array(3)", col2: "Array(3)" } }
 );
 
+gpu.addFunction(function lerpSin(v0, v1, t) {
+  return lerp(v0, v1, 1 - (Math.cos(t * Math.PI) * 0.5 + 0.5));
+});
 gpu.addFunction(
   function lerp(v0, v1, t) {
     return (1 - t) * v0 + t * v1;
@@ -37,6 +58,12 @@ gpu.addFunction(
 gpu.addFunction(
   function lerp2d(v0, v1, t) {
     return [lerp(v0[0], v1[0], t), lerp(v0[1], v1[1], t)];
+  },
+  function lerp2dHermite(v0, v0s, v1, v1s, t) {
+    return [
+      lerp(v0[0], v1[0], hermite(0, v0s, 1, v1s)),
+      lerp(v0[1], v1[1], hermite(0, v0s, 1, v1s)),
+    ];
   },
   {
     argumentTypes: { v0: "Array(2)", v1: "Array(2)", t: "Number" },
@@ -53,19 +80,67 @@ gpu.addFunction(
   ) {
     // find p[ositions on x axises top and bottom
     // mapping is 2d array in order topleft,topright, bottomleft,bottomright
-    var tx1 = lerp2d(mapTopLeft, mapTopRight, coord[0]);
-    var tx2 = lerp2d(mapBottomLeft, mapBottomRight, coord[0]);
-    var result = lerp2d(tx1, tx2, coord[1]);
+    // var tx1 = lerp2d(mapTopLeft, mapTopRight, coord[0]);
+    // var tx2 = lerp2d(mapBottomLeft, mapBottomRight, coord[0]);
+    // var result = lerp2d(tx1, tx2, coord[1]);
+
+    var hermite1TopLeftRight = cubicHermite(
+      0,
+      mapTopLeft[2],
+      1,
+      mapTopRight[2],
+      coord[0]
+    );
+    var hermite2BottomLeftRight = cubicHermite(
+      0,
+      mapBottomLeft[2],
+      1,
+      mapBottomRight[2],
+      coord[0]
+    );
+    var hermite3 = cubicHermite(
+      0,
+      mapTopLeft[3],
+      1,
+      mapBottomLeft[3],
+      coord[1]
+    );
+    var hermite4 = cubicHermite(
+      0,
+      mapTopRight[3],
+      1,
+      mapBottomRight[3],
+      coord[1]
+    );
+    var tx1 = lerp2d(
+      [mapTopLeft[0], mapTopLeft[1]],
+      [mapTopRight[0], mapTopRight[1]],
+      hermite1TopLeftRight
+    );
+    var tx2 = lerp2d(
+      [mapBottomLeft[0], mapBottomLeft[1]],
+      [mapBottomRight[0], mapBottomRight[1]],
+      hermite2BottomLeftRight
+    );
+    var result = lerp2d(
+      tx1,
+      tx2,
+      lerp(
+        hermite3,
+        hermite4,
+        lerp(hermite1TopLeftRight, hermite2BottomLeftRight, coord[1])
+      )
+    );
     // console.log('INput ', coord, 'output', result)
     return result;
   },
   {
     argumentTypes: {
       coord: "Array(2)",
-      mapTopLeft: "Array(2)",
-      mapTopRight: "Array(2)",
-      mapBottomLeft: "Array(2)",
-      mapBottomRight: "Array(2)",
+      mapTopLeft: "Array(4)",
+      mapTopRight: "Array(4)",
+      mapBottomLeft: "Array(4)",
+      mapBottomRight: "Array(4)",
     },
     returnType: "Array(2)",
   }
@@ -177,10 +252,10 @@ var LaserApi = {
 
           var transformedCoord = transformCoordinate(
             [x / resX, y / resY],
-            [mapping[0][0], mapping[0][1]],
-            [mapping[1][0], mapping[1][1]],
-            [mapping[2][0], mapping[2][1]],
-            [mapping[3][0], mapping[3][1]]
+            [mapping[0][0], mapping[0][1], mapping[0][2], mapping[0][3]],
+            [mapping[1][0], mapping[1][1], mapping[1][2], mapping[1][3]],
+            [mapping[2][0], mapping[2][1], mapping[2][2], mapping[2][3]],
+            [mapping[3][0], mapping[3][1], mapping[3][2], mapping[3][3]]
           );
           var x2 = Math.floor(transformedCoord[0] * inputResX);
           var y2 = Math.floor(transformedCoord[1] * inputResY);
@@ -216,18 +291,32 @@ var LaserApi = {
       canvasColorOriginal.data,
       laserConfig.testResolution.width,
       laserConfig.testResolution.height,
-      laserConfig.testResolution.width,
-      laserConfig.testResolution.height,
+      laserConfig.videoResolution.width,
+      laserConfig.videoResolution.height,
       [
-        [laserConfig.transform.topleft.x, laserConfig.transform.topleft.y],
-        [laserConfig.transform.topright.x, laserConfig.transform.topright.y],
+        [
+          laserConfig.transform.topleft.x,
+          laserConfig.transform.topleft.y,
+          Number(laserConfig.transform.topleft.slopex),
+          Number(laserConfig.transform.topleft.slopey),
+        ],
+        [
+          laserConfig.transform.topright.x,
+          laserConfig.transform.topright.y,
+          Number(laserConfig.transform.topright.slopex),
+          Number(laserConfig.transform.topright.slopey),
+        ],
         [
           laserConfig.transform.bottomleft.x,
           laserConfig.transform.bottomleft.y,
+          Number(laserConfig.transform.bottomleft.slopex),
+          Number(laserConfig.transform.bottomleft.slopey),
         ],
         [
           laserConfig.transform.bottomright.x,
           laserConfig.transform.bottomright.y,
+          Number(laserConfig.transform.bottomright.slopex),
+          Number(laserConfig.transform.bottomright.slopey),
         ],
       ],
       [

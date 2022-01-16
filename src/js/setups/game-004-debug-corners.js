@@ -42,39 +42,103 @@ const handler = function (laserGrid) {
     laserConfig.testColor[1],
     laserConfig.testColor[2]
   );
-  MainCanvas.get2dContext().lineWidth = 20;
-  MainCanvas.get2dContext().fillRect(0, 0, size, size);
-  MainCanvas.get2dContext().fillRect(
-    laserConfig.canvasResolution.width - size,
-    0,
-    size,
-    size
-  );
-  MainCanvas.get2dContext().fillRect(
-    0,
-    laserConfig.canvasResolution.height - size,
-    size,
-    size
-  );
-  MainCanvas.get2dContext().fillRect(
-    laserConfig.canvasResolution.width - size,
-    laserConfig.canvasResolution.height - size,
-    size,
-    size
-  );
-  MainCanvas.get2dContext().strokeRect(
-    0,
-    0,
-    laserConfig.canvasResolution.width,
-    laserConfig.canvasResolution.height
-  );
+  MainCanvas.get2dContext().lineWidth = 8;
+
+  for (var i = 0; i < 1; i += 2) {
+    MainCanvas.get2dContext().fillStyle = "#ff0000";
+    MainCanvas.get2dContext().fillRect(i * size, i * size, size, size);
+    MainCanvas.get2dContext().fillStyle = "#000000";
+    MainCanvas.get2dContext().fillRect(i * size, i * size, size / 3, size / 3);
+
+    MainCanvas.get2dContext().fillStyle = "#ff0000";
+    MainCanvas.get2dContext().fillRect(
+      laserConfig.canvasResolution.width - i * size - size,
+      i * size,
+      size,
+      size
+    );
+    MainCanvas.get2dContext().fillStyle = "#000000";
+    MainCanvas.get2dContext().fillRect(
+      laserConfig.canvasResolution.width - i * size - size / 3,
+      i * size,
+      size / 3,
+      size / 3
+    );
+
+    MainCanvas.get2dContext().fillStyle = "#ff0000";
+    MainCanvas.get2dContext().fillRect(
+      laserConfig.canvasResolution.width - i * size - size,
+      laserConfig.canvasResolution.height - i * size - size,
+      size,
+      size
+    );
+
+    MainCanvas.get2dContext().fillStyle = "#000000";
+
+    MainCanvas.get2dContext().fillStyle = "#ff0000";
+    MainCanvas.get2dContext().fillRect(
+      laserConfig.canvasResolution.width - i * size - size / 3,
+      laserConfig.canvasResolution.height - i * size - size / 3,
+      size / 3,
+      size / 3
+    );
+    MainCanvas.get2dContext().fillStyle = "#0000";
+    MainCanvas.get2dContext().fillRect(
+      laserConfig.canvasResolution.width - i * size - size / 3,
+      laserConfig.canvasResolution.height - i * size - size / 3,
+      size / 3,
+      size / 3
+    );
+    MainCanvas.get2dContext().fillStyle = "#ff0000";
+    MainCanvas.get2dContext().fillRect(
+      i * size,
+      laserConfig.canvasResolution.height - i * size - size,
+      size,
+      size
+    );
+    MainCanvas.get2dContext().fillStyle = "#000000";
+    MainCanvas.get2dContext().fillRect(
+      i * size,
+      laserConfig.canvasResolution.height - i * size - size / 3,
+      size / 3,
+      size / 3
+    );
+    // MainCanvas.get2dContext().strokeRect(
+    //   i * size,
+    //   i * size,
+    //   laserConfig.canvasResolution.width - 2 * i * size,
+    //   laserConfig.canvasResolution.height - 2 * i * size
+    // );
+  }
+  for (var i = 0; i < 1; i += 0.1) {
+    drawLine(
+      MainCanvas.get2dContext(),
+      0,
+      laserConfig.canvasResolution.height * i,
+      laserConfig.canvasResolution.width,
+      laserConfig.canvasResolution.height * i
+    );
+    drawLine(
+      MainCanvas.get2dContext(),
+      laserConfig.canvasResolution.width * i,
+      0,
+      laserConfig.canvasResolution.width * i,
+      laserConfig.canvasResolution.height
+    );
+  }
   //
   // bottomright.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // bottomleft.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // topleft.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // topright.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
 };
-
+function drawLine(ctx, x1, y1, x2, y2, color = "#ffff00") {
+  MainCanvas.get2dContext().strokeStyle = color;
+  MainCanvas.get2dContext().beginPath();
+  MainCanvas.get2dContext().moveTo(x1, y1);
+  MainCanvas.get2dContext().lineTo(x2, y2);
+  MainCanvas.get2dContext().stroke();
+}
 export default {
   name: "Debug Grid",
   init: function () {},

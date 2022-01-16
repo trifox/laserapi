@@ -62,8 +62,29 @@ function skewXY(context, angle1, angle2) {
 }
 
 var lastGameIndex = -1;
-
-function frameHandler() {
+async function scaleImageData(imageData, width, height) {
+  const resizeWidth = width >> 0;
+  const resizeHeight = height >> 0;
+  const ibm = await window.createImageBitmap(
+    imageData,
+    0,
+    0,
+    imageData.width,
+    imageData.height,
+    {
+      resizeWidth,
+      resizeHeight,
+    }
+  );
+  const canvas = document.createElement("canvas");
+  canvas.width = resizeWidth;
+  canvas.height = resizeHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(resizeWidth / imageData.width, resizeHeight / imageData.height);
+  ctx.drawImage(ibm, 0, 0);
+  return ctx.getImageData(0, 0, resizeWidth, resizeHeight);
+}
+async function frameHandler() {
   // console.time("frameHandler");
   // console.log('Re Rendering');
   // console.log('Re Rendering', MainCanvas.getCanvas());
@@ -88,34 +109,44 @@ function frameHandler() {
   //  console.log('Re rotate', transform.rotate);
   MainCanvas.get2dContext().imageSmoothingEnabled = false;
 
+  /**
+   * we use painters method and draw on canvas
+   * we start with drawing the video frame as initial input
+   */
   MainCanvas.get2dContext().drawImage(
     CanvasVideo.getVideo(),
     0,
     0,
-    laserConfig.testResolution.width,
-    laserConfig.testResolution.height
+    laserConfig.videoResolution.width,
+    laserConfig.videoResolution.height
   );
-
+  /**
+   * step 2 is to retrieve the rendered video frame as imageData
+   */
   var canvasColor = MainCanvas.get2dContext().getImageData(
     0,
     0,
-    laserConfig.testResolution.width,
-    laserConfig.testResolution.height
+    laserConfig.videoResolution.width,
+    laserConfig.videoResolution.height
   ); // rgba e [0,255]
 
   MainCanvas.get2dContext().restore();
 
-  MainCanvas.get2dContext().fillStyle = "#006666";
+  // MainCanvas.get2dContext().fillStyle = "#006666";
 
-  MainCanvas.get2dContext().strokeStyle = "#0000ff";
-  MainCanvas.get2dContext().strokeRect(
-    0,
-    0,
-    laserConfig.testResolution.width,
-    laserConfig.testResolution.height
-  );
+  // MainCanvas.get2dContext().strokeStyle = "#0000ff";
+  // MainCanvas.get2dContext().strokeRect(
+  //   0,
+  //   0,
+  //   laserConfig.testResolution.width,
+  //   laserConfig.testResolution.height
+  // );
 
   // console.time("getInterestRegionGPU");
+  /**
+   * here we map out the designated area of interest from the input video frame
+   * it comes back as imagedata
+   */
   var canvasColorInterest = LaserApi.getInterestReqionGPU(
     MainCanvas.get2dContext(),
     canvasColor
@@ -132,19 +163,39 @@ function frameHandler() {
   if (!laserConfig.debugVideo) {
     MainCanvas.clear();
   } else {
-    MainCanvas.get2dContext().putImageData(
-      canvasColorInterest,
-      laserConfig.testResolution.width,
-      0
-    );
     // MainCanvas.get2dContext().putImageData(
     //   canvasColorInterestOld,
     //   laserConfig.testResolution.width * 2,
     //   0
     // );
 
-    gameDebugCorners.handle(canvasColor);
     gameDebugTransform.handle(canvasColor);
+  }
+
+  if (laserConfig.showGrid) {
+    gameDebugCorners.handle(canvasColor);
+  }
+
+  if (laserConfig.showMapping) {
+    MainCanvas.get2dContext().putImageData(canvasColorInterest, 0, 0);
+    // MainCanvas.get2dContext().putImageData(
+    //   await scaleImageData(canvasColorInterest, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height),
+    //   0,
+    //   0
+    // );
+
+    /**
+     * draw the debug output scaled for the extracted rect which becomes fed into the
+     * game update loop
+     */
+    //      var newCanvas = $("<canvas>")
+    //      .attr("width", laserConfig.testResolution.width)
+    //      .attr("height",laserConfig.testResolution.height)[0];
+
+    //  newCanvas.getContext("2d").putImageData(canvasColorInterest, 0, 0);
+    //  MainCanvas.get2dContext().drawImage(newCanvas,0,0,laserConfig.canvasResolution.width,laserConfig.canvasResolution.height)
+
+    // MainCanvas.get2dContext().drawImage(canvasColorInterest, 0, 0, 200, 200);
   }
   // console.time("GetRectCPU");
   // var laserGridOld = LaserApi.getRectForInputImage(canvasColorInterest);
@@ -152,6 +203,9 @@ function frameHandler() {
   // console.timeEnd("GetRectCPU");
 
   //  console.time("GetRectGPU");
+  /** step is downsampling the mapped and filtered input video stream image
+   * to just an image with 1 channel
+   */
   var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest.data);
   // console.log("Lasergrid is", laserGrid);
   // console.timeEnd("GetRectGPU");
@@ -203,6 +257,17 @@ document.onkeydown = function (evt) {
         console.log("doing it ", laserConfig.showGame);
         laserConfig.showGame = !laserConfig.showGame;
         document.getElementById("showGame").checked = laserConfig.showGame;
+        break;
+      case "m":
+        console.log("showing mapping it ", laserConfig.showMapping);
+        laserConfig.showMapping = !laserConfig.showMapping;
+        document.getElementById("showMapping").checked =
+          laserConfig.showMapping;
+        break;
+      case "r":
+        console.log("showing rastyer it ", laserConfig.showGrid);
+        laserConfig.showGrid = !laserConfig.showGrid;
+        document.getElementById("showGrid").checked = laserConfig.showGrid;
         break;
       case "f":
         fullscreen();
@@ -264,8 +329,8 @@ function exitHandler(data) {
       "RESETTING RESOLUTION TO DEFAULT",
       laserConfig.canvasResolution
     );
-    laserConfig.canvasResolution.width = 640;
-    laserConfig.canvasResolution.height = 480;
+    laserConfig.canvasResolution.width = 1920;
+    laserConfig.canvasResolution.height = 1080;
     games[laserConfig.gameIndex].init();
   }
 }
@@ -279,12 +344,14 @@ function fullscreen() {
 
   console.log("element is ", elem.getBoundingClientRect());
 
-  laserConfig.canvasResolution.width =
-    screen.width * document.getElementById("playfieldScale").value;
-  laserConfig.canvasResolution.height =
-    screen.height * document.getElementById("playfieldScale").value;
+  // laserConfig.canvasResolution.width =
+  //   screen.width * document.getElementById("playfieldScale").value;
+  // laserConfig.canvasResolution.height =
+  //   screen.height * document.getElementById("playfieldScale").value;
   canvas.style.left = (screen.width - laserConfig.canvasResolution.width) / 2;
   canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2;
+  canvas.style.width = laserConfig.canvasResolution.width;
+  canvas.style.height = laserConfig.canvasResolution.height;
   console.log("resolution is clicked", laserConfig.canvasResolution);
   if (canvascontainer.webkitRequestFullscreen) {
     canvascontainer.webkitRequestFullscreen();
@@ -307,11 +374,17 @@ function fullscreenEdit() {
 
   // laserConfig.canvasResolution.width = 640
   // laserConfig.canvasResolution.height = 480
+  console.log("-----");
+  console.log("Screen Width and height is ", screen.width);
+  console.log("Screen Width and height is ", screen.height);
+  console.log("-----");
 
-  laserConfig.canvasResolution.width =
-    screen.width * document.getElementById("playfieldScale").value;
-  laserConfig.canvasResolution.height =
-    screen.height * document.getElementById("playfieldScale").value;
+  // laserConfig.canvasResolution.width =
+  //   screen.width * document.getElementById("playfieldScale").value;
+  // laserConfig.canvasResolution.height =
+  //   screen.height * document.getElementById("playfieldScale").value;
+  canvas.style.width = laserConfig.canvasResolution.width;
+  canvas.style.height = laserConfig.canvasResolution.height;
   canvas.style.left = (screen.width - laserConfig.canvasResolution.width) / 2;
   canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2;
   console.log("resolution is clicked", laserConfig.canvasResolution);
@@ -411,7 +484,7 @@ function loadFromLocalStorage() {
 function loadHtmlFromSettings(settings) {
   console.log("loading settings", settings);
   if (settings.treshold !== undefined) {
-    document.getElementById("treshold").value = settings.treshold;
+    document.getElementById("threshold").value = settings.treshold;
     laserConfig.threshold = settings.treshold;
   }
   if (settings.testColor !== undefined) {
@@ -434,6 +507,18 @@ function loadHtmlFromSettings(settings) {
   if (settings.showGame !== undefined) {
     document.getElementById("showGame").checked = settings.showGame;
     laserConfig.showGame = settings.showGame;
+  }
+  if (settings.threshold !== undefined) {
+    document.getElementById("threshold").value = settings.threshold;
+    laserConfig.threshold = settings.threshold;
+  }
+  if (settings.showGrid !== undefined) {
+    document.getElementById("showGrid").checked = settings.showGrid;
+    laserConfig.showGrid = settings.showGrid;
+  }
+  if (settings.showMapping !== undefined) {
+    document.getElementById("showMapping").checked = settings.showMapping;
+    laserConfig.showMapping = settings.showMapping;
   }
   if (settings.gameIndex !== undefined) {
     console.log("loading settings gameIndex", settings);
@@ -497,25 +582,35 @@ function saveToLocalStorage() {
 function getCoordinatesForInputElement(elemprefix) {
   var elem1x = document.getElementById(elemprefix + "_x");
   var elem1y = document.getElementById(elemprefix + "_y");
+  var elem1yslope = document.getElementById("slope" + elemprefix + "_y");
+  var elem1xslope = document.getElementById("slope" + elemprefix + "_x");
   return {
     x: elem1x.value / 10000.0,
     y: elem1y.value / 10000.0,
+    slopex: ((elem1xslope && Number(elem1xslope.value)) || 10000) / 10000,
+    slopey: ((elem1yslope && Number(elem1yslope.value)) || 10000) / 10000,
   };
 }
 
 function setCoordinatesForInputElement(elemprefix, data) {
   var elem1x = document.getElementById(elemprefix + "_x");
   var elem1y = document.getElementById(elemprefix + "_y");
+  var elem1xslope = document.getElementById("slope" + elemprefix + "_x");
+  var elem1yslope = document.getElementById("slope" + elemprefix + "_y");
   elem1x.value = data.x * 10000.0;
   elem1y.value = data.y * 10000.0;
+  if (elem1xslope) elem1xslope.value = (data.slopex || 1) * 10000;
+  if (elem1yslope) elem1yslope.value = (data.slopey || 1) * 10000;
 }
 function getCoordinates() {
-  return {
+  var result = {
     topleft: getCoordinatesForInputElement("topleft"),
     topright: getCoordinatesForInputElement("topright"),
     bottomleft: getCoordinatesForInputElement("bottomleft"),
     bottomright: getCoordinatesForInputElement("bottomright"),
   };
+  // console.log("coordinates are", result);
+  return result;
 }
 function getTransformOfVideoInput() {
   return {
@@ -581,11 +676,13 @@ var interval = 1000 / 25;
 var lastDate = performance.now();
 
 function animationHandler() {
-  laserConfig.threshold = document.getElementById("treshold").value;
-  laserConfig.gridResolution = document.getElementById("gridResolution").value;
+  laserConfig.threshold = document.getElementById("threshold").value;
+  laserConfig.gridResolution = document.getElementById("gridResolution").value; 
   laserConfig.debugVideo = document.getElementById("debugVideo").checked;
   laserConfig.showDebug = document.getElementById("showDebug").checked;
   laserConfig.showGame = document.getElementById("showGame").checked;
+  laserConfig.showMapping = document.getElementById("showMapping").checked;
+  laserConfig.showGrid = document.getElementById("showGrid").checked;
   laserConfig.gameIndex = document.getElementById("game-selector").value;
   laserConfig.playfieldScale = document.getElementById("playfieldScale").value;
   //  laserConfig.videoTransform = getTransformOfVideoInput()
@@ -606,10 +703,6 @@ function animationHandler() {
   // setVideoTransform(getTransformOfVideoInput());
   saveToLocalStorage();
 }
-var canvasSize = {
-  x: 512,
-  y: 512,
-};
 
 function updatePresetSelector() {
   document.getElementById("presets-selector").innerHTML = "";

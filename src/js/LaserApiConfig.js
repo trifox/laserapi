@@ -10,16 +10,12 @@ var config = {
     height: 1080,
   },
   testResolution: {
-    width: 640,
-    height: 480,
+    width: 1920,
+    height: 1080,
   },
   canvasResolution: {
-    width: 640,
-    height: 480,
-  },
-  canvasOriginalResolution: {
-    width: 640,
-    height: 480,
+    width: 1920,
+    height: 1080,
   },
   threshold: 120,
 
@@ -39,18 +35,26 @@ var config = {
     topleft: {
       x: 0,
       y: 0.5,
+      slopex: 0,
+      slopey: 1,
     },
     topright: {
       x: 1,
       y: 0,
+      slopex: 0,
+      slopey: 1,
     },
     bottomleft: {
       x: 0,
       y: 1,
+      slopex: 0,
+      slopey: 1,
     },
     bottomright: {
       x: 1,
       y: 1,
+      slopex: 0,
+      slopey: 1,
     },
   },
 };

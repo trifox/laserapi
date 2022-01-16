@@ -139,7 +139,7 @@ const handler = function (laserGrid) {
 };
 
 export default {
-  name: "Fadexxx",
+  name: "FadeCPU",
   init: function (data) {
     if (data) {
       if (data.fadeDuration) {
