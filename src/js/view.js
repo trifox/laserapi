@@ -1,3 +1,5 @@
+import { Solver } from "p2";
+
 var helper = require("./helper.js");
 var laserConfig = require("./LaserApiConfig").default;
 var Util = require("./util").default;
@@ -43,24 +45,6 @@ function stopGame(index) {
 }
 startGame(0);
 
-function skewY(context, angle) {
-  context.setTransform(1, Math.tan((angle / 180.0) * Math.PI), 0, 1, 0, 0);
-}
-function skewX(context, angle) {
-  context.setTransform(1, 0, Math.tan((angle / 180.0) * Math.PI), 1, 1, 0, 0);
-}
-function skewXY(context, angle1, angle2) {
-  context.setTransform(
-    1,
-    Math.tan((angle1 / 180.0) * Math.PI),
-    Math.tan((angle2 / 180.0) * Math.PI),
-    1,
-    1,
-    0,
-    0
-  );
-}
-
 var lastGameIndex = -1;
 async function scaleImageData(imageData, width, height) {
   const resizeWidth = width >> 0;
@@ -86,6 +70,7 @@ async function scaleImageData(imageData, width, height) {
 }
 async function frameHandler() {
   // console.time("frameHandler");
+  var ctx = MainCanvas.get2dContext();
   // console.log('Re Rendering');
   // console.log('Re Rendering', MainCanvas.getCanvas());
 
@@ -94,11 +79,10 @@ async function frameHandler() {
   //var transform = getTransformOfVideoInput()
 
   MainCanvas.clear();
-  MainCanvas.getCanvas().width = laserConfig.canvasResolution.width;
-  MainCanvas.getCanvas().height = laserConfig.canvasResolution.height;
-  MainCanvas.getCanvas().style.width = laserConfig.canvasResolution.width;
-  MainCanvas.getCanvas().style.height = laserConfig.canvasResolution.height;
-  MainCanvas.get2dContext().save();
+  // ctx.width = laserConfig.canvasResolution.width;
+  // ctx.style.width = laserConfig.canvasResolution.width;
+  // ctx.style.height = laserConfig.canvasResolution.height;
+  // ctx.save();
   //   skewXY(MainCanvas.get2dContext(), document.getElementById('skewY').value, document.getElementById('skewX').value)
   //skewX(MainCanvas.get2dContext(), document.getElementById('skewX').value)
   //   MainCanvas.get2dContext().translate(transform.translate.x, transform.translate.y)
@@ -107,30 +91,38 @@ async function frameHandler() {
 
   //    MainCanvas.get2dContext().scale(transform.scale, transform.scale)
   //  console.log('Re rotate', transform.rotate);
-  MainCanvas.get2dContext().imageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = false;
 
   /**
    * we use painters method and draw on canvas
    * we start with drawing the video frame as initial input
    */
-  MainCanvas.get2dContext().drawImage(
-    CanvasVideo.getVideo(),
-    0,
-    0,
-    laserConfig.videoResolution.width,
-    laserConfig.videoResolution.height
-  );
+  if (laserConfig.debugVideo) {
+    ctx.save();
+    // ctx.translate(0, laserConfig.videoResolution.height);
+    // ctx.scale(1, -1);
+    ctx.drawImage(
+      CanvasVideo.getVideo(),
+      0,
+      0,
+      laserConfig.videoResolution.width,
+      laserConfig.videoResolution.height
+    );
+    ctx.restore();
+  }
+  // console.time("frameHandler");
   /**
    * step 2 is to retrieve the rendered video frame as imageData
    */
-  var canvasColor = MainCanvas.get2dContext().getImageData(
-    0,
-    0,
-    laserConfig.videoResolution.width,
-    laserConfig.videoResolution.height
-  ); // rgba e [0,255]
+  // var canvasColor = ctx.getImageData(
+  //   0,
+  //   0,
+  //   laserConfig.videoResolution.width,
+  //   laserConfig.videoResolution.height
+  // ); // rgba e [0,255]
 
-  MainCanvas.get2dContext().restore();
+  // console.timeEnd("frameHandler");
+  // MainCanvas.get2dContext().restore();
 
   // MainCanvas.get2dContext().fillStyle = "#006666";
 
@@ -149,7 +141,7 @@ async function frameHandler() {
    */
   var canvasColorInterest = LaserApi.getInterestReqionGPU(
     MainCanvas.get2dContext(),
-    canvasColor
+    CanvasVideo.getVideo()
   );
   // console.timeEnd("getInterestRegionGPU");
 
@@ -159,21 +151,21 @@ async function frameHandler() {
   //   canvasColor
   // );
 
-  // console.timeEnd("getInterestRegionCPU");
-  if (!laserConfig.debugVideo) {
-    MainCanvas.clear();
-  } else {
-    // MainCanvas.get2dContext().putImageData(
-    //   canvasColorInterestOld,
-    //   laserConfig.testResolution.width * 2,
-    //   0
-    // );
-
-    gameDebugTransform.handle(canvasColor);
+  // // console.timeEnd("getInterestRegionCPU");
+  // if (!laserConfig.debugVideo) {
+  //   MainCanvas.clear();
+  // } else {
+  //   // MainCanvas.get2dContext().putImageData(
+  //   //   canvasColorInterestOld,
+  //   //   laserConfig.testResolution.width * 2,
+  //   //   0
+  //   // );
+  // }
+  if (laserConfig.showTransform) {
+    gameDebugTransform.handle();
   }
-
   if (laserConfig.showGrid) {
-    gameDebugCorners.handle(canvasColor);
+    gameDebugCorners.handle();
   }
 
   if (laserConfig.showMapping) {
@@ -197,6 +189,8 @@ async function frameHandler() {
 
     // MainCanvas.get2dContext().drawImage(canvasColorInterest, 0, 0, 200, 200);
   }
+
+  // console.timeEnd("frameHandler");
   // console.time("GetRectCPU");
   // var laserGridOld = LaserApi.getRectForInputImage(canvasColorInterest);
   // // console.log("Lasergridold is", laserGridOld);
@@ -223,22 +217,23 @@ async function frameHandler() {
   }
   if (laserConfig.showGame) {
     // console.time("GameHandler")
-    games[laserConfig.gameIndex].handle(laserGrid);
+    games[laserConfig.gameIndex || 0].handle(laserGrid);
     // console.timeEnd("GameHandler")
   }
 
-  setTimeout(frameHandler, 0);
+  //setTimeout(frameHandler, 0);
 
-  //console.timeEnd("frameHandler");
+  window.requestAnimationFrame(frameHandler);
 }
 
 var presets = [];
-setTimeout(frameHandler, 1000);
+
+//setTimeout(frameHandler, 1000);
+// document.addEventListener('fullscreenchange', exitHandler, false);
+
 if (document.addEventListener) {
   document.addEventListener("webkitfullscreenchange", exitHandler, false);
-  // document.addEventListener('fullscreenchange', exitHandler, false);
 }
-
 document.onkeydown = function (evt) {
   if (isNaN(evt.key)) {
     console.log(evt.key);
@@ -265,9 +260,15 @@ document.onkeydown = function (evt) {
           laserConfig.showMapping;
         break;
       case "r":
-        console.log("showing rastyer it ", laserConfig.showGrid);
+        console.log("showing raster it ", laserConfig.showGrid);
         laserConfig.showGrid = !laserConfig.showGrid;
         document.getElementById("showGrid").checked = laserConfig.showGrid;
+        break;
+      case "t":
+        console.log("showing transform it ", laserConfig.showTransform);
+        laserConfig.showTransform = !laserConfig.showTransform;
+        document.getElementById("showTransform").checked =
+          laserConfig.showTransform;
         break;
       case "f":
         fullscreen();
@@ -357,7 +358,7 @@ function fullscreen() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[laserConfig.gameIndex].init();
+  games[laserConfig.gameIndex || 0].init();
 }
 function fullscreenEdit() {
   console.log("fullscreenedit clicked");
@@ -392,7 +393,7 @@ function fullscreenEdit() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[laserConfig.gameIndex].init();
+  games[laserConfig.gameIndex || 0].init();
 }
 function initHTML() {
   document.getElementById("fullscreen_button").onclick = fullscreen;
@@ -443,7 +444,7 @@ function initHTML() {
     delete config.transform;
     delete config.videoTransform;
     loadHtmlFromSettings(presets[evt.target.value].config);
-    games[laserConfig.gameIndex].init(preset.initData);
+    games[laserConfig.gameIndex || 0].init(preset.initData);
   };
 }
 
@@ -458,7 +459,7 @@ function loadPreset(preset) {
   delete config.transform;
   delete config.videoTransform;
   loadHtmlFromSettings(config);
-  games[laserConfig.gameIndex].init(preset.initData);
+  games[laserConfig.gameIndex || 0].init(preset.initData);
 }
 
 function loadPresetsFromLocalStorage() {
@@ -516,6 +517,10 @@ function loadHtmlFromSettings(settings) {
     document.getElementById("showGrid").checked = settings.showGrid;
     laserConfig.showGrid = settings.showGrid;
   }
+  if (settings.showTransform !== undefined) {
+    document.getElementById("showTransform").checked = settings.showTransform;
+    laserConfig.showTransform = settings.showTransform;
+  }
   if (settings.showMapping !== undefined) {
     document.getElementById("showMapping").checked = settings.showMapping;
     laserConfig.showMapping = settings.showMapping;
@@ -571,12 +576,16 @@ function loadHtmlFromSettings(settings) {
     setCoordinates(settings.transform);
   }
 }
+var lastStore;
 function saveToLocalStorage() {
   var data = JSON.stringify({
     laserConfig: laserConfig,
   });
-  // console.log('Saving to localstorage', data)
-  window.localStorage.setItem("laser", data);
+  if (lastStore != data) {
+    console.log("Saving to localstorage", data);
+    lastStore = data;
+    window.localStorage.setItem("laser", data);
+  }
 }
 
 function getCoordinatesForInputElement(elemprefix) {
@@ -587,8 +596,8 @@ function getCoordinatesForInputElement(elemprefix) {
   return {
     x: elem1x.value / 10000.0,
     y: elem1y.value / 10000.0,
-    slopex: ((elem1xslope && Number(elem1xslope.value)) || 10000) / 10000,
-    slopey: ((elem1yslope && Number(elem1yslope.value)) || 10000) / 10000,
+    slopex: ((elem1xslope && Number(elem1xslope.value)) || 10000) / 5000,
+    slopey: ((elem1yslope && Number(elem1yslope.value)) || 10000) / 5000,
   };
 }
 
@@ -599,8 +608,8 @@ function setCoordinatesForInputElement(elemprefix, data) {
   var elem1yslope = document.getElementById("slope" + elemprefix + "_y");
   elem1x.value = data.x * 10000.0;
   elem1y.value = data.y * 10000.0;
-  if (elem1xslope) elem1xslope.value = (data.slopex || 1) * 10000;
-  if (elem1yslope) elem1yslope.value = (data.slopey || 1) * 10000;
+  if (elem1xslope) elem1xslope.value = (data.slopex || 1) * 5000;
+  if (elem1yslope) elem1yslope.value = (data.slopey || 1) * 5000;
 }
 function getCoordinates() {
   var result = {
@@ -672,17 +681,15 @@ function setVideoTransform(transform) {
   //   console.log('set tranform to ', video.style.transform)
 }
 
-var interval = 1000 / 25;
-var lastDate = performance.now();
-
 function animationHandler() {
   laserConfig.threshold = document.getElementById("threshold").value;
-  laserConfig.gridResolution = document.getElementById("gridResolution").value; 
+  laserConfig.gridResolution = document.getElementById("gridResolution").value;
   laserConfig.debugVideo = document.getElementById("debugVideo").checked;
   laserConfig.showDebug = document.getElementById("showDebug").checked;
   laserConfig.showGame = document.getElementById("showGame").checked;
   laserConfig.showMapping = document.getElementById("showMapping").checked;
   laserConfig.showGrid = document.getElementById("showGrid").checked;
+  laserConfig.showTransform = document.getElementById("showTransform").checked;
   laserConfig.gameIndex = document.getElementById("game-selector").value;
   laserConfig.playfieldScale = document.getElementById("playfieldScale").value;
   //  laserConfig.videoTransform = getTransformOfVideoInput()
@@ -729,6 +736,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   updatePresetSelector();
   fullscreen();
   fullscreenEdit();
+
+  window.requestAnimationFrame(frameHandler);
 });
 
 export default {};

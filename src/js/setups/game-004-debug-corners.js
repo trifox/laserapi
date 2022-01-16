@@ -29,7 +29,7 @@ function createDiv() {
 // document.body.insertBefore(topright, document.body.firstChild)
 // document.body.insertBefore(bottomleft, document.body.firstChild)
 // document.body.insertBefore(bottomright, document.body.firstChild)
-const handler = function (laserGrid) {
+const handler = function ( ) {
   // paint markers in the corners
   var size = 75;
   MainCanvas.get2dContext().fillStyle = Util.rgbToHex(
@@ -44,6 +44,24 @@ const handler = function (laserGrid) {
   );
   MainCanvas.get2dContext().lineWidth = 8;
 
+  for (var i = 0; i < 1; i += 0.1) {
+    drawLine(
+      MainCanvas.get2dContext(),
+      0,
+      laserConfig.canvasResolution.height * i,
+      laserConfig.canvasResolution.width,
+      laserConfig.canvasResolution.height * i,
+      "#ff0000"
+    );
+    drawLine(
+      MainCanvas.get2dContext(),
+      laserConfig.canvasResolution.width * i,
+      0,
+      laserConfig.canvasResolution.width * i,
+      laserConfig.canvasResolution.height,
+      "#ff0000"
+    );
+  }
   for (var i = 0; i < 1; i += 2) {
     MainCanvas.get2dContext().fillStyle = "#ff0000";
     MainCanvas.get2dContext().fillRect(i * size, i * size, size, size);
@@ -75,7 +93,6 @@ const handler = function (laserGrid) {
 
     MainCanvas.get2dContext().fillStyle = "#000000";
 
-    MainCanvas.get2dContext().fillStyle = "#ff0000";
     MainCanvas.get2dContext().fillRect(
       laserConfig.canvasResolution.width - i * size - size / 3,
       laserConfig.canvasResolution.height - i * size - size / 3,
@@ -110,29 +127,14 @@ const handler = function (laserGrid) {
     //   laserConfig.canvasResolution.height - 2 * i * size
     // );
   }
-  for (var i = 0; i < 1; i += 0.1) {
-    drawLine(
-      MainCanvas.get2dContext(),
-      0,
-      laserConfig.canvasResolution.height * i,
-      laserConfig.canvasResolution.width,
-      laserConfig.canvasResolution.height * i
-    );
-    drawLine(
-      MainCanvas.get2dContext(),
-      laserConfig.canvasResolution.width * i,
-      0,
-      laserConfig.canvasResolution.width * i,
-      laserConfig.canvasResolution.height
-    );
-  }
+
   //
   // bottomright.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // bottomleft.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // topleft.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
   // topright.style.backgroundColor = Util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1], laserConfig.testColor[2])
 };
-function drawLine(ctx, x1, y1, x2, y2, color = "#ffff00") {
+function drawLine(ctx, x1, y1, x2, y2, color = "#ffffff") {
   MainCanvas.get2dContext().strokeStyle = color;
   MainCanvas.get2dContext().beginPath();
   MainCanvas.get2dContext().moveTo(x1, y1);

@@ -6,8 +6,8 @@ var knobPositions = [];
 
 var obstacleSizeY = 160;
 var obstacleSizeX = 160;
-var moveSpeed = 250;
-var itemCount = 10;
+var moveSpeed = 50;
+var itemCount = 6;
 var clampMovementX = true;
 var lastTime = performance.now();
 
@@ -118,7 +118,7 @@ const handler = function (grid) {
 
           directions[k].x += getDist(rect1, rect2).x;
           directions[k].y += getDist(rect1, rect2).y;
-          console.log("moving ", rect1, rect2, direction);
+          // console.log("moving ", rect1, rect2, direction);
         } else {
           //    console.log('not intersectiong ', rect1, rect2)
           //      console.log('dist is ', getDist(rect1, rect2))

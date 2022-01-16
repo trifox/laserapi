@@ -125,11 +125,11 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
   );
 }
 
-const handler = function (laserGrid) {
+const handler = function () {
   // paint markers in the corners
   MainCanvas.get2dContext().fillStyle = "#ffffff";
   MainCanvas.get2dContext().strokeStyle = "#ffffff";
-  MainCanvas.get2dContext().lineWidth = 1.25;
+  MainCanvas.get2dContext().lineWidth = 2;
   var size = 8;
   MainCanvas.get2dContext().strokeRect(
     laserConfig.transform.topleft.x * laserConfig.testResolution.width -

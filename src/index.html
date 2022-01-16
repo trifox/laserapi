@@ -52,8 +52,8 @@
       }
 
       .control {
-        width: 50%;
-        left: 25%;
+        width: 60%;
+        left: 20%;
         bottom: 0px;
         z-index: 10000;
         overflow: scroll;
@@ -208,7 +208,7 @@
               class="w3-input"
               step="1"
               min="2"
-              max="128"
+              max="512"
             />
 
             <label>debugVideo</label>
@@ -223,6 +223,8 @@
             <input type="checkbox" id="showMapping" class="w3-check" />
             <label>showGrid</label>
             <input type="checkbox" id="showGrid" class="w3-check" />
+            <label>showTransform</label>
+            <input type="checkbox" id="showTransform" class="w3-check" />
           </fieldset>
 
           <fieldset style="display: grid; grid-template-columns: 1fr 1fr">
@@ -441,7 +443,7 @@
       </form>
     </div>
     <div id="videocontainer">
-      <video id="video" width="512" height="512"></video>
+      <video id="video" width="1920" height="1080"></video>
     </div>
     <div id="snapshots">
       screenshots

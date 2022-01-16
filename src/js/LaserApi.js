@@ -128,7 +128,7 @@ gpu.addFunction(
       lerp(
         hermite3,
         hermite4,
-        lerp(hermite1TopLeftRight, hermite2BottomLeftRight, coord[1])
+        lerp(hermite1TopLeftRight, hermite2BottomLeftRight, coord[0])
       )
     );
     // console.log('INput ', coord, 'output', result)
@@ -231,7 +231,7 @@ var LaserApi = {
   lerp3d: lerp3d,
 
   gRect: new Array(laserConfig.gridResolution * laserConfig.gridResolution),
-  globalImageData: null,
+  //globalImageData: null,
   video: null,
   canvas: null,
   getInterestReqionGPU(context, canvasColorOriginal) {
@@ -245,26 +245,27 @@ var LaserApi = {
           inputResY,
           mapping,
           referenceColor,
-          treshold
+          threshold
         ) {
           var x = this.thread.x;
           var y = resY - this.thread.y;
 
           var transformedCoord = transformCoordinate(
             [x / resX, y / resY],
-            [mapping[0][0], mapping[0][1], mapping[0][2], mapping[0][3]],
-            [mapping[1][0], mapping[1][1], mapping[1][2], mapping[1][3]],
-            [mapping[2][0], mapping[2][1], mapping[2][2], mapping[2][3]],
-            [mapping[3][0], mapping[3][1], mapping[3][2], mapping[3][3]]
+            [mapping[0][0], 1 - mapping[0][1], mapping[0][2], mapping[0][3]],
+            [mapping[1][0], 1 - mapping[1][1], mapping[1][2], mapping[1][3]],
+            [mapping[2][0], 1 - mapping[2][1], mapping[2][2], mapping[2][3]],
+            [mapping[3][0], 1 - mapping[3][1], mapping[3][2], mapping[3][3]]
           );
           var x2 = Math.floor(transformedCoord[0] * inputResX);
           var y2 = Math.floor(transformedCoord[1] * inputResY);
-          var index = (x2 + y2 * inputResX) * 4;
+          const pixel = imageData[y2][x2];
+          // var index = (x2 + y2 * inputResX) * 4;
           var colorDistance = getColorDistance(
-            [imageData[index], imageData[index + 2], imageData[index + 3]],
+            [pixel[0] * 255, pixel[1] * 255, pixel[2] * 255],
             [referenceColor[0], referenceColor[1], referenceColor[2]]
           );
-          if (colorDistance < treshold) {
+          if (colorDistance < threshold) {
             this.color(
               referenceColor[0] / 255,
               referenceColor[1] / 255,
@@ -273,6 +274,9 @@ var LaserApi = {
             );
           } else {
             this.color(0, 0, 0, 0);
+            // const pixel33 = imageData[y2][x2];
+            // // const pixel = imageData[this.thread.y][this.thread.x];
+            // this.color(pixel[0], pixel[1], pixel[2], pixel[3]);
           }
           // this.color(
           //   imageData[index] / 255,
@@ -288,7 +292,7 @@ var LaserApi = {
         .setGraphical(true);
     }
     compiledKernelExtractInterestRegion(
-      canvasColorOriginal.data,
+      canvasColorOriginal,
       laserConfig.testResolution.width,
       laserConfig.testResolution.height,
       laserConfig.videoResolution.width,
@@ -569,7 +573,7 @@ var LaserApi = {
     lastDate = currentDate;
 
     LaserApi.updateCanvas();
-    window.requestAnimationFrame(LaserApi.updateCanvasRegular);
+    //window.requestAnimationFrame(LaserApi.updateCanvasRegular);
     /*  setTimeout(function () {
 
 
@@ -582,7 +586,7 @@ var LaserApi = {
   // render canvas
   updateCanvas: function (options) {
     //    console.log('UpdateCanvas in api ///');
-    var transform = getCoordinates();
+    //var transform = getCoordinates();
 
     if (LaserApi.globalImageData === null) {
       LaserApi.globalImageData = LaserApi.context.createImageData(
