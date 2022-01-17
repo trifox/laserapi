@@ -2,9 +2,9 @@ var laserConfig = require("../LaserApiConfig").default;
 var LaserApi = require("../LaserApi").default;
 var MainCanvas = require("../MasterCanvas").default;
 
-var GPU = require("gpu.js").GPU;
-
 const gpu = new GPU();
+
+var kernel;
 var lastResolution = -1;
 var fadeDuration = 1500;
 var myGrid = [];
@@ -93,13 +93,51 @@ function getColorString2(position) {
   );
   return getColorString(lerpresult.x, lerpresult.y, lerpresult.z);
 }
-
+var lastResult;
 const handler = function (laserGrid) {
+  const ctx = MainCanvas.get2dContext();
   if (lastResolution != laserGrid.length) {
     init(laserGrid.length);
     lastResolution = laserGrid.length;
     console.log("resolution is ", laserGrid);
   }
+  if (!kernel) {
+    kernel = gpu
+      .createKernel(function (
+        gameRect,
+        gridResolution,
+        outWidth,
+        outHeight,
+        lastResult,
+        initial
+      ) {
+        var xpos = Math.floor((this.thread.x / outWidth) * gridResolution);
+        var ypos = Math.floor(
+          ((outHeight - this.thread.y) / outHeight) * gridResolution
+        );
+        var value = gameRect[xpos + ypos * gridResolution];
+
+        this.color(0, value, value, 1);
+      })
+      .setOutput([
+        laserConfig.canvasResolution.width,
+        laserConfig.canvasResolution.height,
+      ])
+      .setGraphical(true)
+      .setImmutable(true)
+      .setPipeline(true);
+  }
+  lastResult = kernel(
+    laserGrid,
+    laserConfig.gridResolution,
+    laserConfig.canvasResolution.width,
+    laserConfig.canvasResolution.height,
+    lastResult || [1],
+    lastResult !== undefined
+  );
+  ctx.drawImage(kernel.canvas, 0, 0);
+  return;
+
   var currentDate = performance.now();
   for (var x = 0; x < laserConfig.gridResolution; x++) {
     for (var y = 0; y < laserConfig.gridResolution; y++) {

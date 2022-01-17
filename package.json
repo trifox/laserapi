@@ -53,6 +53,7 @@
     "gl-shader": "^4",
     "gl-texture2d": "^2",
     "gpu.js": "^2",
+    "matter-js": "^0.18.0",
     "p2": "^0.7",
     "prettier": "^2",
     "style-loader": "^0.18",

@@ -110,7 +110,7 @@ async function frameHandler() {
     );
     ctx.restore();
   }
-  console.time("frameHandler");
+  // console.time("frameHandler");
   /**
    * step 2 is to retrieve the rendered video frame as imageData
    */
