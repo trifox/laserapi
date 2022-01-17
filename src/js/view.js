@@ -110,7 +110,7 @@ async function frameHandler() {
     );
     ctx.restore();
   }
-  // console.time("frameHandler");
+  console.time("frameHandler");
   /**
    * step 2 is to retrieve the rendered video frame as imageData
    */
@@ -139,13 +139,12 @@ async function frameHandler() {
    * here we map out the designated area of interest from the input video frame
    * it comes back as imagedata
    */
-  var canvasColorInterest = LaserApi.getInterestReqionGPU(
-    MainCanvas.get2dContext(),
-    CanvasVideo.getVideo()
-  );
-  // console.timeEnd("getInterestRegionGPU");
+  // var canvasColorInterest = LaserApi.getInterestReqionGPU(
+  //   MainCanvas.get2dContext(),
+  //   CanvasVideo.getVideo()
+  // );
 
-  // console.time("getInterestRegionCPU");
+  // console.timeEnd("getInterestRegionGPU");
   // var canvasColorInterestOld = LaserApi.getInterestReqion(
   //   MainCanvas.get2dContext(),
   //   canvasColor
@@ -161,34 +160,28 @@ async function frameHandler() {
   //   //   0
   //   // );
   // }
-  if (laserConfig.showTransform) {
-    gameDebugTransform.handle();
-  }
-  if (laserConfig.showGrid) {
-    gameDebugCorners.handle();
-  }
 
-  if (laserConfig.showMapping) {
-    MainCanvas.get2dContext().putImageData(canvasColorInterest, 0, 0);
-    // MainCanvas.get2dContext().putImageData(
-    //   await scaleImageData(canvasColorInterest, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height),
-    //   0,
-    //   0
-    // );
+  // if (laserConfig.showMapping) {
+  //   MainCanvas.get2dContext().putImageData(canvasColorInterest, 0, 0);
+  // MainCanvas.get2dContext().putImageData(
+  //   await scaleImageData(canvasColorInterest, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height),
+  //   0,
+  //   0
+  // );
 
-    /**
-     * draw the debug output scaled for the extracted rect which becomes fed into the
-     * game update loop
-     */
-    //      var newCanvas = $("<canvas>")
-    //      .attr("width", laserConfig.testResolution.width)
-    //      .attr("height",laserConfig.testResolution.height)[0];
+  /**
+   * draw the debug output scaled for the extracted rect which becomes fed into the
+   * game update loop
+   */
+  //      var newCanvas = $("<canvas>")
+  //      .attr("width", laserConfig.testResolution.width)
+  //      .attr("height",laserConfig.testResolution.height)[0];
 
-    //  newCanvas.getContext("2d").putImageData(canvasColorInterest, 0, 0);
-    //  MainCanvas.get2dContext().drawImage(newCanvas,0,0,laserConfig.canvasResolution.width,laserConfig.canvasResolution.height)
+  //  newCanvas.getContext("2d").putImageData(canvasColorInterest, 0, 0);
+  //  MainCanvas.get2dContext().drawImage(newCanvas,0,0,laserConfig.canvasResolution.width,laserConfig.canvasResolution.height)
 
-    // MainCanvas.get2dContext().drawImage(canvasColorInterest, 0, 0, 200, 200);
-  }
+  // MainCanvas.get2dContext().drawImage(canvasColorInterest, 0, 0, 200, 200);
+  // }
 
   // console.timeEnd("frameHandler");
   // console.time("GetRectCPU");
@@ -196,11 +189,13 @@ async function frameHandler() {
   // // console.log("Lasergridold is", laserGridOld);
   // console.timeEnd("GetRectCPU");
 
-  //  console.time("GetRectGPU");
+  // console.time("GetRectGPU");
   /** step is downsampling the mapped and filtered input video stream image
    * to just an image with 1 channel
    */
-  var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest.data);
+  //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
+  var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
+  // console.timeEnd("frameHandler");
   // console.log("Lasergrid is", laserGrid);
   // console.timeEnd("GetRectGPU");
 
@@ -223,7 +218,14 @@ async function frameHandler() {
 
   //setTimeout(frameHandler, 0);
 
+  if (laserConfig.showTransform) {
+    gameDebugTransform.handle();
+  }
+  if (laserConfig.showGrid) {
+    gameDebugCorners.handle();
+  }
   window.requestAnimationFrame(frameHandler);
+  // console.timeEnd("frameHandler");
 }
 
 var presets = [];
@@ -682,16 +684,22 @@ function setVideoTransform(transform) {
 }
 
 function animationHandler() {
-  laserConfig.threshold = document.getElementById("threshold").value;
-  laserConfig.gridResolution = document.getElementById("gridResolution").value;
+  laserConfig.threshold = Number(document.getElementById("threshold").value);
+  laserConfig.gridResolution = Number(
+    document.getElementById("gridResolution").value
+  );
   laserConfig.debugVideo = document.getElementById("debugVideo").checked;
   laserConfig.showDebug = document.getElementById("showDebug").checked;
   laserConfig.showGame = document.getElementById("showGame").checked;
   laserConfig.showMapping = document.getElementById("showMapping").checked;
   laserConfig.showGrid = document.getElementById("showGrid").checked;
   laserConfig.showTransform = document.getElementById("showTransform").checked;
-  laserConfig.gameIndex = document.getElementById("game-selector").value;
-  laserConfig.playfieldScale = document.getElementById("playfieldScale").value;
+  laserConfig.gameIndex = Number(
+    document.getElementById("game-selector").value
+  );
+  laserConfig.playfieldScale = Number(
+    document.getElementById("playfieldScale").value
+  );
   //  laserConfig.videoTransform = getTransformOfVideoInput()
 
   laserConfig.testColor[0] = Util.hexToRgb(

@@ -8,6 +8,7 @@
 var hermite = require("cubic-hermite");
 var helper = require("./helper.js");
 var GPU = require("gpu.js").GPU;
+var laserConfig = require("./LaserApiConfig.js").default;
 
 const gpu = new GPU();
 gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
@@ -29,6 +30,49 @@ gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
   //   }
   return h00 * p0 + h10 * v0 + h01 * p1 + h11 * v1;
 });
+
+gpu.addFunction(function rgb2hsv(r, g, b) {
+  let rr = 0,
+    gg = 0,
+    bb = 0,
+    h = 0,
+    s = 0;
+  let v = Math.max(r, g);
+  v = Math.max(v, b);
+
+  let minv = Math.min(r, g);
+  minv = Math.min(minv, b);
+  let diff = v - minv;
+
+  function diffc(c, v, diff) {
+    return (v - c) / 6 / diff + 1 / 2;
+  }
+
+  if (diff == 0) {
+    h = s = 0;
+  } else {
+    s = diff / v;
+    rr = diffc(r, v, diff);
+    gg = diffc(g, v, diff);
+    bb = diffc(b, v, diff);
+
+    if (r === v) {
+      h = bb - gg;
+    } else if (g === v) {
+      h = 1 / 3 + rr - bb;
+    } else if (b === v) {
+      h = 2 / 3 + gg - rr;
+    }
+
+    if (h < 0) {
+      h += 1;
+    } else if (h > 1) {
+      h -= 1;
+    }
+  }
+
+  return [Math.round(h * 255), Math.round(s * 255), Math.round(v * 255)];
+});
 gpu.addFunction(
   function getColorDistance(col1, col2) {
     var diff = [col1[0] - col2[0], col1[1] - col2[1], col1[2] - col2[2]];
@@ -36,8 +80,18 @@ gpu.addFunction(
       diff[0] * diff[0] + diff[1] * diff[1] + diff[2] * diff[2]
     );
 
-    // console.log('diff is .', col1, col2, result);
+    // // console.log('diff is .', col1, col2, result);
 
+    // // use hsv color distances for
+    // var hsv1 = rgb2hsv(col1[0], col1[1], col1[2]);
+    // var hsv2 = rgb2hsv(col2[0], col2[1], col2[2]);
+    // var hsvdiff = [
+    //   Math.abs(hsv1[0] - hsv2[0]),
+    //   Math.abs(hsv1[1] - hsv2[1]),
+    //   Math.abs(hsv1[2] - hsv2[2]),
+    // ];
+
+    // var result2 = Math.sqrt(hsvdiff[0] * hsvdiff[0]);
     return result;
   },
   { argumentTypes: { col1: "Array(3)", col2: "Array(3)" } }
@@ -146,8 +200,6 @@ gpu.addFunction(
   }
 );
 
-var laserConfig = require("./LaserApiConfig.js").default;
-
 /* make sure to use https as the web audio api does not like http */
 //
 // if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '0.0.0.0') {
@@ -224,7 +276,7 @@ var lastDate = performance.now();
 
 var compiledKernelExtractInterestRegion;
 var compiledKernelExtractGrid;
-
+var superKernel;
 var LaserApi = {
   lerp: lerp,
   lerp2d: lerp2d,
@@ -234,10 +286,23 @@ var LaserApi = {
   //globalImageData: null,
   video: null,
   canvas: null,
-  getInterestReqionGPU(context, canvasColorOriginal) {
-    if (!compiledKernelExtractInterestRegion) {
-      compiledKernelExtractInterestRegion = gpu
-        .createKernel(function (
+  getFine(videoInput) {
+    /**
+     * this method performs the full input filtering and transformation
+     * as of now it is using the gpu.js kernel combination feature to keep
+     * everything on the gpu, functionality wise it is
+     *
+     * 1. transform input video into region of interest and calculate color diferences to laserpoint color
+     * 2. subsample to scale down to what is used as working space of the games, creating a 1dimensional output array of dots indicating true or false wether a laser pointer
+     * has been detected for that location....
+     */
+    if (!superKernel) {
+      const videoKernel = this.createVideoKernel();
+      const downscaleKernel = this.createDownScaleKernel();
+      superKernel = gpu.combineKernels(
+        videoKernel,
+        downscaleKernel,
+        function (
           imageData,
           resX,
           resY,
@@ -245,51 +310,135 @@ var LaserApi = {
           inputResY,
           mapping,
           referenceColor,
-          threshold
+          threshold,
+          gridResolution
         ) {
-          var x = this.thread.x;
-          var y = resY - this.thread.y;
+          return downscaleKernel(
+            videoKernel(
+              imageData,
+              resX,
+              resY,
+              inputResX,
+              inputResY,
+              mapping,
+              referenceColor,
+              threshold
+            ),
+            gridResolution,
+            gridResolution,
+            resX,
+            resY
+          );
+        }
+      );
+    }
 
-          var transformedCoord = transformCoordinate(
-            [x / resX, y / resY],
-            [mapping[0][0], 1 - mapping[0][1], mapping[0][2], mapping[0][3]],
-            [mapping[1][0], 1 - mapping[1][1], mapping[1][2], mapping[1][3]],
-            [mapping[2][0], 1 - mapping[2][1], mapping[2][2], mapping[2][3]],
-            [mapping[3][0], 1 - mapping[3][1], mapping[3][2], mapping[3][3]]
+    return superKernel(
+      videoInput,
+      laserConfig.testResolution.width,
+      laserConfig.testResolution.height,
+      laserConfig.videoResolution.width,
+      laserConfig.videoResolution.height,
+      [
+        [
+          laserConfig.transform.topleft.x,
+          laserConfig.transform.topleft.y,
+          Number(laserConfig.transform.topleft.slopex),
+          Number(laserConfig.transform.topleft.slopey),
+        ],
+        [
+          laserConfig.transform.topright.x,
+          laserConfig.transform.topright.y,
+          Number(laserConfig.transform.topright.slopex),
+          Number(laserConfig.transform.topright.slopey),
+        ],
+        [
+          laserConfig.transform.bottomleft.x,
+          laserConfig.transform.bottomleft.y,
+          Number(laserConfig.transform.bottomleft.slopex),
+          Number(laserConfig.transform.bottomleft.slopey),
+        ],
+        [
+          laserConfig.transform.bottomright.x,
+          laserConfig.transform.bottomright.y,
+          Number(laserConfig.transform.bottomright.slopex),
+          Number(laserConfig.transform.bottomright.slopey),
+        ],
+      ],
+      [
+        laserConfig.testColor[0],
+        laserConfig.testColor[1],
+        laserConfig.testColor[2],
+      ],
+      Number(laserConfig.threshold),
+      laserConfig.gridResolution
+    );
+  },
+
+  createVideoKernel() {
+    return gpu
+      .createKernel(function (
+        imageData,
+        resX,
+        resY,
+        inputResX,
+        inputResY,
+        mapping,
+        referenceColor,
+        threshold
+      ) {
+        var x = this.thread.x;
+        var y = resY - this.thread.y;
+
+        var transformedCoord = transformCoordinate(
+          [x / resX, y / resY],
+          [mapping[0][0], 1 - mapping[0][1], mapping[0][2], mapping[0][3]],
+          [mapping[1][0], 1 - mapping[1][1], mapping[1][2], mapping[1][3]],
+          [mapping[2][0], 1 - mapping[2][1], mapping[2][2], mapping[2][3]],
+          [mapping[3][0], 1 - mapping[3][1], mapping[3][2], mapping[3][3]]
+        );
+        var x2 = Math.floor(transformedCoord[0] * inputResX);
+        var y2 = Math.floor(transformedCoord[1] * inputResY);
+        const pixel = imageData[y2][x2];
+        // var index = (x2 + y2 * inputResX) * 4;
+        var colorDistance = getColorDistance(
+          [pixel[0], pixel[1], pixel[2]],
+          [
+            referenceColor[0] / 255,
+            referenceColor[1] / 255,
+            referenceColor[2] / 255,
+          ]
+        );
+        if (colorDistance < threshold / 255) {
+          this.color(
+            referenceColor[0] / 255,
+            referenceColor[1] / 255,
+            referenceColor[2] / 255,
+            0
           );
-          var x2 = Math.floor(transformedCoord[0] * inputResX);
-          var y2 = Math.floor(transformedCoord[1] * inputResY);
-          const pixel = imageData[y2][x2];
-          // var index = (x2 + y2 * inputResX) * 4;
-          var colorDistance = getColorDistance(
-            [pixel[0] * 255, pixel[1] * 255, pixel[2] * 255],
-            [referenceColor[0], referenceColor[1], referenceColor[2]]
-          );
-          if (colorDistance < threshold) {
-            this.color(
-              referenceColor[0] / 255,
-              referenceColor[1] / 255,
-              referenceColor[2] / 255,
-              0
-            );
-          } else {
-            this.color(0, 0, 0, 0);
-            // const pixel33 = imageData[y2][x2];
-            // // const pixel = imageData[this.thread.y][this.thread.x];
-            // this.color(pixel[0], pixel[1], pixel[2], pixel[3]);
-          }
-          // this.color(
-          //   imageData[index] / 255,
-          //   imageData[index + 1] / 255,
-          //   imageData[index + 2] / 255,
-          //   1
-          // );
-        })
-        .setOutput([
-          laserConfig.testResolution.width,
-          laserConfig.testResolution.height,
-        ])
-        .setGraphical(true);
+        } else {
+          this.color(0, 0, 0, 0);
+          // const pixel33 = imageData[y2][x2];
+          // // const pixel = imageData[this.thread.y][this.thread.x];
+          // this.color(pixel[0], pixel[1], pixel[2], pixel[3]);
+        }
+        // this.color(
+        //   imageData[index] / 255,
+        //   imageData[index + 1] / 255,
+        //   imageData[index + 2] / 255,
+        //   1
+        // );
+      })
+      .setOutput([
+        laserConfig.testResolution.width,
+        laserConfig.testResolution.height,
+      ])
+      .setGraphical(true);
+  },
+
+  getInterestReqionGPU(context, canvasColorOriginal) {
+    if (!compiledKernelExtractInterestRegion) {
+      compiledKernelExtractInterestRegion = this.createVideoKernel();
     }
     compiledKernelExtractInterestRegion(
       canvasColorOriginal,
@@ -333,16 +482,16 @@ var LaserApi = {
 
     // create imageData object
 
-    var resultImage = context.createImageData(
-      laserConfig.testResolution.width,
-      laserConfig.testResolution.height
-    );
-    // set our buffer as source
-    resultImage.data.set(compiledKernelExtractInterestRegion.getPixels());
+    // var resultImage = context.createImageData(
+    //   laserConfig.testResolution.width,
+    //   laserConfig.testResolution.height
+    // );
+    // // set our buffer as source
+    // resultImage.data.set(compiledKernelExtractInterestRegion.getPixels());
 
     // render.destroy();
 
-    return resultImage;
+    return compiledKernelExtractInterestRegion.canvas;
   },
   getInterestReqion: function (context, canvasColorOriginal) {
     /**
@@ -402,36 +551,48 @@ var LaserApi = {
     }
     return resultImage;
   },
+
+  createDownScaleKernel() {
+    return gpu
+      .createKernel(function (imageData, resX, resY, inputResX, inputResY) {
+        var currentX = this.thread.x % resX;
+        var currentY = Math.floor(this.thread.x / resY);
+        var accumulator = 0;
+        var factX = inputResX / resX;
+        var factY = inputResY / resY;
+        var sourceIndex =
+          Math.floor(
+            inputResX * Math.floor(currentY * factY) +
+              Math.floor(currentX * factX)
+          ) * 4;
+        for (var i = 0; i <= Math.floor(factX); i++) {
+          for (var j = 0; j <= Math.floor(factY); j++) {
+            // if (imageData[sourceIndex + 4 * (i + j * inputResX)] > 0) {
+            //   accumulator++;
+            // }
+            var pixel =
+              imageData[Math.floor((resY - currentY) * factY) + j][
+                Math.floor(currentX * factX) + i
+              ];
+            if (pixel[0] > 0) {
+              accumulator++;
+            }
+            //accumulator++;
+          }
+        }
+        return accumulator;
+        //   if (canvasColorOriginal) {
+        //   }
+      })
+      .setOutput([laserConfig.gridResolution * laserConfig.gridResolution]);
+  },
   getRectForInputImageGPU: function (canvasColorOriginal) {
     /**
      * this method downscales the rgb input 2d array into
      * a 2d array of just floats
      */
     if (!compiledKernelExtractGrid) {
-      compiledKernelExtractGrid = gpu
-        .createKernel(function (imageData, resX, resY, inputResX, inputResY) {
-          var currentX = this.thread.x % resX;
-          var currentY = Math.floor(this.thread.x / resY);
-          var accumulator = 0;
-          var factX = inputResX / resX;
-          var factY = inputResY / resY;
-          var sourceIndex =
-            Math.floor(
-              inputResX * Math.floor(currentY * factY) +
-                Math.floor(currentX * factX)
-            ) * 4;
-          for (var i = 0; i <= Math.floor(factX); i++) {
-            for (var j = 0; j <= Math.floor(factY); j++) {
-              if (imageData[sourceIndex + 4 * (i + j * inputResX)] > 0) {
-                accumulator++;
-              }
-            }
-          }
-          return accumulator;
-          //   if (canvasColorOriginal) {
-          //   }
-        })
-        .setOutput([laserConfig.gridResolution * laserConfig.gridResolution]);
+      compiledKernelExtractGrid = this.createDownScaleKernel();
     }
     return compiledKernelExtractGrid(
       canvasColorOriginal,
