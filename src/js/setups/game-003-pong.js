@@ -248,15 +248,15 @@ function init(data) {
   console.log("initialised pong ", knobPositions);
 }
 
-var lastResolution = -1; 
+var lastResolution = -1;
 const buttons = [
-  guiFillButton({ label: "team 1", posX: 1400, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 2", posX: 1200, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 3", posX: 1000, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 4", posX: 800, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 5", posX: 600, posY: 650, radius: 100 }),
+  guiFillButton({ label: "team 1", posX: 1400, posY: 650, radius: 55 }),
+  guiFillButton({ label: "team 2", posX: 1200, posY: 650, radius: 55 }),
+  guiFillButton({ label: "team 3", posX: 1000, posY: 650, radius: 44 }),
+  guiFillButton({ label: "team 4", posX: 800, posY: 650, radius: 66 }),
+  guiFillButton({ label: "team 5", posX: 600, posY: 650, radius: 77 }),
   guiFillButton({ label: "team 6", posX: 400, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 7", posX: 200, posY: 650, radius: 100 }),
+  guiFillButton({ label: "team 7", posX: 200, posY: 650, radius: 80 }),
 ];
 
 export default {
