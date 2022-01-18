@@ -26,6 +26,7 @@ var games = [
   new GameWrapper(require("./setups/game-006-fade").default),
   new GameWrapper(require("./setups/game-007-c64-evoke17").default),
   new GameWrapper(require("./setups/game-007-c64").default),
+  new GameWrapper(require("./setups/game-008-mandelbrot").default),
 ];
 console.log("games are", games);
 /* make sure to use https as the web audio api does not like http */

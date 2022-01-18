@@ -1,8 +1,18 @@
 /**
  *
- * warning:
+ * Breakdown of algorithm
  *
- * YES I KNOW THIS CAN NOT USED WITH STATIC REFERENCES< IT WILL CONTINUE PROVIDING BETTER API INSTANCING FUNCTIONALITY IN FUTURE
+ * 1. input
+ *  a. a video image stream (videoResolution)
+ *  b. a rectangular are marking the projected frame to scan out of the video stream
+ *    i. at the time of writing perspective transform is performed by using weights the corner
+ *        x/y directions of the rectangular, this will be dealt with future changes backmapping
+ *        the projection to a rectangular area, and is as of now just the best known and easiest
+ *        to implement, /message end future christian and reader
+ *  c. a color reference indicating the laser color to scan for
+ * 2.a. extract area of interest from the rectangular area marked (testresolution)
+ * 2.b. calculate color diferencies of rgb values to reference color to scan for (testresolution)
+ * 3. create 1 dimensional resultarray out of video image (gridResolution)
  *
  */
 var hermite = require("cubic-hermite");
@@ -232,31 +242,6 @@ function transformCoordinate(coord, mapping) {
   var result = lerp2d(tx1, tx2, coord.y);
   // console.log('INput ', coord, 'output', result)
   return result;
-}
-
-function getCoordinates() {
-  return laserConfig.transform;
-}
-function setCoordinates(data) {
-  laserConfig.transform = data;
-}
-
-function updateKnobs(rect) {
-  var knob1 = document.getElementById("knob1");
-  var knob2 = document.getElementById("knob2");
-  var knob3 = document.getElementById("knob3");
-  var knob4 = document.getElementById("knob4");
-  var container = document.getElementById("video").getBoundingClientRect();
-  knob1.style.top = rect.topleft.y * container.height;
-  knob1.style.left = rect.topleft.x * container.width;
-  knob2.style.top = rect.topright.y * container.height;
-  knob2.style.left = rect.topright.x * container.width;
-  knob3.style.top = rect.bottomleft.y * container.height;
-  knob3.style.left = rect.bottomleft.x * container.width;
-  knob4.style.top = rect.bottomright.y * container.height;
-  knob4.style.left = rect.bottomright.x * container.width;
-
-  //   console.log(rect, knob1.style.top, knob1.style.left, container.width, container.height)
 }
 
 function getColorDistance(col1, col2) {
@@ -493,64 +478,6 @@ var LaserApi = {
 
     return compiledKernelExtractInterestRegion.canvas;
   },
-  getInterestReqion: function (context, canvasColorOriginal) {
-    /**
-     * this method performs the extraction of the chosen area of interest and returns a rectangular result of the distances
-     * to the selected marker color
-     */
-
-    var resultImage = context.createImageData(
-      laserConfig.testResolution.width,
-      laserConfig.testResolution.height
-    );
-
-    //  resultImage.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    for (var x = 0; x < laserConfig.testResolution.width; x++) {
-      for (var y = 0; y < laserConfig.testResolution.height; y++) {
-        var indexnormal = (y * laserConfig.testResolution.width + x) * 4; // index to the result image pixel
-
-        // get coordinate in original image mapped through the rectangle of user input
-        var coordTransformed = transformCoordinate(
-          {
-            x: x / laserConfig.testResolution.width,
-            y: y / laserConfig.testResolution.height,
-          },
-          laserConfig.transform
-        );
-
-        coordTransformed.x *= laserConfig.testResolution.width;
-        coordTransformed.y *= laserConfig.testResolution.height;
-        //   console.log('coord', coordTransformed)
-        var indexInput =
-          (Math.floor(coordTransformed.y) * laserConfig.testResolution.width +
-            Math.floor(coordTransformed.x)) *
-          4;
-
-        if (
-          getColorDistance(laserConfig.testColor, [
-            canvasColorOriginal.data[indexInput],
-            canvasColorOriginal.data[indexInput + 1],
-            canvasColorOriginal.data[indexInput + 2],
-          ]) < laserConfig.threshold
-        ) {
-          resultImage.data[indexnormal] = canvasColorOriginal.data[indexInput];
-          resultImage.data[indexnormal + 1] =
-            canvasColorOriginal.data[indexInput + 1];
-          resultImage.data[indexnormal + 2] =
-            canvasColorOriginal.data[indexInput + 2];
-          resultImage.data[indexnormal + 3] =
-            canvasColorOriginal.data[indexInput + 3];
-        } else {
-          resultImage.data[indexnormal] = 0;
-          resultImage.data[indexnormal + 1] = 0;
-          resultImage.data[indexnormal + 2] = 0;
-          resultImage.data[indexnormal + 3] = 255;
-        }
-      }
-    }
-    return resultImage;
-  },
 
   createDownScaleKernel() {
     return gpu
@@ -602,92 +529,6 @@ var LaserApi = {
       Number(laserConfig.testResolution.height)
     );
   },
-  getRectForInputImage: function (canvasColorOriginal) {
-    //     console.log('input image is ', canvasColorOriginal)
-    var gwidth = canvasColorOriginal.width / laserConfig.gridResolution;
-    var gheight = canvasColorOriginal.height / laserConfig.gridResolution;
-
-    for (var gy = 0; gy < laserConfig.gridResolution; gy++) {
-      for (var gx = 0; gx < laserConfig.gridResolution; gx++) {
-        var gIndex = gy * laserConfig.gridResolution + gx;
-        LaserApi.gRect[gIndex] = 0;
-      }
-    }
-
-    // lol, room for improvement to make it stop as soon as an adequate pixel has been found in subsection search should continue directly in next section
-    for (var x = 0; x < laserConfig.testResolution.width; x++) {
-      for (var y = 0; y < laserConfig.testResolution.height; y++) {
-        /*var transformed = transformCoordinate({
-                     x: x / LaserApi.canvas.width,
-                     y: y / LaserApi.canvas.height
-                     }, transform);
-
-                     transformed.x *= LaserApi.canvas.width;
-                     transformed.y *= LaserApi.canvas.height;
-
-                     transformed.x = Math.round(transformed.x)
-                     transformed.y = Math.round(transformed.y)
-
-                     */
-
-        var transformed = {
-          x: x,
-          y: y,
-        };
-
-        if (x === 0 && y === 0) {
-          //          console.log("transformed is ", transformed)
-        }
-        var index =
-          (transformed.y * laserConfig.testResolution.width + transformed.x) *
-          4;
-        var indexnormal = (y * laserConfig.testResolution.width + x) * 4;
-        var gx = Math.floor(x / gwidth);
-        var gy = Math.floor(y / gheight);
-        var gIndex = gy * laserConfig.gridResolution + gx;
-        if (LaserApi.gRect[gIndex] > 0) {
-          //     break;
-        }
-        //canvasColor.data[index + 1] = 0;
-        //canvasColor.data[index + 2] = 0;
-        //                    if (canvasColor.data[index] > (canvasColor.data[index + 1] + canvasColor.data[index + 2])) {
-        var diff = [];
-        var current = [];
-        current[0] = canvasColorOriginal.data[index];
-        current[1] = canvasColorOriginal.data[index + 1];
-        current[2] = canvasColorOriginal.data[index + 2];
-
-        if (
-          getColorDistance(laserConfig.testColor, [
-            canvasColorOriginal.data[index],
-            canvasColorOriginal.data[index + 1],
-            canvasColorOriginal.data[index + 2],
-          ]) < laserConfig.threshold
-        ) {
-          /*  coordinates.push({
-                         x: x,
-                         x: x,
-                         y: y,
-                         r: canvasColor.data[index],
-                         g: canvasColor.data[index + 1],
-                         b: canvasColor.data[index + 2]
-                         });
-                         */
-          // LaserApi.globalImageData.data[indexnormal] = 0;
-          // LaserApi.globalImageData.data[indexnormal + 1] = 0;
-          // LaserApi.globalImageData.data[indexnormal + 2] = 255;
-
-          LaserApi.gRect[gIndex] = LaserApi.gRect[gIndex] + 1;
-        } else {
-          // LaserApi.globalImageData.data[indexnormal] *= 0.9;
-          // LaserApi.globalImageData.data[indexnormal + 1] *= 0.9;
-          // LaserApi.globalImageData.data[indexnormal + 2] *= 0.9;
-          //LaserApi .gRect[gIndex] = 0;
-        }
-      }
-    }
-    return LaserApi.gRect;
-  },
 
   init: function (video, canvas) {
     LaserApi.video = video;
@@ -722,28 +563,21 @@ var LaserApi = {
       function () {}
     );
   },
-  // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
-  updateCanvasRegular: function () {
-    var currentDate = performance.now();
-    //     console.log('checking ', lastDate, currentDate);
-    if (currentDate - lastDate < laserConfig.tickIntervalMilliseconds) {
-      window.requestAnimationFrame(LaserApi.updateCanvasRegular);
-      return;
-    }
-    //    console.log('returning ', lastDate, currentDate);
-    lastDate = currentDate;
+  // // main loop, calls the render method each 30ms + calculates the current average volume + activates the alarm
+  // updateCanvasRegular: function () {
+  //   return;
+  //   var currentDate = performance.now();
+  //   //     console.log('checking ', lastDate, currentDate);
+  //   if (currentDate - lastDate < laserConfig.tickIntervalMilliseconds) {
+  //     window.requestAnimationFrame(LaserApi.updateCanvasRegular);
+  //     return;
+  //   }
+  //   //    console.log('returning ', lastDate, currentDate);
+  //   lastDate = currentDate;
 
-    LaserApi.updateCanvas();
-    //window.requestAnimationFrame(LaserApi.updateCanvasRegular);
-    /*  setTimeout(function () {
+  //   LaserApi.updateCanvas();
+  // },
 
-
-             updateCanvas()
-             updateCanvasRegular()
-
-             }, 300)*/
-  },
- 
   registerCallback: function (fn) {
     // most simple callback saving for now, no events, no unregister nothing
     LaserApi.callback = fn;

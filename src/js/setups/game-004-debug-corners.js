@@ -29,7 +29,7 @@ function createDiv() {
 // document.body.insertBefore(topright, document.body.firstChild)
 // document.body.insertBefore(bottomleft, document.body.firstChild)
 // document.body.insertBefore(bottomright, document.body.firstChild)
-const handler = function ( ) {
+const handler = function () {
   // paint markers in the corners
   var size = 75;
   MainCanvas.get2dContext().fillStyle = Util.rgbToHex(
@@ -44,7 +44,7 @@ const handler = function ( ) {
   );
   MainCanvas.get2dContext().lineWidth = 8;
 
-  for (var i = 0; i < 1; i += 0.1) {
+  for (var i = 0; i < 1; i += 0.2) {
     drawLine(
       MainCanvas.get2dContext(),
       0,

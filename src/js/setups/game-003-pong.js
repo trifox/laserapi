@@ -1,3 +1,5 @@
+import util from "../util.js";
+
 var laserConfig = require("../LaserApiConfig.js").default;
 var MasterCanvas = require("../MasterCanvas").default;
 var PhysicsPong = require("./PhysicsPong").default;
@@ -11,7 +13,8 @@ var moveSpeed = 125;
 var itemCount = 6;
 var clampMovementX = true;
 var lastTime = performance.now();
-
+console.log("init pong to state start");
+var gameState = "start";
 const isInsideRect = function (rect1, rect2) {
   //   console.log('comparing ', rect1, rect2)
   var p1 = rect1.topleft.x < rect2.topright.x;
@@ -247,16 +250,43 @@ function init(data) {
   lastTime = performance.now();
   console.log("initialised pong ", knobPositions);
 }
-
+var activeButtons = 0;
 var lastResolution = -1;
 const buttons = [
-  guiFillButton({ label: "team 1", posX: 1400, posY: 650, radius: 55 }),
-  guiFillButton({ label: "team 2", posX: 1200, posY: 650, radius: 55 }),
-  guiFillButton({ label: "team 3", posX: 1000, posY: 650, radius: 44 }),
-  guiFillButton({ label: "team 4", posX: 800, posY: 650, radius: 66 }),
-  guiFillButton({ label: "team 5", posX: 600, posY: 650, radius: 77 }),
-  guiFillButton({ label: "team 6", posX: 400, posY: 650, radius: 100 }),
-  guiFillButton({ label: "team 7", posX: 200, posY: 650, radius: 80 }),
+  guiFillButton({
+    label: "Team 1",
+    posX: 1920 / 2 - 400,
+    posY: 650,
+    radius: 200,
+    onEnterActive: () => {
+      console.log("hrhr enter active1");
+      activeButtons++;
+      if (activeButtons === 2) {
+        gameState = "game";
+      }
+    },
+    onExitActive: () => {
+      activeButtons--;
+      console.log("hrhr exit active1");
+    },
+  }),
+  guiFillButton({
+    label: "Team 2",
+    posX: 1920 / 2 + 400,
+    posY: 650,
+    radius: 200,
+    onEnterActive: () => {
+      activeButtons++;
+      console.log("hrhr enter active2", gameState);
+      if (activeButtons === 2) {
+        gameState = "game";
+      }
+    },
+    onExitActive: () => {
+      activeButtons--;
+      console.log("hrhr exit active2", gameState);
+    },
+  }),
 ];
 
 export default {
@@ -264,7 +294,7 @@ export default {
   init: function (data) {
     init(data);
 
-    console.log("init game moorhuni ", knobPositions);
+    console.log("init game pong ", knobPositions);
   },
   handle: function (grid) {
     if (lastResolution != grid.length) {
@@ -273,43 +303,63 @@ export default {
     }
 
     handler(grid);
+    console.log(gameState);
+    if (gameState == "start") {
+      this.handleStartGame(grid);
+    } else {
+      // update physics positions
+      for (var i = 0; i < itemCount; i++) {
+        if (PhysicsPong.getObstacle(i)) {
+          //  console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
 
-    // update physics positions
-    for (var i = 0; i < itemCount; i++) {
-      if (PhysicsPong.getObstacle(i)) {
-        //  console.log('physics pong', knobPositions [i], PhysicsPong.getObstacle(i))
+          var obstacle = PhysicsPong.getObstacle(i);
+          var obstPosition = {
+            x: knobPositions[i].left + knobPositions[i].width / 2,
+            y: knobPositions[i].top + knobPositions[i].height / 2,
+          };
+          if (
+            Math.sqrt(
+              Math.pow(obstPosition.x - obstacle.position[0], 2) +
+                Math.pow(obstPosition.y - obstacle.position[1], 2)
+            ) > 0.5
+          ) {
+            obstacle.velocity = [
+              (obstacle.position[0] - obstPosition.x) / 10,
+              (obstacle.position[1] - obstPosition.y) / 10,
+            ];
+            // console.log("applying force", obstacle.force);
+            // obstacle.stiffness = 0;
+          } else {
+            obstacle.velocity = [0, 0];
+          }
+          obstacle.position = [obstPosition.x, obstPosition.y];
+          obstacle.color = knobPositions[i].color;
+          // console.log(obstacle);
 
-        var obstacle = PhysicsPong.getObstacle(i);
-        var obstPosition = {
-          x: knobPositions[i].left + knobPositions[i].width / 2,
-          y: knobPositions[i].top + knobPositions[i].height / 2,
-        };
-        if (
-          Math.sqrt(
-            Math.pow(obstPosition.x - obstacle.position[0], 2) +
-              Math.pow(obstPosition.y - obstacle.position[1], 2)
-          ) > 0.5
-        ) {
-          obstacle.velocity = [
-            (obstacle.position[0] - obstPosition.x) / 10,
-            (obstacle.position[1] - obstPosition.y) / 10,
-          ];
-          // console.log("applying force", obstacle.force);
-          // obstacle.stiffness = 0;
-        } else {
-          obstacle.velocity = [0, 0];
+          // console.log('physics pong is ', PhysicsPong)
+          PhysicsPong.render(MasterCanvas.get2dContext());
         }
-        obstacle.position = [obstPosition.x, obstPosition.y];
-        obstacle.color = knobPositions[i].color;
-        // console.log(obstacle);
       }
+      PhysicsPong.step();
     }
-    PhysicsPong.step();
+  },
 
-    // console.log('physics pong is ', PhysicsPong)
-    PhysicsPong.render(MasterCanvas.get2dContext());
-
-    // button.handle(grid);
+  handleStartGame(grid) {
+    util.renderText({
+      ctx: MasterCanvas.get2dContext(),
+      text: "Laser-Pong",
+      fontSize: "150px",
+      fillStyle: "green",
+      x: laserConfig.canvasResolution.width / 2,
+      y: 200,
+    });
+    util.renderText({
+      ctx: MasterCanvas.get2dContext(),
+      text: "Activate Both buttons to start game and indicate you are ready",
+      fontSize: "50px",
+      x: laserConfig.canvasResolution.width / 2,
+      y: 300,
+    });
     buttons.forEach((item) => item.handle(grid));
   },
 };

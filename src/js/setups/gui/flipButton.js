@@ -1,5 +1,6 @@
 /**
- * fillButton is a circular area that becomes filled, once filled the state switches to 'ON'
+ * flipButton is a button that is triggering onEnter, onExit events when a laser pointer has been detected
+ * underneath
  *
  */
 var MasterCanvas = require("../../MasterCanvas").default;
@@ -11,26 +12,22 @@ function moveToHelper_getGridPixel(data, x, y) {
 }
 
 export default ({
-  label = "Sample Buttohn",
+  label = "Flip Button",
   posX,
   posY,
   radius = 10,
-  speedUp = 1,
-  speedDown = 0.1,
   activeColor = "#ffff00",
   growColor = "#00ffff",
   normalColor = "#0000ff",
-  activeValue = 75,
-  onEnterActive,
-  onExitActive,
-  minValue = 25,
+  onEnter,
+  onExit,
 }) => {
   var sleeper = 0;
   var counter = 0;
   var lastTime = performance.now();
   var state = "normal";
   return {
-    name: "GUI flipButton",
+    name: "GUI fillButton",
     init: function () {},
     data: {
       fillState: 0,
@@ -75,40 +72,28 @@ export default ({
             }
             if (found) break;
           }
-          if (found) {
-            counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
-            sleeper = 1;
-          } else {
-            counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
-            // make a sleep
-            sleeper = 5 + Math.round(Math.random() * 25);
-            sleeper = 1;
-          }
         }
       }
       var ctx = MasterCanvas.get2dContext();
 
       //        ctx.strokeStyle = util.rgbToHex(0, 255, 255);
       var oldstate = state;
-      if (counter > activeValue) {
+      if (found) {
         ctx.strokeStyle = activeColor;
         state = "active";
-      } else if (counter > minValue) {
-        ctx.strokeStyle = growColor;
-        state = "grow";
       } else {
         ctx.strokeStyle = normalColor;
-        state = "normal";
+        state = "inactive";
       }
       if (oldstate != state) {
-        if (oldstate == "grow" && state == "active") {
-          if (onEnterActive) {
-            onEnterActive();
+        if (state == "active") {
+          if (onEnter) {
+            onEnter();
           }
         }
-        if (oldstate == "active" && state == "grow") {
-          if (onExitActive) {
-            onExitActive();
+        if (state == "inactive") {
+          if (onExit) {
+            onExit();
           }
         }
       }
@@ -116,18 +101,19 @@ export default ({
       ctx.beginPath();
       ctx.arc(posX, posY, radius, 0, 2 * Math.PI);
       ctx.arc(posX, posY, radius * (counter / 100), 0, 2 * Math.PI);
-      ctx.rect(posX - radius, posY - radius, radius * 2, radius * 2);
       ctx.stroke();
 
       // ctx.fillText(label, posX, posY - radius);
 
-      util.renderText({
+      util.renderTextDropShadow({
         ctx,
         text: label,
         x: posX,
-        y: posY - 10,
+        y: posY,
         fontSize: "25px",
         fillStyle: "white",
+        dropDistX: 2,
+        dropDistY: 2,
       });
     },
   };

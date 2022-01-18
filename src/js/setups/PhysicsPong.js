@@ -5,7 +5,7 @@ var MasterCanvas = require("../MasterCanvas").default;
 var matter = require("matter-js");
 var intervalId = null;
 var ballSpeed = 250;
-var gameState = "gameover";
+var gameState = "game";
 var obstacleSizeY = 160;
 var obstacleSizeX = 160;
 var itemCount = 6;
@@ -192,7 +192,7 @@ function renderDescription(ctx) {
 function renderGame(canvas2d) {
   switch (gameState) {
     case "game":
-      renderGame(canvas2d);
+      renderGamePlayfield(canvas2d);
       break;
     case "intro":
       renderIntro(canvas2d);
