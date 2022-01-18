@@ -220,7 +220,7 @@ by hovering with the laser above the right or left
 area of the bars below the labels X(Horizontal)/Y(Vertical)/ZOOM
 the corresponding values are changed
 
-have fun!
+Have Fun!
 
 Copyright 2022 C.Kleinhuis 
 Copyright 2022 Frontend Solutions GmbH
