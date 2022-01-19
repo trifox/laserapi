@@ -81,7 +81,7 @@ gpu.addFunction(function rgb2hsv(r, g, b) {
     }
   }
 
-  return [Math.round(h * 255), Math.round(s * 255), Math.round(v * 255)];
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(v * 100)];
 });
 gpu.addFunction(
   function getColorDistance(col1, col2) {

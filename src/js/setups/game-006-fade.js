@@ -1,194 +1,143 @@
 var laserConfig = require("../LaserApiConfig").default;
-var LaserApi = require("../LaserApi").default;
-var MainCanvas = require("../MasterCanvas").default;
+var MasterCanvas = require("../MasterCanvas").default;
+import util from "../util.js";
+var guiFillButton = require("./gui/fillButton").default;
+var GPU = require("gpu.js").GPU;
+var lastResolution = -1;
 
 const gpu = new GPU();
 
-var kernel;
-var lastResolution = -1;
-var fadeDuration = 1500;
-var myGrid = [];
+var kernelRender;
+var kernelBuffer;
+var buffer;
 
-function init(count) {
-  myGrid = [];
-  console.log("initialising fade ", count);
-  for (var i = 0; i < count; i++) {
-    myGrid.push({
-      active: false,
-      time: performance.now(),
-    });
-  }
-}
-function toPaddedHexString(num, len) {
-  //    console.log('toPaddedHexString', num, len)
-  var str = (num % 256).toString(16);
-  return "0".repeat(len - str.length) + str;
-}
+var help = false;
+const buttons = [
+  guiFillButton({
+    label: "HELP",
+    posX: 1920 - 100,
+    posY: 1080 - 100,
+    radius: 50,
+    speedUp: 2,
+    speedDown: 1,
 
-function getColorString(r, g, b) {
-  var result =
-    "#" +
-    toPaddedHexString(Math.floor(Math.abs(r)), 2) +
-    toPaddedHexString(Math.floor(Math.abs(g)), 2) +
-    toPaddedHexString(Math.floor(Math.abs(b)), 2);
-  //  console.log('result is ', r, g, b, result)
-  return result;
-}
+    onEnterActive: () => {
+      help = true;
+    },
+    onExitActive: () => {
+      help = false;
+    },
+  }),
+];
 
-function getColorString2(position) {
-  // console.log('position is ',position)
-  if (position > 1) {
-    position = 1;
-  }
-
-  if (position < 0) {
-    position = 0;
-  }
-  var green = {
-    x: 0,
-    y: 255,
-    z: 0,
-  };
-  var turkis = {
-    x: 0,
-    y: 255,
-    z: 255,
-  };
-  var blue = {
-    x: 0,
-    y: 0,
-    z: 255,
-  };
-  var darkgrey = {
-    x: 0,
-    y: 128,
-    z: 128,
-  };
-  var black = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
-
-  var colors = [
-    green,
-    turkis,
-    black,
-    black,
-    // turkis,
-    // blue,
-    // black,
-    // turkis,
-    // black,
-    // black
-  ];
-
-  var index1 = Math.floor(position * (colors.length - 2));
-  var index2 = Math.floor(position * (colors.length - 2)) + 1;
-  // console.log('lerping colors', position, colors, index1, index2)
-  var lerpresult = LaserApi.lerp3d(
-    colors[index1],
-    colors[index2],
-    (position - (index1 * 1) / (colors.length - 2)) * (colors.length - 2)
-  );
-  return getColorString(lerpresult.x, lerpresult.y, lerpresult.z);
-}
-var lastResult;
 const handler = function (laserGrid) {
-  const ctx = MainCanvas.get2dContext();
-  if (lastResolution != laserGrid.length) {
-    init(laserGrid.length);
-    lastResolution = laserGrid.length;
-    console.log("resolution is ", laserGrid);
+  var gridSize = Math.sqrt(laserGrid.length);
+  if (gridSize !== lastResolution) {
+    // initialise the buffer bitmap with the same size of the input guiRangeSlider
+
+    buffer = new Float32Array(laserGrid.length);
+    kernelBuffer = undefined;
+    kernelRender = undefined;
+    lastResolution = gridSize;
   }
-  if (!kernel) {
-    kernel = gpu
-      .createKernel(function (
-        gameRect,
-        gridResolution,
-        outWidth,
-        outHeight,
-        lastResult,
-        initial
-      ) {
+  const ctx = MasterCanvas.get2dContext();
+
+  if (!kernelBuffer) {
+    kernelBuffer = gpu
+      .createKernel(function (grid, buffer) {
+        const pos = this.thread.x;
+        if (grid[pos] > 0) {
+          return Math.min(buffer[pos] + 1, 1);
+        } else {
+          return Math.max(buffer[pos] - 0.001, 0);
+        }
+      })
+      .setOutput([laserGrid.length])
+      .setGraphical(false);
+  }
+
+  if (!kernelRender) {
+    kernelRender = gpu
+      .createKernel(function (gameRect, gridResolution, outWidth, outHeight) {
         var xpos = Math.floor((this.thread.x / outWidth) * gridResolution);
         var ypos = Math.floor(
           ((outHeight - this.thread.y) / outHeight) * gridResolution
         );
         var value = gameRect[xpos + ypos * gridResolution];
 
-        this.color(0, value, value, 1);
+        this.color(
+          0.5 * value * (Math.sin(value * 13) * 0.5 + 0.5),
+          value * (Math.sin(value * 15) * 0.25 + 0.5),
+          value * (Math.sin(value * 17) * 0.25 + 0.5),
+          value
+        );
       })
       .setOutput([
         laserConfig.canvasResolution.width,
         laserConfig.canvasResolution.height,
       ])
-      .setGraphical(true)
-      .setImmutable(true)
-      .setPipeline(true);
+      .setGraphical(true);
   }
-  lastResult = kernel(
-    laserGrid,
+  buffer = kernelBuffer(laserGrid, buffer);
+  // console.log("buffer is", buffer);
+  kernelRender(
+    buffer,
     laserConfig.gridResolution,
     laserConfig.canvasResolution.width,
-    laserConfig.canvasResolution.height,
-    lastResult || [1],
-    lastResult !== undefined
+    laserConfig.canvasResolution.height
   );
-  ctx.drawImage(kernel.canvas, 0, 0);
-  return;
+  ctx.drawImage(kernelRender.canvas, 0, 0);
 
-  var currentDate = performance.now();
-  for (var x = 0; x < laserConfig.gridResolution; x++) {
-    for (var y = 0; y < laserConfig.gridResolution; y++) {
-      var gwidth =
-        laserConfig.canvasResolution.width / laserConfig.gridResolution;
-      var gheight =
-        laserConfig.canvasResolution.height / laserConfig.gridResolution;
-
-      var ggx = x * gwidth;
-      var ggy = y * gheight;
-      var gIndex = y * laserConfig.gridResolution + x;
-
-      if (myGrid[gIndex].active) {
-        myGrid[gIndex].active =
-          currentDate - myGrid[gIndex].time < fadeDuration;
-        // random      MainCanvas.get2dContext().fillStyle = '#00' + Math.floor(Math.random() * 255).toString(16) + 'ff'
-        //    console.log('diff is ', currentDate, myGrid[gIndex].time, currentDate - myGrid[gIndex].time)
-        //    MainCanvas.get2dContext().fillStyle = getColorString(0, 255 - ((currentDate - myGrid[gIndex].time) / fadeDuration) * 255, 0, 255)
-        MainCanvas.get2dContext().fillStyle = getColorString2(
-          (currentDate - myGrid[gIndex].time) / fadeDuration
-        );
-        // context.fillText('' +LaserApi . gRect[gIndex], ggx + gwidth * 0.5, ggy + gheight * 0.5);
-
-        MainCanvas.get2dContext().fillRect(
-          ggx,
-          ggy,
-          laserConfig.canvasResolution.width / laserConfig.gridResolution,
-          laserConfig.canvasResolution.height / laserConfig.gridResolution
-        );
-      } else {
-        // context.strokeStyle = "#ffffff";
-      }
-
-      if (laserGrid[gIndex] > 0) {
-        myGrid[gIndex].active = true;
-        myGrid[gIndex].time = performance.now();
-      }
-    }
+  buttons.forEach((item) => item.handle(laserGrid));
+  if (help) {
+    drawHelp();
   }
 };
 
+function drawHelp() {
+  const ctx = MasterCanvas.get2dContext();
+  if (help) {
+    util.renderTextDropShadow({
+      ctx,
+      text: "Laser-Fade",
+      fontSize: "150px",
+      fillStyle: "red",
+      x: laserConfig.canvasResolution.width / 2,
+      y: 200,
+    });
+    ctx.fillStyle = "#00aa0088";
+    ctx.fillRect(
+      laserConfig.canvasResolution.width * 0.05,
+      220,
+      laserConfig.canvasResolution.width * 0.9,
+      laserConfig.canvasResolution.height * 0.5
+    );
+    util.renderTextOutline({
+      ctx,
+      text: `
+This HELP text is displayed,
+because you hovered over the HELP button in the bottom right corner.
+
+This is a painting fading app, 
+point your laser anywhere and it leaves a trace that slowly diminishes
+
+Have Fun!
+
+Copyright 2022 C.Kleinhuis 
+Copyright 2022 Frontend Solutions GmbH
+Copyright 2022 I-Love-Chaos`,
+      fontSize: "26px",
+      lineHeight: 25,
+      fillStyle: "#ffffff",
+      x: laserConfig.canvasResolution.width / 2,
+      y: 250,
+      dropDistX: 4,
+      dropDistY: 4,
+    });
+  }
+}
 export default {
-  name: "FadeGPU",
-  init: function (data) {
-    if (data) {
-      if (data.fadeDuration) {
-        fadeDuration = data.fadeDuration;
-      }
-    }
-  },
-  handle: function (grid) {
-    handler(grid);
-  },
+  name: "Fade GPU",
+  handle: handler,
+  init: () => {},
 };

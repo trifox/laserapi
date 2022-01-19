@@ -129,7 +129,7 @@ export default ({
           Math.max(minValue, maxValue)
         );
       }
-      ctx.lineWidth = height;
+      ctx.lineWidth = height / 4;
       ctx.strokeStyle = normalColor;
       ctx.beginPath();
       ctx.moveTo(posX, posY + height / 2);
@@ -143,7 +143,7 @@ export default ({
 
       ctx.stroke();
 
-      ctx.lineWidth = height / 4;
+      ctx.lineWidth = height / 8;
       ctx.strokeStyle = growColor;
       ctx.beginPath();
       ctx.moveTo(posX, posY + height / 2);

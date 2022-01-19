@@ -55,11 +55,7 @@ export default ({
         const factx = MasterCanvas.getCanvas().width / gridSize;
         const facty = MasterCanvas.getCanvas().height / gridSize;
         var found = false;
-        for (
-          var x = 0;
-          x <= (radius / factx) * 2 /** why the heck is it 8 here??!~! */;
-          x++
-        ) {
+        for (var x = 0; x <= (radius * 2) / factx; x++) {
           for (var y = 0; y <= (radius * 2) / facty; y++) {
             // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
             if (

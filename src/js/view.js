@@ -1,5 +1,5 @@
 import { Solver } from "p2";
-
+import util from "./util.js";
 var helper = require("./helper.js");
 var laserConfig = require("./LaserApiConfig").default;
 var Util = require("./util").default;
@@ -19,13 +19,13 @@ var gameDebugTransform = require("./setups/game-004-debug-transform").default;
 var GameWrapper = require("./setups/game-wrapper").default;
 //var game01 = require('./setups/game-005-switch').default
 var games = [
-  new GameWrapper(require("./setups/game-001-play-midi").default),
-  new GameWrapper(require("./setups/game-002-moorhuni").default),
+  // new GameWrapper(require("./setups/game-001-play-midi").default),
+  // new GameWrapper(require("./setups/game-002-moorhuni").default),
   new GameWrapper(require("./setups/game-003-pong").default),
-  new GameWrapper(require("./setups/game-005-switch").default),
+  // new GameWrapper(require("./setups/game-005-switch").default),
   new GameWrapper(require("./setups/game-006-fade").default),
-  new GameWrapper(require("./setups/game-007-c64-evoke17").default),
-  new GameWrapper(require("./setups/game-007-c64").default),
+  // new GameWrapper(require("./setups/game-007-c64-evoke17").default),
+  // new GameWrapper(require("./setups/game-007-c64").default),
   new GameWrapper(require("./setups/game-008-mandelbrot").default),
 ];
 console.log("games are", games);
@@ -162,14 +162,6 @@ async function frameHandler() {
   //   // );
   // }
 
-  // if (laserConfig.showMapping) {
-  //   MainCanvas.get2dContext().putImageData(canvasColorInterest, 0, 0);
-  // MainCanvas.get2dContext().putImageData(
-  //   await scaleImageData(canvasColorInterest, laserConfig.canvasResolution.width, laserConfig.canvasResolution.height),
-  //   0,
-  //   0
-  // );
-
   /**
    * draw the debug output scaled for the extracted rect which becomes fed into the
    * game update loop
@@ -225,6 +217,9 @@ async function frameHandler() {
   if (laserConfig.showGrid) {
     gameDebugCorners.handle();
   }
+  if (laserConfig.showHelp) {
+    showHelp(ctx);
+  }
   window.requestAnimationFrame(frameHandler);
   // console.timeEnd("frameHandler");
 }
@@ -256,16 +251,16 @@ document.onkeydown = function (evt) {
         laserConfig.showGame = !laserConfig.showGame;
         document.getElementById("showGame").checked = laserConfig.showGame;
         break;
-      case "m":
-        console.log("showing mapping it ", laserConfig.showMapping);
-        laserConfig.showMapping = !laserConfig.showMapping;
-        document.getElementById("showMapping").checked =
-          laserConfig.showMapping;
-        break;
+
       case "r":
         console.log("showing raster it ", laserConfig.showGrid);
         laserConfig.showGrid = !laserConfig.showGrid;
         document.getElementById("showGrid").checked = laserConfig.showGrid;
+        break;
+      case "h":
+        console.log("showing help ", laserConfig.showHelp);
+        laserConfig.showHelp = !laserConfig.showHelp;
+        document.getElementById("showHelp").checked = laserConfig.showHelp;
         break;
       case "t":
         console.log("showing transform it ", laserConfig.showTransform);
@@ -319,7 +314,63 @@ document.onkeydown = function (evt) {
     loadPreset(presets[evt.key]);
   }
 };
+function showHelp(ctx) {
+  ctx.fillStyle = "#00000088";
+  ctx.fillRect(
+    laserConfig.canvasResolution.width * 0.05,
+    220,
+    laserConfig.canvasResolution.width * 0.9,
+    laserConfig.canvasResolution.height * 0.5
+  );
+  util.renderTextDropShadow({
+    ctx,
+    text: "Laser-Api",
+    fontSize: "150px",
+    fillStyle: "green",
+    x: laserConfig.canvasResolution.width / 2,
+    y: 200,
+  });
 
+  util.renderTextOutline({
+    ctx,
+    text: `
+This HELP text is displayed,because you pressed the 'h' key, press it again to hide.
+
+Shortcut Keys:
+      'h' - show/hide this help  
+      'f' - Fullscreen Mode, always work in fullscreen mode, exit using ESC key
+SHIFT+'f' - Fullscreen Edit Mode, showing the transform edit controls
+      'd' - show/hide debug scanline grid, whis is the input for laserApi applications (Debug) (current:${laserConfig.showDebug})
+      'g' - show/hide current game rendering (Game)                                            (current:${laserConfig.showGame})
+      'r' - show/hide aligning raster when setting up rectangle of interest (Raster)           (current:${laserConfig.showGrid})
+      't' - show/hide the rectangle of interest (Transform)                                    (current:${laserConfig.showTransform})
+      'v' - show/hide video input stream                                                       (current:${laserConfig.debugVideo})
+
+Setting Up:
+1. Setting up
+    a. Select Rectangle of interest - Display the Video (v) and display the Transform (t), hide all other (r,g,d). 
+      Use the input form (SHFT-F)to place the corners of the rectangle to the projection, either monitor or projector.
+    b. Fine Tune Perspective - The Perspective is corrected using the handles on each corner,
+      one for horizontal and one for vertical called slopeX and slopeY. Use the Raster (r) and Debug (d) to match.
+    c. Setup Laser Color - provide a color matching the video stream color of the laserpointer color to look for.
+2. Select Game and Play
+    a. Use input form (SHIFT-F) to select a game in the game dropdown.
+    b. Display the game (g), hide all other views (d,v,r,t).
+                                                                                                             Have Fun!
+Copyright 2022 C.Kleinhuis 
+Copyright 2022 Frontend Solutions GmbH
+Copyright 2022 I-Love-Chaos`,
+    fontSize: "26px",
+    font: "Courier",
+    lineHeight: 30,
+    align: "left",
+    fillStyle: "#ffffff",
+    x: 50,
+    y: 250,
+    dropDistX: 4,
+    dropDistY: 4,
+  });
+}
 function exitHandler(data) {
   console.log("exitHandler", data);
   if (
@@ -524,10 +575,6 @@ function loadHtmlFromSettings(settings) {
     document.getElementById("showTransform").checked = settings.showTransform;
     laserConfig.showTransform = settings.showTransform;
   }
-  if (settings.showMapping !== undefined) {
-    document.getElementById("showMapping").checked = settings.showMapping;
-    laserConfig.showMapping = settings.showMapping;
-  }
   if (settings.gameIndex !== undefined) {
     console.log("loading settings gameIndex", settings);
     laserConfig.gameIndex = settings.gameIndex;
@@ -536,6 +583,10 @@ function loadHtmlFromSettings(settings) {
   if (settings.showDebug !== undefined) {
     document.getElementById("showDebug").checked = settings.showDebug;
     laserConfig.showDebug = settings.showDebug;
+  }
+  if (settings.showHelp !== undefined) {
+    document.getElementById("showHelp").checked = settings.showHelp;
+    laserConfig.showHelp = settings.showHelp;
   }
   if (settings.debugVideo !== undefined) {
     document.getElementById("debugVideo").checked = settings.debugVideo;
@@ -691,8 +742,8 @@ function animationHandler() {
   );
   laserConfig.debugVideo = document.getElementById("debugVideo").checked;
   laserConfig.showDebug = document.getElementById("showDebug").checked;
+  laserConfig.showHelp = document.getElementById("showHelp").checked;
   laserConfig.showGame = document.getElementById("showGame").checked;
-  laserConfig.showMapping = document.getElementById("showMapping").checked;
   laserConfig.showGrid = document.getElementById("showGrid").checked;
   laserConfig.showTransform = document.getElementById("showTransform").checked;
   laserConfig.gameIndex = Number(
