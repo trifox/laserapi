@@ -23,11 +23,16 @@ var games = [
   // new GameWrapper(require("./setups/game-002-moorhuni").default),
   new GameWrapper(require("./setups/game-003-pong").default),
   // new GameWrapper(require("./setups/game-005-switch").default),
-  new GameWrapper(require("./setups/game-006-fade").default),
+  new GameWrapper(require("./setups/game-006-montagsmaler").default),
   // new GameWrapper(require("./setups/game-007-c64-evoke17").default),
   // new GameWrapper(require("./setups/game-007-c64").default),
   new GameWrapper(require("./setups/game-008-mandelbrot").default),
+  new GameWrapper(require("./setups/game-009-shooter").default),
+  new GameWrapper(require("./setups/game-011-basefight").default),
+  new GameWrapper(require("./setups/game-012-reversi").default),
+  new GameWrapper(require("./setups/game-013-lasertorpedo").default),
 ];
+const Lowpassfilter = require("./setups/game-000000000-lowpassfilter").default;
 console.log("games are", games);
 /* make sure to use https as the web audio api does not like http */
 MainCanvas.init(document.getElementById("canvas"));
@@ -71,6 +76,82 @@ async function scaleImageData(imageData, width, height) {
 }
 async function frameHandler() {
   // console.time("frameHandler");
+  const zoomctx = document.getElementById("zoomcanvas").getContext("2d");
+  const zoomx = document.getElementById("zoom_x").value;
+  const zoomy = document.getElementById("zoom_y").value;
+  zoomctx.imageSmoothingEnabled = false;
+  zoomctx.drawImage(
+    CanvasVideo.getVideo(),
+    -zoomx * 3,
+    -zoomy * 3,
+    1920 * 3,
+    1080 * 3
+  );
+
+  // paint the transform as well
+  zoomctx.lineWidth = 10;
+  util.drawLine(
+    zoomctx,
+    laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+    laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.topright.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+    "#00ff00"
+  );
+  util.drawLine(
+    zoomctx,
+    laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+    laserConfig.transform.bottomleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.bottomleft.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+    "#00ff00"
+  );
+  util.drawLine(
+    zoomctx,
+    laserConfig.transform.bottomright.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+    laserConfig.transform.bottomright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+    laserConfig.transform.bottomleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.bottomleft.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+    "#00ff00"
+  );
+  util.drawLine(
+    zoomctx,
+    laserConfig.transform.bottomright.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+    laserConfig.transform.bottomright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+    laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+    laserConfig.transform.topright.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+    "#00ff00"
+  );
+  // end of zoomarea
+
   var ctx = MainCanvas.get2dContext();
   // console.log('Re Rendering');
   // console.log('Re Rendering', MainCanvas.getCanvas());
@@ -188,6 +269,7 @@ async function frameHandler() {
    */
   //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
   var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
+  laserGrid = Lowpassfilter.handle(laserGrid);
   // console.timeEnd("frameHandler");
   // console.log("Lasergrid is", laserGrid);
   // console.timeEnd("GetRectGPU");
@@ -231,6 +313,36 @@ var presets = [];
 
 if (document.addEventListener) {
   document.addEventListener("webkitfullscreenchange", exitHandler, false);
+}
+if (document.addEventListener) {
+  /**
+   * return the location of the click (or another mouse event) relative to the given element (to increase accuracy).
+   * @param {DOM Object} element A dom element (button,canvas,input etc)
+   * @param {DOM Event} event An event generate by an event listener.
+   */
+  function getEventLocation(element, event) {
+    // Relies on the getElementPosition function.
+    var crect = element.getBoundingClientRect();
+    console.log(crect);
+    return {
+      x: event.pageX - crect.x,
+      y: event.pageY - crect.y,
+    };
+  }
+
+  document.getElementById("zoomcanvas").addEventListener(
+    "click",
+    (evt) => {
+      const ctx = document.getElementById("zoomcanvas").getContext("2d");
+      const testcolorinput = document.getElementById("lasercolor");
+      console.log("canvas clicked for color");
+      var loc = getEventLocation(document.getElementById("zoomcanvas"), evt);
+      var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
+      console.log("color is", c);
+      testcolorinput.value = util.rgbToHex(c[0], c[1], c[2]);
+    },
+    false
+  );
 }
 document.onkeydown = function (evt) {
   if (isNaN(evt.key)) {
@@ -349,7 +461,7 @@ SHIFT+'f' - Fullscreen Edit Mode, showing the transform edit controls
 Setting Up:
 1. Setting up
     a. Select Rectangle of interest - Display the Video (v) and display the Transform (t), hide all other (r,g,d). 
-      Use the input form (SHFT-F)to place the corners of the rectangle to the projection, either monitor or projector.
+      Use the input form (SHFT-F) to place the corners of the rectangle to the projection, either monitor or projector.
     b. Fine Tune Perspective - The Perspective is corrected using the handles on each corner,
       one for horizontal and one for vertical called slopeX and slopeY. Use the Raster (r) and Debug (d) to match.
     c. Setup Laser Color - provide a color matching the video stream color of the laserpointer color to look for.

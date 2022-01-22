@@ -16,9 +16,11 @@
  *
  */
 var hermite = require("cubic-hermite");
+import { lerp, lerp2d, lerp3d } from "./math.js";
 var helper = require("./helper.js");
 var GPU = require("gpu.js").GPU;
 var laserConfig = require("./LaserApiConfig.js").default;
+var gpuTools = require("./gpuTools").default;
 
 const gpu = new GPU();
 gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
@@ -41,68 +43,38 @@ gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
   return h00 * p0 + h10 * v0 + h01 * p1 + h11 * v1;
 });
 
-gpu.addFunction(function rgb2hsv(r, g, b) {
-  let rr = 0,
-    gg = 0,
-    bb = 0,
-    h = 0,
-    s = 0;
-  let v = Math.max(r, g);
-  v = Math.max(v, b);
-
-  let minv = Math.min(r, g);
-  minv = Math.min(minv, b);
-  let diff = v - minv;
-
-  function diffc(c, v, diff) {
-    return (v - c) / 6 / diff + 1 / 2;
-  }
-
-  if (diff == 0) {
-    h = s = 0;
-  } else {
-    s = diff / v;
-    rr = diffc(r, v, diff);
-    gg = diffc(g, v, diff);
-    bb = diffc(b, v, diff);
-
-    if (r === v) {
-      h = bb - gg;
-    } else if (g === v) {
-      h = 1 / 3 + rr - bb;
-    } else if (b === v) {
-      h = 2 / 3 + gg - rr;
-    }
-
-    if (h < 0) {
-      h += 1;
-    } else if (h > 1) {
-      h -= 1;
-    }
-  }
-
-  return [Math.round(h * 360), Math.round(s * 100), Math.round(v * 100)];
-});
+gpu.addFunction(gpuTools.rgb2hsv);
 gpu.addFunction(
-  function getColorDistance(col1, col2) {
-    var diff = [col1[0] - col2[0], col1[1] - col2[1], col1[2] - col2[2]];
+  function getColorDistance(col1, referenceColor) {
+    var diff = [
+      col1[0] - referenceColor[0],
+      col1[1] - referenceColor[1],
+      col1[2] - referenceColor[2],
+    ];
     var result = Math.sqrt(
       diff[0] * diff[0] + diff[1] * diff[1] + diff[2] * diff[2]
     );
 
     // // console.log('diff is .', col1, col2, result);
-
+    const contrast = 1;
+    const brightness = 1;
     // // use hsv color distances for
-    // var hsv1 = rgb2hsv(col1[0], col1[1], col1[2]);
-    // var hsv2 = rgb2hsv(col2[0], col2[1], col2[2]);
-    // var hsvdiff = [
-    //   Math.abs(hsv1[0] - hsv2[0]),
-    //   Math.abs(hsv1[1] - hsv2[1]),
-    //   Math.abs(hsv1[2] - hsv2[2]),
-    // ];
-
+    var hsv1 = rgb2hsv(col1[0], col1[1], col1[2]);
+    var hsv2 = rgb2hsv(referenceColor[0], referenceColor[1], referenceColor[2]);
+    var hsvdiff = [
+      Math.abs(hsv1[0] - hsv2[0]),
+      Math.abs(hsv1[1] * brightness - hsv2[1]),
+      Math.abs(hsv1[2] * contrast - hsv2[2]),
+    ];
+    // return result;
     // var result2 = Math.sqrt(hsvdiff[0] * hsvdiff[0]);
-    return result;
+    return (
+      Math.sqrt(
+        hsvdiff[0] * hsvdiff[0] +
+          hsvdiff[1] * hsvdiff[1] +
+          hsvdiff[2] * hsvdiff[2]
+      ) / 386 // the 386 results from sqrt(360*360+100*100+100*100) range of rgb2hsv result
+    );
   },
   { argumentTypes: { col1: "Array(3)", col2: "Array(3)" } }
 );
@@ -110,15 +82,7 @@ gpu.addFunction(
 gpu.addFunction(function lerpSin(v0, v1, t) {
   return lerp(v0, v1, 1 - (Math.cos(t * Math.PI) * 0.5 + 0.5));
 });
-gpu.addFunction(
-  function lerp(v0, v1, t) {
-    return (1 - t) * v0 + t * v1;
-  },
-  {
-    argumentTypes: { v0: "Number", v1: "Number", t: "Number" },
-    returnType: "Number",
-  }
-);
+gpu.addFunction(lerp);
 gpu.addFunction(
   function lerp2d(v0, v1, t) {
     return [lerp(v0[0], v1[0], t), lerp(v0[1], v1[1], t)];
@@ -351,11 +315,11 @@ var LaserApi = {
         ],
       ],
       [
-        laserConfig.testColor[0],
-        laserConfig.testColor[1],
-        laserConfig.testColor[2],
+        laserConfig.testColor[0] / 255,
+        laserConfig.testColor[1] / 255,
+        laserConfig.testColor[2] / 255,
       ],
-      Number(laserConfig.threshold),
+      Number(laserConfig.threshold / 255),
       laserConfig.gridResolution
     );
   },
@@ -388,17 +352,13 @@ var LaserApi = {
         // var index = (x2 + y2 * inputResX) * 4;
         var colorDistance = getColorDistance(
           [pixel[0], pixel[1], pixel[2]],
-          [
-            referenceColor[0] / 255,
-            referenceColor[1] / 255,
-            referenceColor[2] / 255,
-          ]
+          [referenceColor[0], referenceColor[1], referenceColor[2]]
         );
-        if (colorDistance < threshold / 255) {
+        if (colorDistance < threshold) {
           this.color(
-            referenceColor[0] / 255,
-            referenceColor[1] / 255,
-            referenceColor[2] / 255,
+            referenceColor[0],
+            referenceColor[1],
+            referenceColor[2],
             0
           );
         } else {

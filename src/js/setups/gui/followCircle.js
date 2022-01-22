@@ -4,65 +4,46 @@
  */
 var MasterCanvas = require("../../MasterCanvas").default;
 var util = require("../../util.js").default;
-
+import { lerp, slerp } from "./../../math.js";
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
   return data[Math.floor(x) + Math.floor(y) * gridSize];
 }
 
 export default ({
-  label = "Sample Button",
+  label = "Follow Circle",
   posX,
   posY,
   radius = 10,
-  speedUp = 50,
-  edges = 5,
-  speedDown = 25,
-  activeColor = "#00ff88",
-  growColor = "#00ff44",
-  normalColor = "#00ffff",
+  speedUp = 0.1,
+  speedDown = 0.1,
+  activeColor = "#ffff00",
+  growColor = "#00ffff",
+  normalColor = "#008844",
   activeValue = 75,
+  speedX = 0,
+  edges = 10,
+  speedY = 0,
   onEnterActive,
   onExitActive,
-  minValue = 25,
+  angle = 0,
 }) => {
   var sleeper = 0;
   var currentX = posX;
   var currentY = posY;
-  var counter = 0;
-  var currentEdges = edges;
-  var lastTime = performance.now();
+  var currentSpeedX = speedX;
+  var currentSpeedY = speedY;
+  var currentAngle = angle;
   var currentRadius = radius;
-  var currentColor = normalColor;
-  var currentGrowColor = growColor;
-  var currentActiveColor = activeColor;
+  var currentNormalColor = normalColor;
+  var counter = 0;
+  var lastTime = performance.now();
   var state = "normal";
-  var result = {
+  return {
     name: "GUI flipButton",
     init: function () {},
     data: {
       fillState: 0,
-    },
-    getColor() {
-      return currentColor;
-    },
-    getLabel() {
-      return label;
-    },
-    setColor(newcol) {
-      currentColor = newcol;
-    },
-    getGrowColor() {
-      return currentGrowColor;
-    },
-    setGrowColor(newcol) {
-      currentGrowColor = newcol;
-    },
-    getActiveColor() {
-      return currentActiveColor;
-    },
-    setActiveColor(newcol) {
-      currentActiveColor = newcol;
     },
     setX(newX) {
       currentX = newX;
@@ -70,26 +51,25 @@ export default ({
     getX() {
       return currentX;
     },
-    setY(newX) {
-      currentY = newX;
+    setColor(newX) {
+      currentNormalColor = newX;
     },
-    setEdges(newX) {
-      currentEdges = newX;
+    getColor() {
+      return currentNormalColor;
     },
-    setCounter(newX) {
-      counter = newX;
-    },
-    getY() {
-      return currentY;
+    setRadius(newX) {
+      currentRadius = newX;
     },
     getRadius() {
       return currentRadius;
     },
-    setRadius(newRadius) {
-      currentRadius = newRadius;
+    setY(newY) {
+      currentY = newY;
+    },
+    getY() {
+      return currentY;
     },
     handle: function (grid) {
-      var ctx = MasterCanvas.get2dContext();
       if (sleeper-- <= 0) {
         sleeper = 1; //update always 1
         var currentTime = performance.now();
@@ -108,8 +88,8 @@ export default ({
 
         const factx = MasterCanvas.getCanvas().width / gridSize;
         const facty = MasterCanvas.getCanvas().height / gridSize;
-        var found = false;
-
+        var first = true;
+        var midCoord = {};
         for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
           for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
             // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
@@ -120,57 +100,62 @@ export default ({
                 y + Math.floor((currentY - currentRadius) / facty)
               ) > 0
             ) {
-              // ctx.fillRect(
-              //   currentX - radius + x * factx,
-              //   currentY - radius + y * facty,
-              //   radius * factx * 0.1,
-              //   radius * facty * 0.1
-              // );
-              //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
-              found = true;
-              break;
+              if (first) {
+                midCoord = { x, y };
+              } else {
+                midCoord = { x: (x + midCoord.x) / 2, y: (y + midCoord.y) / 2 };
+              }
+              first = false;
             }
           }
-          if (found) break;
         }
-        if (found) {
-          counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
-          sleeper = 1;
+        if (!first) {
+          // first flag indicates that one field has been found and a valid mass center is available
+          currentSpeedX = lerp(
+            currentSpeedX,
+            midCoord.x / ((currentRadius * 2) / factx) - 0.5,
+            speedUp
+          );
+          currentSpeedY = lerp(
+            currentSpeedY,
+            midCoord.y / ((currentRadius * 2) / facty) - 0.5,
+            speedUp
+          );
         } else {
-          counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
-          // make a sleep
-          sleeper = 5 + Math.round(Math.random() * 25);
-          sleeper = 1;
+          currentSpeedX = lerp(currentSpeedX, 0, speedDown);
+          currentSpeedY = lerp(currentSpeedY, 0, speedDown);
         }
+        currentX = currentX + currentSpeedX * elapsed * 1000;
+        currentY = currentY + currentSpeedY * elapsed * 1000;
       }
+      // console.log(
+      //   "data",
+      //   currentX,
+      //   currentY,
+      //   currentSpeedX,
+      //   currentSpeedY,
+      //   radius
+      // );
+      var ctx = MasterCanvas.get2dContext();
 
       //        ctx.strokeStyle = util.rgbToHex(0, 255, 255);
       var oldstate = state;
-      if (counter > activeValue) {
-        ctx.strokeStyle = currentActiveColor;
-        ctx.fillStyle = currentActiveColor;
-        state = "active";
-      } else if (counter > minValue) {
-        ctx.strokeStyle = currentGrowColor;
-        ctx.fillStyle = currentGrowColor;
-        state = "grow";
-      } else {
-        ctx.strokeStyle = currentColor;
-        ctx.fillStyle = currentColor;
-        state = "normal";
-      }
+
+      ctx.strokeStyle = currentNormalColor;
+
       if (oldstate != state) {
         if (oldstate == "grow" && state == "active") {
           if (onEnterActive) {
-            onEnterActive(result);
+            onEnterActive();
           }
         }
         if (oldstate == "active" && state == "grow") {
           if (onExitActive) {
-            onExitActive(result);
+            onExitActive();
           }
         }
       }
+
       ctx.lineWidth = 4;
       // ctx.beginPath();
       // ctx.arc(currentX, currentY, currentRadius, 0, 2 * Math.PI);
@@ -190,23 +175,7 @@ export default ({
       // ctx.stroke();
 
       // ctx.fillText(label, posX, posY - radius);
-      util.drawNgon({
-        ctx,
-        color: ctx.strokeStyle,
-        Xcenter: currentX,
-        Ycenter: currentY,
-        size: currentRadius,
-        numberOfSides: currentEdges,
-      });
-      util.drawNgon({
-        ctx,
-        color: ctx.strokeStyle,
-        Xcenter: currentX,
-        Ycenter: currentY,
-        size: currentRadius * (counter / 100),
-        numberOfSides: currentEdges,
-        filled: true,
-      });
+      // currentAngle = Math.atan2(currentSpeedX, currentSpeedY);
       util.renderText({
         ctx,
         text: label,
@@ -215,7 +184,15 @@ export default ({
         fontSize: "25px",
         fillStyle: "white",
       });
+      util.drawNgon({
+        ctx,
+        color: currentNormalColor,
+        Xcenter: currentX,
+        Ycenter: currentY,
+        size: currentRadius,
+        numberOfSides: edges,
+        angle: currentAngle,
+      });
     },
   };
-  return result;
 };

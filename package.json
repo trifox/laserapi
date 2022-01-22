@@ -60,6 +60,7 @@
     "tone": "^0.10",
     "uglify-js": "^2",
     "url-loader": "^0.5",
-    "w3": "^1"
+    "w3": "^1",
+    "webpack-copy-plugin": "0.0.4"
   }
 }

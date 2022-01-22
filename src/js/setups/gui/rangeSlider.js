@@ -5,21 +5,13 @@
  */
 var MasterCanvas = require("../../MasterCanvas").default;
 var util = require("../../util.js").default;
-
-function lerp(v0, v1, t) {
-  return v0 * (1 - t) + v1 * t;
-}
-function explerp(v0, v1, t) {
-  /**
-   * golden function :D exponential lerp
-   */
-  return Math.exp(lerp(Math.log(v0), Math.log(v1), t));
-}
+ 
 var guiFlipButton = require("./flipButton").default;
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
   return data[Math.floor(x) + Math.floor(y) * gridSize];
 }
+import {explerp} from './../../math'
 var lastTime;
 export default ({
   label = "Range Slider",
@@ -27,17 +19,13 @@ export default ({
   posY,
   width = 200,
   height = 50,
-  activeColor = "#ffff00",
   growColor = "#00ffff",
-  normalColor = "#0000ff",
-  onChange,
+  normalColor = "#0088ff",
   startValue = 0.4,
   minValue = 0.00001,
   maxValue = 1,
   step = 0.1,
   exponential = false,
-  onEnter,
-  onExit,
 }) => {
   var sleeper = 0;
   var currentStep = step;
@@ -129,7 +117,7 @@ export default ({
           Math.max(minValue, maxValue)
         );
       }
-      ctx.lineWidth = height / 4;
+      ctx.lineWidth = height / 2;
       ctx.strokeStyle = normalColor;
       ctx.beginPath();
       ctx.moveTo(posX, posY + height / 2);
@@ -165,10 +153,10 @@ export default ({
 
       util.renderTextDropShadow({
         ctx,
-        text: this.getValue(),
+        text: this.getValue().toFixed(5),
         x: posX + width / 2,
         y: posY + height / 2,
-        fontSize: "15px",
+        fontSize: "20px",
         fillStyle: "white",
         dropDistX: 2,
         dropDistY: 2,

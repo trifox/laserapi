@@ -1,3 +1,5 @@
+import util from "../util";
+
 var laserConfig = require("../LaserApiConfig").default;
 var Util = require("../util").default;
 var MainCanvas = require("../MasterCanvas").default;
@@ -43,7 +45,7 @@ const handler = function () {
     laserConfig.testColor[2]
   );
   MainCanvas.get2dContext().lineWidth = 8;
-
+var color=util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1],laserConfig.testColor[2])
   for (var i = 0; i < 1; i += 0.2) {
     drawLine(
       MainCanvas.get2dContext(),
@@ -51,7 +53,7 @@ const handler = function () {
       laserConfig.canvasResolution.height * i,
       laserConfig.canvasResolution.width,
       laserConfig.canvasResolution.height * i,
-      "#ff0000"
+      color
     );
     drawLine(
       MainCanvas.get2dContext(),
@@ -59,7 +61,7 @@ const handler = function () {
       0,
       laserConfig.canvasResolution.width * i,
       laserConfig.canvasResolution.height,
-      "#ff0000"
+      color
     );
   }
   for (var i = 0; i < 1; i += 2) {

@@ -5,7 +5,6 @@ var MasterCanvas = require("../MasterCanvas").default;
 var guiFillButton = require("./gui/fillButton").default;
 var guiFlipButton = require("./gui/flipButton").default;
 var guiRangeSlider = require("./gui/rangeSlider").default;
-
 var knobPositions = [];
 
 var lastResolution = -1;
@@ -15,84 +14,50 @@ const bottomBarStartY = 1080 * 0.75;
 var help = false;
 const bottomBarCenterY = (1080 - bottomBarStartY) / 2 + bottomBarStartY;
 
-const xSlider = guiRangeSlider({
-  label: "X Coordinate",
-  posX: rightStartX - 1400,
-  posY: bottomBarCenterY - 50,
-  height: 100,
-  width: 400,
-  startValue: -0.6,
-  minValue: -2,
-  maxValue: 2,
-});
-const ySlider = guiRangeSlider({
-  label: "Y Coordinate",
-  posX: rightStartX - 900,
-  posY: bottomBarCenterY - 50,
-  height: 100,
-  width: 400,
-  startValue: 0,
-  minValue: 2,
-  maxValue: -2,
-});
-const zoomSlider = guiRangeSlider({
-  label: "ZOOM",
-  posX: rightStartX - 400,
-  posY: bottomBarCenterY - 50,
-  height: 100,
-  width: 400,
-  exponential: true,
-  startValue: 2,
-  minValue: 0.0001,
-  maxValue: 2,
-});
-const rotationSlider = guiRangeSlider({
-  label: "Angle",
-  posX: rightStartX - 1300,
-  posY: bottomBarCenterY + 20,
-  height: 100,
-  width: 600,
-  step: 1,
-  startValue: 0,
-  minValue: 0,
-  maxValue: Math.PI,
-});
+var lastTime = 0;
+var elapsed = 0;
+function getDelta() {
+  var currentTime = performance.now();
+  const elapsed = (currentTime - lastTime) / 1000;
 
-const buttons = [
-  guiFillButton({
-    label: "Reset",
+  lastTime = currentTime;
+  return elapsed;
+}
+function createEnemyButton() {
+  const enemy = guiFillButton({
+    label: "",
     posX: leftStartX + 200,
-    posY: bottomBarCenterY,
-    speedDown: 25,
-    speedUp: 50,
+    posY: Math.random() * 800,
+    speedDown: 50,
+    speedUp: 100,
     radius: 50,
     onEnterActive: () => {
-      zoomSlider.reset();
-      xSlider.reset();
-      ySlider.reset();
-    },
-  }),
-  guiFillButton({
-    label: "HELP",
-    posX: leftStartX + 50,
-    posY: bottomBarCenterY,
-    radius: 50,
-    speedDown: 25,
-    activeValue: 50,
-    minValue: 10,
-    speedUp: 50,
-    onEnterActive: () => {
-      help = true;
-    },
-    onExitActive: () => {
-      help = false;
-    },
-  }),
+      enemy.setCounter(0);
+      enemy.setY(Math.random() * 1080);
+      enemy.setX(Math.random() * 1920);
+      enemy.setEdges(Math.floor(3 + Math.random() * 8));
 
-  xSlider,
-  ySlider,
-  zoomSlider,
-  // rotationSlider,
+      enemy.setRadius(Math.random() * 200);
+      var audio = new Audio(
+        "https://freesound.org/data/previews/19/19988_37876-lq.mp3"
+      );
+      audio.play();
+    },
+  });
+
+  return enemy;
+}
+const buttons = [
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
+  createEnemyButton(),
 ];
 
 var GPU = require("gpu.js").GPU;
@@ -110,6 +75,7 @@ gpu.addFunction(function rotate(v, a) {
 });
 var kernel;
 const handler = function () {
+  return;
   const ctx = MasterCanvas.get2dContext();
   // console.log("render debug", laserConfig);
   if (!kernel) {
@@ -162,14 +128,7 @@ const handler = function () {
       ])
       .setGraphical(true);
   }
-  xSlider.setStep(zoomSlider.getValue() / 4);
-  ySlider.setStep(zoomSlider.getValue() / 4);
-  kernel(
-    [xSlider.getValue(), ySlider.getValue()],
-    zoomSlider.getValue(),
-    512,
-    0
-  );
+  kernel([0, 0], 2, 512, 0);
   ctx.drawImage(
     kernel.canvas,
     laserConfig.canvasResolution.width * 0.05,
@@ -178,11 +137,12 @@ const handler = function () {
   return;
 };
 export default {
-  name: "Laser-Mandelbrot",
+  name: "Laser-Plopper",
   init: function (data) {
     console.log("init game mandelbrot ", knobPositions);
   },
   handle: function (grid) {
+    elapsed = getDelta();
     if (lastResolution != grid.length) {
       // init();
       lastResolution = grid.length;
@@ -193,11 +153,16 @@ export default {
 
   handleMandelbrotScreen(grid) {
     const ctx = MasterCanvas.get2dContext();
-    buttons.forEach((item) => item.handle(grid));
+    buttons.forEach((item) => {
+      item.handle(grid);
+
+      // item.setX(item.getX() + 1 * Math.random() * 4);
+      item.setRadius(item.getRadius() + elapsed * Math.random() * 4);
+    });
     if (help) {
       util.renderTextDropShadow({
         ctx,
-        text: "Laser-Mandelbrot",
+        text: "Laser-Shooter",
         fontSize: "150px",
         fillStyle: "green",
         x: laserConfig.canvasResolution.width / 2,

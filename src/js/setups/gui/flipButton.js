@@ -16,9 +16,8 @@ export default ({
   posX,
   posY,
   radius = 10,
-  activeColor = "#ffff00",
-  growColor = "#00ffff",
-  normalColor = "#0000ff",
+  activeColor = "#ffff00", 
+  normalColor = "#008844",
   onEnter,
   onExit,
 }) => {
@@ -54,7 +53,7 @@ export default ({
         var found = false;
         for (
           var x = 0;
-          x <= (radius / factx) * 2 /** why the heck is it 8 here??!~! */;
+          x <= (radius *2/ factx) /** why the heck is it 8 here??!~! */;
           x++
         ) {
           for (var y = 0; y <= (radius * 2) / facty; y++) {
@@ -70,8 +69,8 @@ export default ({
               found = true;
               break;
             }
-            if (found) break;
           }
+          if (found) break;
         }
       }
       var ctx = MasterCanvas.get2dContext();
@@ -97,7 +96,7 @@ export default ({
           }
         }
       }
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.arc(posX, posY, radius, 0, 2 * Math.PI);
       ctx.arc(posX, posY, radius * (counter / 100), 0, 2 * Math.PI);

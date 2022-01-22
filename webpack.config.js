@@ -2,6 +2,7 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 var HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin");
 var UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 var WebpackCleanupPlugin = require("webpack-cleanup-plugin");
+var WebpackCopyPlugin = require("webpack-copy-plugin");
 var webpack = require("webpack");
 var intlJSON = require("./src/res/en.json");
 var path = require("path");
@@ -97,6 +98,9 @@ if (isProduction) {
   );
 }
 
+config.plugins.push(
+  new WebpackCopyPlugin({ dirs: [{ from: "./public", to: "dist/public" }] })
+);
 config.plugins.push(new ExtractTextPlugin("styles.css"));
 config.plugins.push(
   new webpack.DefinePlugin(intlJSON),

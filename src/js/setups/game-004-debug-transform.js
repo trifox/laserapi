@@ -55,8 +55,9 @@ function drawLineNormalizedExtended(
     );
   }
 }
-function drawLine(context, p1, p2, color) {
+function drawLine(context, p1, p2, color = "#ffffff") {
   context.strokeStyle = color;
+  context.lineWidth = 2;
   context.beginPath();
   context.moveTo(p1.x, p1.y);
   context.lineTo(p2.x, p2.y);
@@ -170,6 +171,31 @@ const handler = function () {
     laserConfig.videoResolution.height,
     MainCanvas.get2dContext(),
     laserConfig.transform
+  );
+  // horizontal/vertical markes
+
+  drawLine(
+    MainCanvas.get2dContext(),
+    {
+      x: laserConfig.transform.topleft.x * laserConfig.canvasResolution.width,
+      y: 0,
+    },
+    {
+      x: laserConfig.transform.topleft.x * laserConfig.canvasResolution.width,
+      y: laserConfig.canvasResolution.height,
+    }
+  );
+
+  drawLine(
+    MainCanvas.get2dContext(),
+    {
+      y: laserConfig.transform.topleft.y * laserConfig.canvasResolution.height,
+      x: 0,
+    },
+    {
+      y: laserConfig.transform.topleft.y * laserConfig.canvasResolution.height,
+      x: laserConfig.canvasResolution.width,
+    }
   );
 };
 

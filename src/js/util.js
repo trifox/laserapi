@@ -1,8 +1,42 @@
 function componentToHex(c) {
-  var hex = c.toString(16);
+  var hex = Math.round(c).toString(16);
   return hex.length == 1 ? "0" + hex : hex;
 }
 
+function drawNgon({
+  ctx,
+  numberOfSides = 10,
+  size = 100,
+  Xcenter = 25,
+  lineWidth = 4,
+  Ycenter = 25,
+  color,
+  filled = false,
+  angle = 21.2,
+}) {
+  ctx.fillStyle = color; // hexagon
+  ctx.strokeStyle = color; // hexagon
+
+  ctx.beginPath();
+  ctx.moveTo(
+    Xcenter + size * Math.cos(-angle + 0),
+    Ycenter + size * Math.sin(-angle + 0)
+  );
+
+  for (var i = 1; i <= numberOfSides; i += 1) {
+    ctx.lineTo(
+      Xcenter + size * Math.cos(-angle + (i * 2 * Math.PI) / numberOfSides),
+      Ycenter + size * Math.sin(-angle + (i * 2 * Math.PI) / numberOfSides)
+    );
+  }
+
+  // ctx.strokeStyle = "#000000";
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+  if (filled) {
+    ctx.fill();
+  }
+}
 function renderTextOutline({
   ctx,
   text,
@@ -120,6 +154,13 @@ function renderTextDropShadow({
     align,
   });
 }
+function drawLine(ctx, x1, y1, x2, y2, color = "#ffffff") {
+  ctx.strokeStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
 function renderText({
   ctx,
   text,
@@ -138,7 +179,7 @@ function renderText({
   const res = String(text).split("\n");
   res.forEach((item, index) => ctx.fillText(item, x, y + index * lineHeight));
 }
-function rgbToHex(r, g, b) {
+function rgbToHex(r = 0, g = 255, b = 0) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
@@ -154,9 +195,11 @@ function hexToRgb(hex) {
 }
 export default {
   renderText,
+  drawNgon,
   renderTextDropShadow,
   renderTextOutline,
   componentToHex: componentToHex,
   rgbToHex: rgbToHex,
   hexToRgb: hexToRgb,
+  drawLine,
 };
