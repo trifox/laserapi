@@ -18,13 +18,13 @@ export default ({
   speedUp = 50,
   edges = 5,
   speedDown = 25,
-  activeColor = "#00ff88",
-  growColor = "#00ff44",
-  normalColor = "#00ffff",
+  activeColor = "#00bbff",
+  growColor = "#0088ff",
+  normalColor = "#0044ff",
   activeValue = 75,
+  minValue = 25,
   onEnterActive,
   onExitActive,
-  minValue = 25,
 }) => {
   var sleeper = 0;
   var currentX = posX;
@@ -34,6 +34,7 @@ export default ({
   var lastTime = performance.now();
   var currentRadius = radius;
   var currentColor = normalColor;
+  var currentLabel = label;
   var currentGrowColor = growColor;
   var currentActiveColor = activeColor;
   var state = "normal";
@@ -47,10 +48,16 @@ export default ({
       return currentColor;
     },
     getLabel() {
-      return label;
+      return currentLabel;
+    },
+    setLabel(label) {
+      currentLabel = label;
     },
     setColor(newcol) {
       currentColor = newcol;
+    },
+    setValue(newcol) {
+      counter = newcol;
     },
     getGrowColor() {
       return currentGrowColor;
@@ -123,8 +130,8 @@ export default ({
               // ctx.fillRect(
               //   currentX - radius + x * factx,
               //   currentY - radius + y * facty,
-              //   radius * factx * 0.1,
-              //   radius * facty * 0.1
+              //   (radius)/(currentRadius * 2) / factx ,
+              //   (radius)/(currentRadius * 2) / facty ,
               // );
               //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
               found = true;
@@ -205,11 +212,11 @@ export default ({
         Ycenter: currentY,
         size: currentRadius * (counter / 100),
         numberOfSides: currentEdges,
-        filled: true,
+        filled: false,
       });
       util.renderText({
         ctx,
-        text: label,
+        text: currentLabel,
         x: currentX,
         y: currentY - 10,
         fontSize: "25px",

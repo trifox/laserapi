@@ -121,7 +121,7 @@ function initialiseTeams() {
       edges: 5,
 
       radius: 100,
-      normalColor: "#00aaff",
+      normalColor: "#00ffaa",
       onEnterActive: (sender) => {
         // spawn buttons
         enemies.push(
@@ -145,14 +145,14 @@ function initialiseTeams() {
       edges: 4,
 
       radius: 100,
-      normalColor: "#00aaff",
+      normalColor: "#0000ff",
       onEnterActive: (sender) => {
         // spawn buttons
         enemies.push(
           createEnemyButton(
-            1920 - 100,
-            100,
-            "#00ffaa",
+            sender.getX(),
+            sender.getY(),
+            "#0000ff",
             "Team3",
             4,
             sender.getRadius()
@@ -169,14 +169,14 @@ function initialiseTeams() {
       edges: 3,
 
       radius: 100,
-      normalColor: "#00aaff",
+      normalColor: "#00ff00",
       onEnterActive: (sender) => {
         // spawn buttons
         enemies.push(
           createEnemyButton(
-            1920 - 100,
             100,
-            "#00ffaa",
+            1080 - 100,
+            "#00ff00",
             "Team4",
             3,
             sender.getRadius()
@@ -326,6 +326,7 @@ export default {
           baseCollision.base.getRadius() -
             baseCollision.enemy.getGui().getRadius() * 0.1
         );
+        console.log("Remove Enemy collisition with base item");
         removeItemFromArray(enemies, baseCollision.enemy);
         if (baseCollision.base.getRadius() <= 50) {
           removeItemFromArray(buttons, baseCollision.base);
@@ -410,7 +411,7 @@ The team that is last to survive wins the game.
 
 Have Fun!
 
-Copyright 2022 C.Kleinhuis 
+Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
         fontSize: "26px",

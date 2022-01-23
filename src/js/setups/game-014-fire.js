@@ -15,7 +15,9 @@ gpu.addFunction(lerp3dArray);
 gpu.addFunction(lerp2dArray);
 var kernelRender;
 var kernelBuffer;
+var kernelBufferFire;
 var buffer;
+var buffer2;
 
 var lastTime = 0;
 var elapsed = 0;
@@ -51,21 +53,28 @@ const handler = function (laserGrid) {
     // initialise the buffer bitmap with the same size of the input guiRangeSlider
 
     buffer = new Float32Array(laserGrid.length);
+    buffer2 = new Float32Array(laserGrid.length);
     kernelBuffer = undefined;
-    kernelRender = undefined;
     lastResolution = gridSize;
   }
   const ctx = MasterCanvas.get2dContext();
 
   if (!kernelBuffer) {
     kernelBuffer = gpu
-      .createKernel(function (grid, buffer, elapsed) {
+      .createKernel(function (grid, buffer, elapsed, gridSizer) {
+        var result = 0;
         const pos = this.thread.x;
         if (grid[pos] > 0) {
-          return Math.min(buffer[pos] + 1000 * elapsed, 1);
+          result = Math.min(buffer[pos] + 1000 * elapsed, 1);
         } else {
-          return Math.max(buffer[pos] - 0.001 * elapsed, 0);
+          result = Math.max(buffer[pos] - 0.001 * elapsed, 0);
         }
+        result *= 2;
+        result += buffer[pos + 1] * 1;
+        result += buffer[pos - 1] * 1;
+        result += buffer[pos + gridSizer * 1] * 1;
+        result += buffer[pos + gridSizer * 2] * 1;
+        return result / 6;
       })
       .setOutput([laserGrid.length])
       .setGraphical(false);
@@ -103,7 +112,8 @@ const handler = function (laserGrid) {
       ])
       .setGraphical(true);
   }
-  buffer = kernelBuffer(laserGrid, buffer, elapsed);
+  buffer = kernelBuffer(laserGrid, buffer, elapsed, Number(gridSize));
+  //  buffer2 = kernelBuffer( buffer, elapsed);
   // console.log("buffer is", buffer);
   kernelRender(
     buffer,
@@ -125,7 +135,7 @@ function drawHelp() {
   if (help) {
     util.renderTextDropShadow({
       ctx,
-      text: "Laser-Montagsmaler",
+      text: "Laser-Fire",
       fontSize: "150px",
       fillStyle: "red",
       x: laserConfig.canvasResolution.width / 2,
@@ -163,7 +173,7 @@ Copyright 2022 I-Love-Chaos`,
   }
 }
 export default {
-  name: "Montagsmaler",
+  name: "Laser-Fire",
   handle: handler,
   init: () => {},
 };

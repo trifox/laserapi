@@ -31,6 +31,7 @@ var games = [
   new GameWrapper(require("./setups/game-011-basefight").default),
   new GameWrapper(require("./setups/game-012-reversi").default),
   new GameWrapper(require("./setups/game-013-lasertorpedo").default),
+  new GameWrapper(require("./setups/game-014-fire").default),
 ];
 const Lowpassfilter = require("./setups/game-000000000-lowpassfilter").default;
 console.log("games are", games);
@@ -469,7 +470,7 @@ Setting Up:
     a. Use input form (SHIFT-F) to select a game in the game dropdown.
     b. Display the game (g), hide all other views (d,v,r,t).
                                                                                                              Have Fun!
-Copyright 2022 C.Kleinhuis 
+Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
     fontSize: "26px",

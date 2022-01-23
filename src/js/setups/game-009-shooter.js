@@ -194,7 +194,7 @@ the corresponding values are changed
 
 Have Fun!
 
-Copyright 2022 C.Kleinhuis 
+Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
         fontSize: "26px",

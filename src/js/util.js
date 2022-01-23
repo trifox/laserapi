@@ -12,7 +12,7 @@ function drawNgon({
   Ycenter = 25,
   color,
   filled = false,
-  angle = 21.2,
+  angle =0,
 }) {
   ctx.fillStyle = color; // hexagon
   ctx.strokeStyle = color; // hexagon
