@@ -1,9 +1,16 @@
-function componentToHex(c) {
+export function componentToHex(c) {
   var hex = Math.round(c).toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
+  return hex.length == 1 ? '0' + hex : hex;
 }
-
-function drawNgon({
+export function removeItemFromArray(arr, value) {
+  // console.log('Removing from array', arr, value);
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+export function drawNgon({
   ctx,
   numberOfSides = 10,
   size = 100,
@@ -12,7 +19,7 @@ function drawNgon({
   Ycenter = 25,
   color,
   filled = false,
-  angle =0,
+  angle = 0,
 }) {
   ctx.fillStyle = color; // hexagon
   ctx.strokeStyle = color; // hexagon
@@ -37,19 +44,19 @@ function drawNgon({
     ctx.fill();
   }
 }
-function renderTextOutline({
+export function renderTextOutline({
   ctx,
   text,
   x = 100,
-  fontSize = "140px",
+  fontSize = '140px',
   lineHeight = 140,
   y = 100,
-  weight = "bold",
-  font = "Verdana",
-  fillStyle = "#0088ff",
-  align = "center",
+  weight = 'bold',
+  font = 'Verdana',
+  fillStyle = '#0088ff',
+  align = 'center',
   outlineDist = 1,
-  shadowStyle = "#000000",
+  shadowStyle = '#000000',
 }) {
   renderText({
     ctx,
@@ -114,20 +121,20 @@ function renderTextOutline({
   });
 }
 
-function renderTextDropShadow({
+export function renderTextDropShadow({
   ctx,
   text,
   x = 100,
-  fontSize = "140px",
+  fontSize = '140px',
   lineHeight = 140,
   y = 100,
-  weight = "bold",
-  font = "Verdana",
-  fillStyle = "#0088ff",
-  align = "center",
+  weight = 'bold',
+  font = 'Verdana',
+  fillStyle = '#0088ff',
+  align = 'center',
   dropDistX = 10,
   dropDistY = 10,
-  shadowStyle = "#000000",
+  shadowStyle = '#000000',
 }) {
   renderText({
     ctx,
@@ -154,36 +161,36 @@ function renderTextDropShadow({
     align,
   });
 }
-function drawLine(ctx, x1, y1, x2, y2, color = "#ffffff") {
+export function drawLine(ctx, x1, y1, x2, y2, color = '#ffffff') {
   ctx.strokeStyle = color;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
 }
-function renderText({
+export function renderText({
   ctx,
   text,
   x = 100,
-  fontSize = "140px",
+  fontSize = '140px',
   lineHeight = 140,
   y = 100,
-  weight = "bold",
-  font = "Verdana",
-  fillStyle = "#0088ff",
-  align = "center",
+  weight = 'bold',
+  font = 'Verdana',
+  fillStyle = '#0088ff',
+  align = 'center',
 }) {
-  ctx.font = weight + " " + fontSize + " " + font;
+  ctx.font = weight + ' ' + fontSize + ' ' + font;
   ctx.fillStyle = fillStyle;
   ctx.textAlign = align;
-  const res = String(text).split("\n");
+  const res = String(text).split('\n');
   res.forEach((item, index) => ctx.fillText(item, x, y + index * lineHeight));
 }
-function rgbToHex(r = 0, g = 255, b = 0) {
-  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+export function rgbToHex(r = 0, g = 255, b = 0) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-function hexToRgb(hex) {
+export function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {

@@ -2,8 +2,8 @@
  * fillButton is a circular area that becomes filled, once filled the state switches to 'ON'
  *
  */
-var MasterCanvas = require("../../MasterCanvas").default;
-var util = require("../../util.js").default;
+var MasterCanvas = require('../../MasterCanvas').default;
+var util = require('../../util.js').default;
 
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
@@ -11,16 +11,18 @@ function moveToHelper_getGridPixel(data, x, y) {
 }
 
 export default ({
-  label = "Sample Button",
+  label = 'Sample Button',
   posX,
   posY,
   radius = 10,
   speedUp = 50,
   edges = 5,
+  edges2 = 3,
   speedDown = 25,
-  activeColor = "#00bbff",
-  growColor = "#0088ff",
-  normalColor = "#0044ff",
+  angle = 0,
+  activeColor = '#00bbff',
+  growColor = '#0088ff',
+  normalColor = '#0044ff',
   activeValue = 75,
   minValue = 25,
   onEnterActive,
@@ -37,9 +39,9 @@ export default ({
   var currentLabel = label;
   var currentGrowColor = growColor;
   var currentActiveColor = activeColor;
-  var state = "normal";
+  var state = 'normal';
   var result = {
-    name: "GUI flipButton",
+    name: 'GUI flipButton',
     init: function () {},
     data: {
       fillState: 0,
@@ -49,6 +51,12 @@ export default ({
     },
     getLabel() {
       return currentLabel;
+    },
+    getEdges() {
+      return edges;
+    },
+    getEdges2() {
+      return edges2;
     },
     setLabel(label) {
       currentLabel = label;
@@ -156,23 +164,23 @@ export default ({
       if (counter > activeValue) {
         ctx.strokeStyle = currentActiveColor;
         ctx.fillStyle = currentActiveColor;
-        state = "active";
+        state = 'active';
       } else if (counter > minValue) {
         ctx.strokeStyle = currentGrowColor;
         ctx.fillStyle = currentGrowColor;
-        state = "grow";
+        state = 'grow';
       } else {
         ctx.strokeStyle = currentColor;
         ctx.fillStyle = currentColor;
-        state = "normal";
+        state = 'normal';
       }
       if (oldstate != state) {
-        if (oldstate == "grow" && state == "active") {
+        if (oldstate == 'grow' && state == 'active') {
           if (onEnterActive) {
             onEnterActive(result);
           }
         }
-        if (oldstate == "active" && state == "grow") {
+        if (oldstate == 'active' && state == 'grow') {
           if (onExitActive) {
             onExitActive(result);
           }
@@ -204,23 +212,36 @@ export default ({
         Ycenter: currentY,
         size: currentRadius,
         numberOfSides: currentEdges,
+        angle,
       });
+      if (edges2) {
+        util.drawNgon({
+          ctx,
+          color: ctx.strokeStyle,
+          Xcenter: currentX,
+          Ycenter: currentY,
+          size: currentRadius / 2,
+          numberOfSides: edges2,
+          angle,
+        });
+      }
       util.drawNgon({
         ctx,
         color: ctx.strokeStyle,
         Xcenter: currentX,
         Ycenter: currentY,
         size: currentRadius * (counter / 100),
-        numberOfSides: currentEdges,
+        numberOfSides: edges,
         filled: false,
+        angle,
       });
       util.renderText({
         ctx,
         text: currentLabel,
         x: currentX,
         y: currentY - 10,
-        fontSize: "25px",
-        fillStyle: "white",
+        fontSize: '25px',
+        fillStyle: 'white',
       });
     },
   };

@@ -46,7 +46,7 @@ const handler = function (laserGrid) {
         ) {
           return Math.min(buffer[pos] + 1000 * elapsed, 1);
         } else {
-          return Math.max(buffer[pos] - 5 * elapsed, 0);
+          return Math.max(buffer[pos] - 500 * elapsed, 0);
         }
       })
       .setOutput([laserGrid.length])

@@ -2,27 +2,28 @@
  * fillButton is a circular area that becomes filled, once filled the state switches to 'ON'
  *
  */
-var MasterCanvas = require("../../MasterCanvas").default;
-var util = require("../../util.js").default;
-import { lerp, slerp } from "./../../math.js";
+var MasterCanvas = require('../../MasterCanvas').default;
+var util = require('../../util.js').default;
+import { lerp, slerp } from './../../math.js';
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
   return data[Math.floor(x) + Math.floor(y) * gridSize];
 }
 
 export default ({
-  label = "Follow Circle",
+  label = 'Follow Circle',
   posX,
   posY,
   radius = 10,
   speedUp = 0.1,
   speedDown = 0.1,
-  activeColor = "#ffff00",
-  growColor = "#00ffff",
-  normalColor = "#008844",
+  activeColor = '#ffff00',
+  growColor = '#00ffff',
+  normalColor = '#008844',
   activeValue = 75,
   speedX = 0,
   edges = 10,
+  edges2 = 10,
   speedY = 0,
   onEnterActive,
   onExitActive,
@@ -38,9 +39,9 @@ export default ({
   var currentNormalColor = normalColor;
   var counter = 0;
   var lastTime = performance.now();
-  var state = "normal";
+  var state = 'normal';
   return {
-    name: "GUI flipButton",
+    name: 'GUI flipButton',
     init: function () {},
     data: {
       fillState: 0,
@@ -68,6 +69,18 @@ export default ({
     },
     getY() {
       return currentY;
+    },
+    setSpeedY(newY) {
+      currentSpeedY = newY;
+    },
+    getSpeedY() {
+      return currentSpeedY;
+    },
+    setSpeedX(newY) {
+      currentSpeedX = newY;
+    },
+    getSpeedX() {
+      return currentSpeedX;
     },
     handle: function (grid) {
       if (sleeper-- <= 0) {
@@ -124,6 +137,7 @@ export default ({
         } else {
           currentSpeedX = lerp(currentSpeedX, 0, speedDown);
           currentSpeedY = lerp(currentSpeedY, 0, speedDown);
+          // currentRadius = currentRadius - 10 * elapsed;
         }
         currentX = currentX + currentSpeedX * elapsed * 1000;
         currentY = currentY + currentSpeedY * elapsed * 1000;
@@ -144,12 +158,12 @@ export default ({
       ctx.strokeStyle = currentNormalColor;
 
       if (oldstate != state) {
-        if (oldstate == "grow" && state == "active") {
+        if (oldstate == 'grow' && state == 'active') {
           if (onEnterActive) {
             onEnterActive();
           }
         }
-        if (oldstate == "active" && state == "grow") {
+        if (oldstate == 'active' && state == 'grow') {
           if (onExitActive) {
             onExitActive();
           }
@@ -181,8 +195,8 @@ export default ({
         text: label,
         x: currentX,
         y: currentY - 10,
-        fontSize: "25px",
-        fillStyle: "white",
+        fontSize: '25px',
+        fillStyle: 'white',
       });
       util.drawNgon({
         ctx,
@@ -193,6 +207,17 @@ export default ({
         numberOfSides: edges,
         angle: currentAngle,
       });
+      if (edges2) {
+        util.drawNgon({
+          ctx,
+          color: currentNormalColor,
+          Xcenter: currentX,
+          Ycenter: currentY,
+          size: currentRadius / 2,
+          numberOfSides: edges2,
+          angle: currentAngle,
+        });
+      }
     },
   };
 };

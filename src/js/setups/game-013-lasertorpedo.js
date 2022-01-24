@@ -45,8 +45,8 @@ function createTorpedo(
     posY: posY,
     normalColor: "#00ffaa",
     edges: edges,
-    speedDown: 25,
-    speedUp: 200,
+    speedDown: 0,
+    speedUp: 25,
     radius: radius,
     onEnterActive: () => {
       // kill torpedo
@@ -263,42 +263,41 @@ export default {
       // check collisions torpedos bases
 
       //torpedo torpedo collision check
-      var handled = [];
-      var toDeleteTorpedos = [];
-      torpedos.forEach((torp) => {
-        handled.push(torp);
-        if (torp.getGui().getX() < 0) {
-          toDeleteTorpedos.push(torp);
-        }
-        if (torp.getGui().getX() > 1920) {
-          toDeleteTorpedos.push(torp);
-        }
-        if (!handled.includes(torp)) {
-          torpedos.forEach((torp2) => {
-            if (!handled.includes(torp2) && torp !== torp2) {
-              if (torp2.getDirection() !== torp.getDirection()) {
-                if (
-                  torp2.getGui().getY() === torp.getGui().getY() &&
-                  Math.abs(torp2.getGui().getX() - torp.getGui().getX()) <
-                    torp.getGui().getRadius()
-                ) {
-                  console.log("torpedo collision", torp, torp2);
-                  handled.push(torp);
-                  handled.push(torp2);
-                  toDeleteTorpedos.push(torp);
-                  toDeleteTorpedos.push(torp2);
+      // var handled = [];
+      // var toDeleteTorpedos = [];
+      // torpedos.forEach((torp) => {
+      //   if (torp.getGui().getX() < 0) {
+      //     toDeleteTorpedos.push(torp);
+      //   }
+      //   if (torp.getGui().getX() > 1920) {
+      //     toDeleteTorpedos.push(torp);
+      //   }
+      //   if (!handled.includes(torp)) {
+      //     torpedos.forEach((torp2) => {
+      //       if (!handled.includes(torp2) && torp !== torp2) {
+      //         if (torp2.getDirection() !== torp.getDirection()) {
+      //           if (
+      //             torp2.getGui().getY() === torp.getGui().getY() &&
+      //             Math.abs(torp2.getGui().getX() - torp.getGui().getX()) <
+      //               torp.getGui().getRadius()
+      //           ) {
+      //             console.log("torpedo collision", torp, torp2);
+      //             handled.push(torp);
+      //             handled.push(torp2);
+      //             toDeleteTorpedos.push(torp);
+      //             toDeleteTorpedos.push(torp2);
 
-                  var audio = new Audio(sonarSound);
-                  audio.play();
-                }
-              }
-            }
-          });
-        }
-      });
-      toDeleteTorpedos.forEach((torp) => {
-        removeItemFromArray(torpedos, torp);
-      });
+      //             var audio = new Audio(sonarSound);
+      //             audio.play();
+      //           }
+      //         }
+      //       }
+      //     });
+      //   }
+      // });
+      // toDeleteTorpedos.forEach((torp) => {
+      //   removeItemFromArray(torpedos, torp);
+      // });
 
       // torpedo base
       const toDeleteBaseCollisions = [];

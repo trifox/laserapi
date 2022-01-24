@@ -46,7 +46,7 @@ const handler = function () {
   );
   MainCanvas.get2dContext().lineWidth = 8;
 var color=util.rgbToHex(laserConfig.testColor[0], laserConfig.testColor[1],laserConfig.testColor[2])
-  for (var i = 0; i < 1; i += 0.2) {
+  for (var i = 0; i <= 1; i += 0.2) {
     drawLine(
       MainCanvas.get2dContext(),
       0,

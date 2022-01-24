@@ -8,7 +8,15 @@ export function lerp2d(v0, v1, t) {
     y: lerp(v0.y, v1.y, t),
   };
 }
-
+export function vecAdd2d(a, b) {
+  return [a[0] + b[0], a[1] + b[1]];
+}
+export function vecSub2d(a, b) {
+  return [a[0] - b[0], a[1] - b[1]];
+}
+export function length(a) {
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1]);
+}
 export function slerp(v0, v1, t) {
   const length1 = Math.sqrt(v0[0] * v0[0] + v0[1] * v0[1]);
   const length2 = Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1]);

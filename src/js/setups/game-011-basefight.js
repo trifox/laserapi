@@ -1,81 +1,108 @@
-import util from "../util.js";
+import { renderTextDropShadow, removeItemFromArray } from '../util.js';
 
-var laserConfig = require("../LaserApiConfig.js").default;
-var MasterCanvas = require("../MasterCanvas").default;
-var guiFillButton = require("./gui/fillButton").default;
-var guiFlipButton = require("./gui/flipButton").default;
-var guiRangeSlider = require("./gui/rangeSlider").default;
-var guiFollowCircle = require("./gui/followCircle").default;
-var knobPositions = [];
-var won = { getLabel: () => "Start Game" };
-var lastResolution = -1;
-const leftStartX = 1920 * 0.05;
-const rightStartX = 1920 - 1920 * 0.05;
-const bottomBarStartY = 1080 * 0.75;
-var help = false;
-const bottomBarCenterY = (1080 - bottomBarStartY) / 2 + bottomBarStartY;
+var laserConfig = require('../LaserApiConfig.js').default;
+var MasterCanvas = require('../MasterCanvas').default;
+var guiFillButton = require('./gui/fillButton').default;
+var guiFollowCircle = require('./gui/followCircle').default;
 
-function createEnemyButton(posX, posY, color, label, edges, radius = 50) {
+/**
+ * audio imports
+ */
+import soundSpawn from '../../../public/media/496199__luminousfridge__player-spawned.ogg';
+import soundGrow from '../../../public/media/521966__kastenfrosch__ready-to-start-jingle.ogg';
+import soundSmash from '../../../public/media/369952__mischy__plop-1.wav';
+import soundBaseCrash from '../../../public/media/155235__zangrutz__bomb-small (1).mp3';
+import soundBaseDestroy from '../../../public/media/414346__bykgames__explosion-far.wav';
+import soundGameOver from '../../../public/media/70299__kizilsungur__sonar.wav';
+
+var won = { getLabel: () => 'Start Game' }; // indicator for winning team, used to initialise game
+var lastResolution = -1; // used to reset stuff wether resolution of grid changes between calls
+var help = false; // flag for displaying help screen
+/**
+ * the create enemy button spawns a moveable object that shrinks over time
+ * @param {*} posX
+ * @param {*} posY
+ * @param {*} color
+ * @param {*} label
+ * @param {*} edges
+ * @param {*} radius
+ * @param {*} spawningBaseRef
+ * @returns
+ */
+function createEnemyButton(
+  posX,
+  posY,
+  color,
+  label,
+  edges,
+  radius = 50,
+  spawningBaseRef
+) {
   const enemy = guiFollowCircle({
-    label: "",
+    label: '',
     posX: posX,
     posY: posY,
     normalColor: color,
     edges,
-    speedDown: 0.1,
-    speedUp: 0.01,
-    radius: radius,
-    onEnterActive: () => {
-      // enemy.setX(0);
-      // var audio = new Audio(
-      //   "https://freesound.org/data/previews/19/19988_37876-lq.mp3"
-      // );
-      // audio.play();
-    },
+    speedDown: 0.01,
+    speedUp: 0.1,
+    radius: radius / 2,
   });
 
-  return {
+  var myself = {
     getGui: () => enemy,
+    getSpawningBase: () => spawningBaseRef,
+    getBaseDistance: () => {
+      const res = Math.sqrt(
+        Math.pow(spawningBaseRef.getX() - enemy.getX(), 2) +
+          Math.pow(spawningBaseRef.getY() - enemy.getY(), 2)
+      );
+      //console.log('Base distance is', res);
+      return res;
+    },
     handle: (grid) => {
-      // grow element at constant rate up to certain size
-      if (enemy.getRadius() < 250) {
-        enemy.setRadius(enemy.getRadius() + 0.1);
-      } else {
-        enemy.setRadius(250);
-      }
       enemy.handle(grid);
+      if (enemy.getRadius() > 150) {
+        //        enemy.setRadius(100);
+        enemy.setX(enemy.getX() + Math.random() + 6 - 3);
+        enemy.setY(enemy.getY() + Math.random() + 6 - 3);
+      }
+      if (enemy.getRadius() > 200 || enemy.getRadius() <= 0) {
+        removeItemFromArray(enemies, myself);
+      }
     },
   };
+  return myself;
 }
 var enemies = [];
 var startScreenButtons = [
   guiFillButton({
-    label: "Start Game",
+    label: 'Start Game',
     posX: 970,
     posY: 640,
-    speedDown: 25,
-    speedUp: 100,
+    speedDown: 200,
+    speedUp: 200,
     edges: 4,
     radius: 200,
-    normalColor: "#00aaff",
+    normalColor: '#00aaff',
     onEnterActive: (sender) => {
       // initialise game
-      buttons = initialiseTeams();
+      basesButtons = initialiseTeams();
       enemies = [];
       help = false;
       won = undefined;
     },
   }),
   guiFillButton({
-    label: "Help",
+    label: 'Help',
     posX: 1920 - 100,
     posY: 1080 - 100,
-    speedDown: 5,
-    speedUp: 100,
+    speedDown: 200,
+    speedUp: 200,
     edges: 32,
     activeValue: 35,
     radius: 50,
-    normalColor: "#00aaff",
+    normalColor: '#00aaff',
     onEnterActive: (sender) => {
       // initialise game
       // buttons = initialiseTeams();
@@ -92,116 +119,126 @@ var startScreenButtons = [
     },
   }),
 ];
-var buttons = initialiseTeams();
+var basesButtons = initialiseTeams();
+function makeBase({
+  posX,
+  posY,
+  name,
+  color = '#00ff00',
+  edges = 6,
+  radius = 100,
+}) {
+  var bases = [
+    guiFillButton({
+      label: name,
+      posX: posX,
+      posY: posY,
+      speedDown: 200,
+      speedUp: 200,
+      edges,
+      radius: radius,
+      normalColor: color,
+    }),
+  ];
+  var currentRadius = 100;
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < 4; j++) {
+      if (i == 0 || j == 0 || i == 3 || j == 3) {
+        var item = guiFillButton({
+          label: '',
+          posX: posX + (i * radius) / 2 - radius + radius / 4,
+          posY: posY + (j * radius) / 2 - radius + radius / 4,
+          speedDown: 200,
+          speedUp: 200,
+          edges,
+          radius: radius / 4,
+          normalColor: color,
+          onEnterActive: (sender) => {
+            var audio = new Audio(soundSpawn);
+            audio.play();
+            // spawn enemy at location
+            enemies.push(
+              createEnemyButton(
+                sender.getX(),
+                sender.getY(),
+                color,
+                'Team1',
+                edges,
+                sender.getRadius() * 2,
+                myself
+              )
+            );
+          },
+        });
+        bases.push(item);
+      }
+    }
+  }
 
+  var myself = {
+    getColor() {
+      return color;
+    },
+    getX() {
+      return posX;
+    },
+    getY() {
+      return posY;
+    },
+    getRadius() {
+      return currentRadius;
+    },
+    getLabel() {
+      return name;
+    },
+    setRadius(x) {
+      currentRadius = x;
+      bases[0].setRadius(x);
+    },
+    handle(grid) {
+      bases.forEach((item) => item.handle(grid));
+    },
+  };
+  return myself;
+}
 function initialiseTeams() {
   return [
-    guiFillButton({
-      label: "Team1",
-      posX: 100,
-      posY: 100,
-      speedDown: 25,
-      speedUp: 100,
-      edges: 6,
-      radius: 100,
-      normalColor: "#00aaff",
-      onEnterActive: (sender) => {
-        // spawn buttons
-        enemies.push(
-          createEnemyButton(100, 100, "#00aaff", "Team1", 6, sender.getRadius())
-        );
-      },
-    }),
-    guiFillButton({
-      label: "Team2",
-      posX: 1920 - 100,
-      posY: 100,
-      speedDown: 25,
-      speedUp: 100,
-      edges: 5,
-
-      radius: 100,
-      normalColor: "#00ffaa",
-      onEnterActive: (sender) => {
-        // spawn buttons
-        enemies.push(
-          createEnemyButton(
-            1920 - 100,
-            100,
-            "#00ffaa",
-            "Team2",
-            5,
-            sender.getRadius()
-          )
-        );
-      },
-    }),
-    guiFillButton({
-      label: "Team3",
-      posX: 1920 - 100,
-      posY: 1080 - 100,
-      speedDown: 25,
-      speedUp: 100,
-      edges: 4,
-
-      radius: 100,
-      normalColor: "#0000ff",
-      onEnterActive: (sender) => {
-        // spawn buttons
-        enemies.push(
-          createEnemyButton(
-            sender.getX(),
-            sender.getY(),
-            "#0000ff",
-            "Team3",
-            4,
-            sender.getRadius()
-          )
-        );
-      },
-    }),
-    guiFillButton({
-      label: "Team4",
-      posX: 100,
-      posY: 1080 - 100,
-      speedDown: 25,
-      speedUp: 100,
+    makeBase({
+      posX: 1920 / 2 - 4 * 100,
+      posY: 1080 / 2 - 4 * 100,
+      name: 'Team 1',
       edges: 3,
-
-      radius: 100,
-      normalColor: "#00ff00",
-      onEnterActive: (sender) => {
-        // spawn buttons
-        enemies.push(
-          createEnemyButton(
-            100,
-            1080 - 100,
-            "#00ff00",
-            "Team4",
-            3,
-            sender.getRadius()
-          )
-        );
-      },
+      color: '#44ff44',
+    }),
+    makeBase({
+      posX: 1920 / 2 + 4 * 100,
+      posY: 1080 / 2 - 4 * 100,
+      name: 'Team 2',
+      edges: 4,
+      color: '#00ff88',
+    }),
+    makeBase({
+      posX: 1920 / 2 + 4 * 100,
+      posY: 1080 / 2 + 4 * 100,
+      name: 'Team 3',
+      edges: 5,
+      color: '#0088ff',
+    }),
+    makeBase({
+      posX: 1920 / 2 - 4 * 100,
+      posY: 1080 / 2 + 4 * 100,
+      name: 'Team 4',
+      edges: 6,
+      color: '#00ffff',
     }),
   ];
 }
 
-var GPU = require("gpu.js").GPU;
 var lastResolution = -1;
-function removeItemFromArray(arr, value) {
-  console.log("Removing from array", arr, value);
-  var index = arr.indexOf(value);
-  if (index > -1) {
-    arr.splice(index, 1);
-  }
-  return arr;
-}
-
 export default {
-  name: "Laser-Basefight",
+  name: 'Laser-Basefight',
   init: function (data) {
-    console.log("init game mandelbrot ", knobPositions);
+    console.log('init game basefight ');
   },
   handle: function (grid) {
     if (lastResolution != grid.length) {
@@ -214,7 +251,7 @@ export default {
   handleGameScreen(grid) {
     const ctx = MasterCanvas.get2dContext();
     if (!won) {
-      buttons.forEach((item) => {
+      basesButtons.forEach((item) => {
         item.handle(grid);
 
         // item.setX(item.getX() + 1 * Math.random() * 4);
@@ -242,7 +279,7 @@ export default {
                 item.getGui().getRadius() + item2.getGui().getRadius()
               ) {
                 // colision
-                console.log("collision", dist, item, item2);
+                //console.log('collision', dist, item, item2);
 
                 toDelete.push({ item1: item, item2: item2 });
                 handled.push(item);
@@ -252,31 +289,40 @@ export default {
           });
         }
       });
+
+      var playGrow = false;
+      var playFlop = false;
+
       // perform the decided actions, grow/unite and delete smaller colided objects
       toDelete.forEach((item) => {
         if (item.item1.getGui().getColor() === item.item2.getGui().getColor()) {
-          // same
-
+          // same, check that only outside of base joining cann happen
           if (
-            item.item1.getGui().getRadius() > item.item2.getGui().getRadius()
+            item.item1.getBaseDistance() > 125 &&
+            item.item2.getBaseDistance() > 125
           ) {
-            // keep item1 remove item2
-            item.item1
-              .getGui()
-              .setRadius(
-                item.item2.getGui().getRadius() * 0.5 +
-                  item.item1.getGui().getRadius()
-              );
-            enemies = removeItemFromArray(enemies, item.item2);
-          } else {
-            // keep item2 remove item1
-            item.item2
-              .getGui()
-              .setRadius(
-                item.item2.getGui().getRadius() +
-                  item.item1.getGui().getRadius() * 0.5
-              );
-            enemies = removeItemFromArray(enemies, item.item1);
+            if (
+              item.item1.getGui().getRadius() > item.item2.getGui().getRadius()
+            ) {
+              // keep item1 remove item2
+              item.item1
+                .getGui()
+                .setRadius(
+                  item.item2.getGui().getRadius() * 0.5 +
+                    item.item1.getGui().getRadius()
+                );
+              enemies = removeItemFromArray(enemies, item.item2);
+            } else {
+              // keep item2 remove item1
+              item.item2
+                .getGui()
+                .setRadius(
+                  item.item2.getGui().getRadius() +
+                    item.item1.getGui().getRadius() * 0.5
+                );
+              enemies = removeItemFromArray(enemies, item.item1);
+            }
+            playGrow = true;
           }
         } else {
           // different
@@ -301,13 +347,21 @@ export default {
               );
             enemies = removeItemFromArray(enemies, item.item1);
           }
+          playFlop = true;
         }
       });
-
+      if (playFlop) {
+        var audio = new Audio(soundSmash);
+        audio.play();
+      }
+      if (playGrow) {
+        var audio = new Audio(soundGrow);
+        audio.play();
+      }
       // and check any collisions with spawn area
       const baseCollisions = [];
       enemies.forEach((enemy) => {
-        buttons.forEach((base) => {
+        basesButtons.forEach((base) => {
           if (base.getColor() !== enemy.getGui().getColor()) {
             const dist = Math.sqrt(
               Math.pow(base.getX() - enemy.getGui().getX(), 2) +
@@ -324,15 +378,22 @@ export default {
       baseCollisions.forEach((baseCollision) => {
         baseCollision.base.setRadius(
           baseCollision.base.getRadius() -
-            baseCollision.enemy.getGui().getRadius() * 0.1
+            baseCollision.enemy.getGui().getRadius() * 0.5
         );
-        console.log("Remove Enemy collisition with base item");
+        //('Remove Enemy collisition with base item');
         removeItemFromArray(enemies, baseCollision.enemy);
+        var audio = new Audio(soundBaseCrash);
+        audio.play();
         if (baseCollision.base.getRadius() <= 50) {
-          removeItemFromArray(buttons, baseCollision.base);
+          removeItemFromArray(basesButtons, baseCollision.base);
+
+          var audio = new Audio(soundBaseDestroy);
+          audio.play();
           //  check if game over
-          if (buttons.length === 1) {
-            won = buttons[0];
+          if (basesButtons.length === 1) {
+            won = basesButtons[0];
+            var audio = new Audio(soundGameOver);
+            audio.play();
           }
         }
       });
@@ -349,41 +410,41 @@ export default {
       });
     }
     if (won) {
-      util.renderTextDropShadow({
+      renderTextDropShadow({
         ctx,
-        text: "Laser-BaseFight",
-        fontSize: "150px",
-        fillStyle: "green",
+        text: 'Laser-BaseFight',
+        fontSize: '150px',
+        fillStyle: 'green',
         x: laserConfig.canvasResolution.width / 2,
         y: 200,
       });
-      util.renderTextDropShadow({
+      renderTextDropShadow({
         ctx,
-        text: "Winner " + won.getLabel(),
-        fontSize: "150px",
-        fillStyle: "green",
+        text: 'Winner ' + won.getLabel(),
+        fontSize: '150px',
+        fillStyle: 'green',
         x: laserConfig.canvasResolution.width / 2,
         y: 350,
       });
       startScreenButtons.forEach((item) => item.handle(grid));
     }
     if (help) {
-      util.renderTextDropShadow({
+      renderTextDropShadow({
         ctx,
-        text: "Laser-BaseFight",
-        fontSize: "150px",
-        fillStyle: "red",
+        text: 'Laser-BaseFight',
+        fontSize: '150px',
+        fillStyle: 'red',
         x: laserConfig.canvasResolution.width / 2,
         y: 200,
       });
-      ctx.fillStyle = "#00000088";
+      ctx.fillStyle = '#00000088';
       ctx.fillRect(
         laserConfig.canvasResolution.width * 0.05,
         220,
         laserConfig.canvasResolution.width * 0.9,
         laserConfig.canvasResolution.height * 0.5
       );
-      util.renderTextOutline({
+      renderTextOutline({
         ctx,
         text: `
 This HELP text is displayed,
@@ -414,9 +475,9 @@ Have Fun!
 Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
-        fontSize: "26px",
+        fontSize: '26px',
         lineHeight: 25,
-        fillStyle: "#00ffff",
+        fillStyle: '#00ffff',
         x: laserConfig.canvasResolution.width / 2,
         y: 250,
         dropDistX: 4,
