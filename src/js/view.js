@@ -1,6 +1,6 @@
 import { Solver } from 'p2';
 import util from './util.js';
-import { length } from './math.js';
+import { length, lerp2d } from './math.js';
 var helper = require('./helper.js');
 var laserConfig = require('./LaserApiConfig').default;
 var Util = require('./util').default;
@@ -34,6 +34,7 @@ var games = [
   new GameWrapper(require('./setups/game-013-lasertorpedo').default),
   new GameWrapper(require('./setups/game-014-fire').default),
   new GameWrapper(require('./setups/game-015-flap').default),
+  new GameWrapper(require('./setups/game-016-lasershark').default),
 ];
 const Lowpassfilter = require('./setups/game-000000000-lowpassfilter').default;
 console.log('games are', games);
@@ -272,6 +273,7 @@ async function frameHandler() {
    */
   //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
   var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
+
   laserGrid = Lowpassfilter.handle(laserGrid);
   // console.timeEnd("frameHandler");
   // console.log("Lasergrid is", laserGrid);
@@ -357,37 +359,91 @@ if (document.addEventListener) {
       loc.x - document.getElementById('zoomcanvas').width / 8;
   });
 
-  function makeMarker(coorName) {
+  function makeMarker(
+    coorName,
+    coorHorizName,
+    coorVertiName,
+    dirx = 1,
+    diry = 1
+  ) {
     var mouseDown = false;
+
     document.getElementById('canvas').addEventListener('mousedown', (evt) => {
       // check if marker has been hit
       var loc = getEventLocation(evt.target, evt);
       var transform = laserConfig.transform[coorName];
       var diff = [loc.x - transform.x * 1920, loc.y - transform.y * 1080];
+
+      var control1 = lerp2d(
+        transform,
+        laserConfig.transform[coorHorizName],
+        transform.slopex / 4
+      );
+      var control2 = lerp2d(
+        transform,
+        laserConfig.transform[coorVertiName],
+        transform.slopey / 4
+      );
+
+      var diff1 = [loc.x - control1.x * 1920, loc.y - control1.y * 1080];
+      var diff2 = [loc.x - control2.x * 1920, loc.y - control2.y * 1080];
+
       console.log('check', coorName, loc, transform, diff);
-      if (length(diff) < 25) {
+      if (length(diff) < 10) {
         console.log('clickkediclicked');
-        mouseDown = true;
+        mouseDown = 1;
+      }
+      if (length(diff1) < 10) {
+        console.log('clickkediclicked');
+        mouseDown = 2;
+      }
+      if (length(diff2) < 10) {
+        console.log('clickkediclicked');
+        mouseDown = 3;
       }
     });
     document.getElementById('canvas').addEventListener('mousemove', (evt) => {
       // check if marker has been hit
       var loc = getEventLocation(evt.target, evt);
 
-      if (mouseDown) {
+      if (mouseDown > 0) {
         console.log('check', loc);
-        document.getElementById(coorName + '_x').value = (loc.x / 1920) * 10000;
-        document.getElementById(coorName + '_y').value = (loc.y / 1080) * 10000;
+        if (mouseDown === 1) {
+          document.getElementById(coorName + '_x').value =
+            (loc.x / 1920) * 10000;
+          document.getElementById(coorName + '_y').value =
+            (loc.y / 1080) * 10000;
+        }
+
+        if (mouseDown === 2) {
+          if (dirx === 1) {
+            document.getElementById('slope' + coorName + '_x').value =
+              (loc.x / 1920) * 10000;
+          } else {
+            document.getElementById('slope' + coorName + '_x').value =
+              10000 - (loc.x / 1920) * 10000;
+          }
+        }
+
+        if (mouseDown === 3) {
+          if (diry === 1) {
+            document.getElementById('slope' + coorName + '_y').value =
+              (loc.y / 1080) * 10000;
+          } else {
+            document.getElementById('slope' + coorName + '_y').value =
+              10000 - (loc.y / 1080) * 10000;
+          }
+        }
       }
     });
     document.getElementById('canvas').addEventListener('mouseup', (evt) => {
-      mouseDown = false;
+      mouseDown = -1;
     });
   }
-  makeMarker('topleft');
-  makeMarker('topright');
-  makeMarker('bottomright');
-  makeMarker('bottomleft');
+  makeMarker('topleft', 'topright', 'bottomleft', 1, 1);
+  makeMarker('topright', 'topleft', 'bottomright', -1, 1);
+  makeMarker('bottomright', 'bottomleft', 'topright', -1, -1);
+  makeMarker('bottomleft', 'bottomright', 'topleft', 1, -1);
 }
 document.onkeydown = function (evt) {
   if (isNaN(evt.key)) {
@@ -741,9 +797,24 @@ function loadHtmlFromSettings(settings) {
     document.getElementById('showDebug').checked = settings.showDebug;
     laserConfig.showDebug = settings.showDebug;
   }
+  if (settings.contrast !== undefined) {
+    document.getElementById('contrast').value = settings.contrast;
+    laserConfig.contrast = settings.contrast;
+  }
+  if (settings.brightness !== undefined) {
+    document.getElementById('brightness').value = settings.brightness;
+    laserConfig.brightness = settings.brightness;
+  }
   if (settings.showHelp !== undefined) {
     document.getElementById('showHelp').checked = settings.showHelp;
     laserConfig.showHelp = settings.showHelp;
+  }
+  if (settings.colorWeights !== undefined) {
+    document.getElementById('weightColor').value = settings.colorWeights[0];
+    document.getElementById('weightBrightness').value =
+      settings.colorWeights[1];
+    document.getElementById('weightDarkness').value = settings.colorWeights[2];
+    laserConfig.colorWeights = settings.colorWeights;
   }
   if (settings.debugVideo !== undefined) {
     document.getElementById('debugVideo').checked = settings.debugVideo;
@@ -899,8 +970,16 @@ function animationHandler() {
   );
   laserConfig.debugVideo = document.getElementById('debugVideo').checked;
   laserConfig.showDebug = document.getElementById('showDebug').checked;
+  laserConfig.contrast = Number(document.getElementById('contrast').value);
+  laserConfig.brightness = Number(document.getElementById('brightness').value);
   laserConfig.showHelp = document.getElementById('showHelp').checked;
   laserConfig.showGame = document.getElementById('showGame').checked;
+  laserConfig.colorWeights = [
+    Number(document.getElementById('weightColor').value),
+    Number(document.getElementById('weightBrightness').value),
+    Number(document.getElementById('weightDarkness').value),
+  ];
+
   laserConfig.showGrid = document.getElementById('showGrid').checked;
   laserConfig.showTransform = document.getElementById('showTransform').checked;
   laserConfig.gameIndex = Number(

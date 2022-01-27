@@ -241,7 +241,7 @@ export default ({
         x: currentX,
         y: currentY - 10,
         fontSize: '25px',
-        fillStyle: 'white',
+        fillStyle: 'lightgreen',
       });
     },
   };

@@ -24,6 +24,7 @@ export default ({
   speedX = 0,
   edges = 10,
   edges2 = 10,
+  shrinkSpeed = 0,
   speedY = 0,
   onEnterActive,
   onExitActive,
@@ -38,6 +39,7 @@ export default ({
   var currentRadius = radius;
   var currentNormalColor = normalColor;
   var counter = 0;
+  var currentShrinkSpeed=shrinkSpeed
   var lastTime = performance.now();
   var state = 'normal';
   return {
@@ -137,7 +139,7 @@ export default ({
         } else {
           currentSpeedX = lerp(currentSpeedX, 0, speedDown);
           currentSpeedY = lerp(currentSpeedY, 0, speedDown);
-          // currentRadius = currentRadius - 10 * elapsed;
+         currentRadius = currentRadius - shrinkSpeed * elapsed;
         }
         currentX = currentX + currentSpeedX * elapsed * 1000;
         currentY = currentY + currentSpeedY * elapsed * 1000;

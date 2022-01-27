@@ -1,7 +1,7 @@
-var laserConfig = require("../LaserApiConfig").default;
-var MainCanvas = require("../MasterCanvas").default;
+var laserConfig = require('../LaserApiConfig').default;
+var MainCanvas = require('../MasterCanvas').default;
 
-var GPU = require("gpu.js").GPU;
+var GPU = require('gpu.js').GPU;
 var lastResolution = -1;
 
 const gpu = new GPU();
@@ -29,10 +29,10 @@ const handler = function (laserGrid) {
         var value = gameRect[xpos + ypos * gridResolution];
 
         this.color(
-          value * (1 - testColor[0]),
-          value * (1 - testColor[1]),
-          value * (1 - testColor[2]),
-          value
+          0.5 * value * (1 - testColor[0]),
+          0.5 * value * (1 - testColor[1]),
+          0.5 * value * (1 - testColor[2]),
+          1
         );
       })
       .setOutput([
@@ -57,7 +57,7 @@ const handler = function (laserGrid) {
 };
 
 export default {
-  name: "Debug Grid",
+  name: 'Debug Grid',
   init: () => {},
   handle: function (grid) {
     handler(grid);

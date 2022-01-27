@@ -3,20 +3,21 @@
  * underneath
  *
  */
-var MasterCanvas = require("../../MasterCanvas").default;
-var util = require("../../util.js").default;
+var MasterCanvas = require('../../MasterCanvas').default;
+var util = require('../../util.js').default;
 
-var guiFlipButton = require("./flipButton").default;
-var guiFillButton = require("./fillButton").default;
+import soundSpawn from '../../../../public/media/369952__mischy__plop-1.wav';
+var guiFlipButton = require('./flipButton').default;
+var guiFillButton = require('./fillButton').default;
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
   return data[Math.floor(x) + Math.floor(y) * gridSize];
 }
-import { explerp } from "./../../math";
+import { explerp } from './../../math';
 var lastTime;
 export default ({
-  label = "Switch",
-  label2 = "Switch2",
+  label = 'Switch',
+  label2 = 'Switch2',
   posX,
   posY,
   onChange,
@@ -29,16 +30,15 @@ export default ({
 }) => {
   var down = true;
   var currentValue = startValue;
-var updateView=()=>{
-
-  if (down) {
-    button.setLabel(label);
-    button.setEdges(5);
-  } else {
-    button.setLabel(label2);
-    button.setEdges(3);
-  }
-}
+  var updateView = () => {
+    if (down) {
+      button.setLabel(label);
+      button.setEdges(5);
+    } else {
+      button.setLabel(label2);
+      button.setEdges(3);
+    }
+  };
   var button = guiFillButton({
     label: label,
     posX: posX,
@@ -46,14 +46,16 @@ var updateView=()=>{
     radius: radius,
     onEnterActive: () => {
       down = !down;
-updateView()
+      updateView();
       if (onChange) {
         onChange(down);
       }
+      var audio = new Audio(soundSpawn);
+      audio.play();
     },
   });
   var buttons = [button];
-updateView()
+  updateView();
   return {
     getValue: () =>
       exponential
@@ -63,7 +65,7 @@ updateView()
             Math.abs(currentValue - minValue) / Math.abs(maxValue - minValue)
           )
         : currentValue,
-    name: "Range Slider",
+    name: 'Range Slider',
     init: function () {},
     data: {
       fillState: 0,

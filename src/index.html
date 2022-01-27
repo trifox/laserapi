@@ -176,6 +176,35 @@
           <!--&gt;-->
           <!--</fieldset >-->
           <fieldset>
+            <label>brightness </label>
+            <input
+              type="range"
+              class="w3-input"
+              id="brightness"
+              min="0"
+              max="2"
+              step="0.0001"
+              value="1"
+            />
+            <label>contrast </label>
+            <input
+              type="range"
+              class="w3-input"
+              id="contrast"
+              step="0.0001"
+              min="0"
+              max="2"
+              value="1"
+            />
+            <label>threshold </label>
+            <input
+              type="range"
+              class="w3-input"
+              id="threshold"
+              min="0"
+              max="1255"
+              value="100"
+            />
             <label> lasercolor </label>
             <input
               type="color"
@@ -184,14 +213,36 @@
               value="#ff6666"
             />
 
-            <label>threshold </label>
+            <label>weightColor </label>
             <input
               type="range"
               class="w3-input"
-              id="threshold"
+              id="weightColor"
               min="0"
-              max="255"
-              value="100"
+              max="25"
+              value="1"
+              step=".001"
+            />
+            <label>weightBrightness </label>
+            <input
+              type="range"
+              class="w3-input"
+              id="weightBrightness"
+              min="0"
+              max="25"
+              value="1"
+              step="0.001"
+            />
+            <label>weightDarkness </label>
+            <input
+              type="range"
+              class="w3-input"
+              id="weightDarkness"
+              min="0"
+              min="0"
+              max="25"
+              value="1"
+              step="0.001"
             />
 
             <label>gridresolution </label>

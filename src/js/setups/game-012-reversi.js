@@ -1,12 +1,13 @@
-import util from "../util.js";
-import gpu from "../gpuTools";
+import util from '../util.js';
+import gpu from '../gpuTools';
 
-var laserConfig = require("../LaserApiConfig.js").default;
-var MasterCanvas = require("../MasterCanvas").default;
-var guiFillButton = require("./gui/fillButton").default;
-var guiSwitch = require("./gui/switch").default;
+var laserConfig = require('../LaserApiConfig.js').default;
+var MasterCanvas = require('../MasterCanvas').default;
+var guiFillButton = require('./gui/fillButton').default;
+var guiSwitch = require('./gui/switch').default;
 var knobPositions = [];
 
+import soundSpawn from '../../../public/media/369952__mischy__plop-1.wav';
 var lastResolution = -1;
 const bottomBarStartY = 1080 * 0.75;
 var help = false;
@@ -24,34 +25,34 @@ function getButton(x, y) {
 }
 var startScreenButtons = [
   guiFillButton({
-    label: "Reset",
+    label: 'Reset',
     posX: 100,
     posY: 1080 - 100,
     speedDown: 25,
     speedUp: 25,
     edges: 8,
     radius: 50,
-    normalColor: "#00aaff",
+    normalColor: '#0088ff',
     onEnterActive: (sender) => {
       // initialise game
     },
   }),
   guiSwitch({
-    label: "Reversi",
-    label2: "Single",
+    label: 'Reversi',
+    label2: 'Single',
     posX: 200,
     posY: 1080 - 100,
     speedDown: 25,
     speedUp: 25,
     edges: 8,
     radius: 50,
-    normalColor: "#00aaff",
+    normalColor: '#0088ff',
     onChange: (value) => {
       useLineMode = value;
     },
   }),
   guiFillButton({
-    label: "Help",
+    label: 'Help',
     posX: 1920 - 100,
     posY: 1080 - 100,
     speedDown: 10,
@@ -59,7 +60,7 @@ var startScreenButtons = [
     edges: 32,
     activeValue: 35,
     radius: 50,
-    normalColor: "#00aaff",
+    normalColor: '#00aaff',
     onEnterActive: (sender) => {
       help = true;
     },
@@ -85,14 +86,14 @@ function createButton(fieldX, fieldY, posX, posY) {
     if (isBottomSide) {
       enemy.setEdges(4);
       var audio = new Audio(
-        "https://freesound.org/data/previews/337/337049_3232293-lq.mp3"
+      soundSpawn
       );
       // audio.play();
       var rgb1 = gpu.hsv2rgb(0.25 + hsv[0] / 360, 1, 1);
       var rgb2 = gpu.hsv2rgb(0.35 + hsv[0] / 360, 0.75, 0.9);
       var rgb3 = gpu.hsv2rgb(0.45 + hsv[0] / 360, 0.5, 0.81);
 
-      console.log("rgb is ", rgb1);
+      console.log('rgb is ', rgb1);
       enemy.setColor(
         util.rgbToHex(rgb1[0] * 255, rgb1[1] * 255, rgb1[2] * 255)
       );
@@ -106,7 +107,7 @@ function createButton(fieldX, fieldY, posX, posY) {
       enemy.setEdges(5);
 
       var audio = new Audio(
-        "https://freesound.org/data/previews/372/372209_6687700-lq.mp3"
+       soundSpawn
       );
       // audio.play();
       var rgb1 = gpu.hsv2rgb(0.75 + hsv[0] / 360, 1, 1);
@@ -126,7 +127,7 @@ function createButton(fieldX, fieldY, posX, posY) {
   }
 
   const enemy = guiFillButton({
-    label: "",
+    label: '',
     posX: posX,
     posY: posY,
     normalColor: util.rgbToHex(rgb1[0] * 255, rgb1[1] * 255, rgb1[2] * 255),
@@ -146,14 +147,15 @@ function createButton(fieldX, fieldY, posX, posY) {
       // find horizontal matching own color
 
       isBottomSide = !isBottomSide;
-
+      var audio = new Audio(soundSpawn);
+      audio.play();
       if (useLineMode) {
         // horizontal right
         var temp = [];
-        console.log("checking", fieldX, fieldY);
+        console.log('checking', fieldX, fieldY);
         for (var i = fieldX + 1; i < fieldSizeX; i++) {
           const bb = getButton(i, fieldY);
-          console.log("check", i, bb, bb.isBottomSide(), isBottomSide);
+          console.log('check', i, bb, bb.isBottomSide(), isBottomSide);
           // go right
           if (bb.isBottomSide() === !isBottomSide) {
             temp.push(bb);
@@ -166,17 +168,17 @@ function createButton(fieldX, fieldY, posX, posY) {
             temp = [];
           }
         }
-        console.log("found", temp);
+        console.log('found', temp);
         temp.forEach((item) => {
-          console.log("item is", item);
+          console.log('item is', item);
           item.setBottomSide(isBottomSide);
         });
         // horizontal left
         temp = [];
-        console.log("checking", fieldX, fieldY);
+        console.log('checking', fieldX, fieldY);
         for (var i = fieldX - 1; i >= 0; i--) {
           const bb = getButton(i, fieldY);
-          console.log("check", i, bb, bb.isBottomSide(), isBottomSide);
+          console.log('check', i, bb, bb.isBottomSide(), isBottomSide);
           // go right
           if (bb.isBottomSide() === !isBottomSide) {
             temp.push(bb);
@@ -189,17 +191,17 @@ function createButton(fieldX, fieldY, posX, posY) {
             temp = [];
           }
         }
-        console.log("found", temp);
+        console.log('found', temp);
         temp.forEach((item) => {
-          console.log("item is", item);
+          console.log('item is', item);
           item.setBottomSide(isBottomSide);
         });
         // vertical up
         temp = [];
-        console.log("checking", fieldX, fieldY);
+        console.log('checking', fieldX, fieldY);
         for (var i = fieldY - 1; i >= 0; i--) {
           const bb = getButton(fieldX, i);
-          console.log("check", i, bb, bb.isBottomSide(), isBottomSide);
+          console.log('check', i, bb, bb.isBottomSide(), isBottomSide);
           // go right
           if (bb.isBottomSide() === !isBottomSide) {
             temp.push(bb);
@@ -212,18 +214,18 @@ function createButton(fieldX, fieldY, posX, posY) {
             temp = [];
           }
         }
-        console.log("found", temp);
+        console.log('found', temp);
         temp.forEach((item) => {
-          console.log("item is", item);
+          console.log('item is', item);
           item.setBottomSide(isBottomSide);
         });
         //////
         // vertical down
         temp = [];
-        console.log("checking", fieldX, fieldY);
+        console.log('checking', fieldX, fieldY);
         for (var i = fieldY + 1; i < fieldSizeY; i++) {
           const bb = getButton(fieldX, i);
-          console.log("check", i, bb, bb.isBottomSide(), isBottomSide);
+          console.log('check', i, bb, bb.isBottomSide(), isBottomSide);
           // go right
           if (bb.isBottomSide() === !isBottomSide) {
             temp.push(bb);
@@ -236,15 +238,15 @@ function createButton(fieldX, fieldY, posX, posY) {
             temp = [];
           }
         }
-        console.log("found", temp);
+        console.log('found', temp);
         temp.forEach((item) => {
-          console.log("item is", item);
+          console.log('item is', item);
           item.setBottomSide(isBottomSide);
         });
         //////
       }
 
-      console.log("hsv is ", hsv);
+      console.log('hsv is ', hsv);
       updateButtonColor();
     },
   });
@@ -281,10 +283,10 @@ for (var i = 0; i < fieldSizeX; i++) {
     buttons.push(createButton(i, j, 100 + i * pieceSize, 100 + j * pieceSize));
   }
 }
-var GPU = require("gpu.js").GPU;
+var GPU = require('gpu.js').GPU;
 var lastResolution = -1;
 function removeItemFromArray(arr, value) {
-  console.log("Removing from array", arr, value);
+  console.log('Removing from array', arr, value);
   var index = arr.indexOf(value);
   if (index > -1) {
     arr.splice(index, 1);
@@ -293,9 +295,9 @@ function removeItemFromArray(arr, value) {
 }
 
 export default {
-  name: "Laser-Reversi",
+  name: 'Laser-Reversi',
   init: function (data) {
-    console.log("init game reversi ", knobPositions);
+    console.log('init game reversi ', knobPositions);
   },
   handle: function (grid) {
     if (lastResolution != grid.length) {
@@ -335,8 +337,8 @@ export default {
         (countdown / buttons.length) *
         100
       ).toFixed(0)}% Team 1 `,
-      fontSize: "50px",
-      fillStyle: "green",
+      fontSize: '50px',
+      fillStyle: 'green',
       x: laserConfig.canvasResolution.width / 2,
       y: 1080 - 100,
     });
@@ -344,13 +346,13 @@ export default {
     if (help) {
       util.renderTextDropShadow({
         ctx,
-        text: "Laser-Reversi",
-        fontSize: "150px",
-        fillStyle: "green",
+        text: 'Laser-Reversi',
+        fontSize: '150px',
+        fillStyle: 'green',
         x: laserConfig.canvasResolution.width / 2,
         y: 200,
       });
-      ctx.fillStyle = "#00000088";
+      ctx.fillStyle = '#00000088';
       ctx.fillRect(
         laserConfig.canvasResolution.width * 0.05,
         220,
@@ -375,9 +377,9 @@ Have Fun!
 Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
-        fontSize: "26px",
+        fontSize: '26px',
         lineHeight: 25,
-        fillStyle: "#ffffff",
+        fillStyle: '#ffffff',
         x: laserConfig.canvasResolution.width / 2,
         y: 250,
         dropDistX: 4,

@@ -1,12 +1,13 @@
-import util from "../util.js";
+import util from '../util.js';
 
-var laserConfig = require("../LaserApiConfig.js").default;
-var MasterCanvas = require("../MasterCanvas").default;
-var guiFillButton = require("./gui/fillButton").default;
-var guiFlipButton = require("./gui/flipButton").default;
-var guiRangeSlider = require("./gui/rangeSlider").default;
+var laserConfig = require('../LaserApiConfig.js').default;
+var MasterCanvas = require('../MasterCanvas').default;
+var guiFillButton = require('./gui/fillButton').default;
+var guiFlipButton = require('./gui/flipButton').default;
+var guiRangeSlider = require('./gui/rangeSlider').default;
 var knobPositions = [];
 
+import soundSpawn from '../../../public/media/369952__mischy__plop-1.wav';
 var lastResolution = -1;
 const leftStartX = 1920 * 0.05;
 const rightStartX = 1920 - 1920 * 0.05;
@@ -25,7 +26,7 @@ function getDelta() {
 }
 function createEnemyButton() {
   const enemy = guiFillButton({
-    label: "",
+    label: '',
     posX: leftStartX + 200,
     posY: Math.random() * 800,
     speedDown: 50,
@@ -36,11 +37,9 @@ function createEnemyButton() {
       enemy.setY(Math.random() * 1080);
       enemy.setX(Math.random() * 1920);
       enemy.setEdges(Math.floor(3 + Math.random() * 8));
-
+      enemy.setValue(0);
       enemy.setRadius(Math.random() * 200);
-      var audio = new Audio(
-        "https://freesound.org/data/previews/19/19988_37876-lq.mp3"
-      );
+      var audio = new Audio(soundSpawn);
       audio.play();
     },
   });
@@ -96,21 +95,9 @@ const buttons = [
   createEnemyButton(),
   createEnemyButton(),
   createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
-  createEnemyButton(),
 ];
 
-var GPU = require("gpu.js").GPU;
+var GPU = require('gpu.js').GPU;
 var lastResolution = -1;
 
 const gpu = new GPU();
@@ -187,9 +174,9 @@ const handler = function () {
   return;
 };
 export default {
-  name: "Laser-Plopper",
+  name: 'Laser-Plopper',
   init: function (data) {
-    console.log("init game mandelbrot ", knobPositions);
+    console.log('init game mandelbrot ', knobPositions);
   },
   handle: function (grid) {
     elapsed = getDelta();
@@ -212,13 +199,13 @@ export default {
     if (help) {
       util.renderTextDropShadow({
         ctx,
-        text: "Laser-Shooter",
-        fontSize: "150px",
-        fillStyle: "green",
+        text: 'Laser-Shooter',
+        fontSize: '150px',
+        fillStyle: 'green',
         x: laserConfig.canvasResolution.width / 2,
         y: 200,
       });
-      ctx.fillStyle = "#00000088";
+      ctx.fillStyle = '#00000088';
       ctx.fillRect(
         laserConfig.canvasResolution.width * 0.05,
         220,
@@ -247,9 +234,9 @@ Have Fun!
 Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
-        fontSize: "26px",
+        fontSize: '26px',
         lineHeight: 25,
-        fillStyle: "#ffffff",
+        fillStyle: '#ffffff',
         x: laserConfig.canvasResolution.width / 2,
         y: 250,
         dropDistX: 4,

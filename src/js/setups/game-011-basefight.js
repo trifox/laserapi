@@ -1,4 +1,8 @@
-import { renderTextDropShadow, removeItemFromArray } from '../util.js';
+import {
+  renderTextDropShadow,
+  removeItemFromArray,
+  renderTextOutline,
+} from '../util.js';
 
 var laserConfig = require('../LaserApiConfig.js').default;
 var MasterCanvas = require('../MasterCanvas').default;
@@ -42,6 +46,7 @@ function createEnemyButton(
     label: '',
     posX: posX,
     posY: posY,
+    shrinkSpeed: 8,
     normalColor: color,
     edges,
     speedDown: 0.01,
@@ -208,28 +213,28 @@ function initialiseTeams() {
       posY: 1080 / 2 - 4 * 100,
       name: 'Team 1',
       edges: 3,
-      color: '#44ff44',
+      color: '#118888',
     }),
     makeBase({
       posX: 1920 / 2 + 4 * 100,
       posY: 1080 / 2 - 4 * 100,
       name: 'Team 2',
       edges: 4,
-      color: '#00ff88',
+      color: '#2299aa',
     }),
     makeBase({
       posX: 1920 / 2 + 4 * 100,
       posY: 1080 / 2 + 4 * 100,
       name: 'Team 3',
       edges: 5,
-      color: '#0088ff',
+      color: '#33aacc',
     }),
     makeBase({
       posX: 1920 / 2 - 4 * 100,
       posY: 1080 / 2 + 4 * 100,
       name: 'Team 4',
       edges: 6,
-      color: '#00ffff',
+      color: '#44bbff',
     }),
   ];
 }

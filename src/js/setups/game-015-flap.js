@@ -12,6 +12,11 @@ var MasterCanvas = require('../MasterCanvas').default;
 var guiFillButton = require('./gui/fillButton').default;
 var guiFollowCircle = require('./gui/followCircle').default;
 
+import soundSpawn from '../../../public/media/496199__luminousfridge__player-spawned.ogg';
+import soundExplode from '../../../public/media/414346__bykgames__explosion-far.wav';
+import soundGameOver from '../../../public/media/70299__kizilsungur__sonar.wav';
+import soundBG from '../../../public/media/517267__foolboymedia__cinematic-stomp.wav';
+// import soundBG from '../../../public/media/522110__setuniman__cheeky-1t41b.wav';
 /**
  * audio imports
  */
@@ -38,6 +43,7 @@ function createEnemies() {
     createEnemy(),
   ];
 }
+var bgSound;
 var spawnButtons = [];
 var bubbles = [];
 var gameState = 'spawn';
@@ -88,6 +94,10 @@ var buttonsSpawnScreen = [
       gameState = 'game';
       gameTime = 0;
       startAmount = bubbles.length;
+
+      bgSound = new Audio(soundBG);
+      bgSound.loop = true;
+      bgSound.play();
     },
     onExitActive: (sender) => {},
   }),
@@ -131,6 +141,10 @@ function checkCollisionWithObstacles() {
       }
     });
   });
+  if (todelete.length > 0) {
+    var audio = new Audio(soundExplode);
+    audio.play();
+  }
   todelete.forEach((item) => removeItemFromArray(bubbles, item));
 }
 function repellAll(workArray) {
@@ -285,6 +299,9 @@ function createBubble({
   edges = 5,
   edges2 = 5,
 }) {
+  var audio = new Audio(soundSpawn);
+  audio.play();
+
   var bubble = guiFollowCircle({
     label: '',
     posX: x,
@@ -446,7 +463,7 @@ export default {
     });
     renderTextDropShadow({
       ctx,
-      text: `You reached distance:${wonTime.toFixed(2)}
+      text: `You reached distance: ${wonTime.toFixed(2)}
       
       Todays best is: ${bestWonTime.toFixed(2)}
       
@@ -470,6 +487,10 @@ export default {
       wonTime = gameTime;
       bestWonTime = Math.max(wonTime, bestWonTime);
       gameState = 'gameover';
+
+      bgSound.pause();
+      var audio = new Audio(soundGameOver);
+      audio.play();
     }
     bubbles.forEach((item) => {
       if (
@@ -479,6 +500,9 @@ export default {
         item.getY() > 1080
       ) {
         removeItemFromArray(bubbles, item);
+
+        var audio = new Audio(soundExplode);
+        audio.play();
       }
     });
   },
@@ -486,7 +510,12 @@ export default {
     const ctx = MasterCanvas.get2dContext();
     renderTextDropShadow({
       ctx,
-      text: gameTime.toFixed(2),
+      text:
+        bubbles.length +
+        '/' +
+        startAmount +
+        '                ' +
+        gameTime.toFixed(2),
       fontSize: '150px',
       fillStyle: '#66aaff',
       x: laserConfig.canvasResolution.width / 2,

@@ -1,7 +1,7 @@
-var laserConfig = require("../LaserApiConfig").default;
+var laserConfig = require('../LaserApiConfig').default;
 
-var hermite = require("cubic-hermite");
-var MainCanvas = require("../MasterCanvas").default;
+var hermite = require('cubic-hermite');
+var MainCanvas = require('../MasterCanvas').default;
 
 function lerp(v0, v1, t) {
   return (1 - t) * v0 + t * v1;
@@ -29,11 +29,14 @@ function drawLineNormalizedExtended(
   p2,
   color,
   sl1 = 1,
-  sl2 = 1
+  sl2 = 1,
+  useSlope = 'slopex'
 ) {
   drawLineNormalized(areaWidth, areaHeight, context, p1, p2, color);
   // make funny dots along line
-  // console.log("HERMITE SLOPES ARE", sl1, sl2);
+
+  context.strokeStyle = 'white';
+
   for (var i = 0; i < 10; i++) {
     var size = 8;
     context.strokeRect(
@@ -54,8 +57,44 @@ function drawLineNormalizedExtended(
       size
     );
   }
+
+  // console.log("HERMITE SLOPES ARE", sl1, sl2);
+  var size = 8;
+  context.strokeStyle = 'red';
+  context.fillStyle = 'orange';
+
+  drawLine(
+    context,
+    { x: p1.x * areaWidth, y: p1.y * areaHeight },
+    {
+      x: lerp(p1.x * areaWidth, p2.x * areaWidth, p1[useSlope] / 4),
+      y: lerp(p1.y * areaHeight, p2.y * areaHeight, p1[useSlope] / 4),
+    },
+    'red'
+  );
+  drawLine(
+    context,
+    { x: p2.x * areaWidth, y: p2.y * areaHeight },
+    {
+      x: lerp(p1.x * areaWidth, p2.x * areaWidth, 1 - p2[useSlope] / 4),
+      y: lerp(p1.y * areaHeight, p2.y * areaHeight, 1 - p2[useSlope] / 4),
+    },
+    'lightred'
+  );
+  context.fillRect(
+    lerp(p1.x * areaWidth, p2.x * areaWidth, p1[useSlope] / 4) - size / 2,
+    lerp(p1.y * areaHeight, p2.y * areaHeight, p1[useSlope] / 4) - size / 2,
+    size,
+    size
+  );
+  context.fillRect(
+    lerp(p1.x * areaWidth, p2.x * areaWidth, 1 - p2[useSlope] / 4) - size / 2,
+    lerp(p1.y * areaHeight, p2.y * areaHeight, 1 - p2[useSlope] / 4) - size / 2,
+    size,
+    size
+  );
 }
-function drawLine(context, p1, p2, color = "#ffffff") {
+function drawLine(context, p1, p2, color = '#ffffff') {
   context.strokeStyle = color;
   context.lineWidth = 2;
   context.beginPath();
@@ -65,7 +104,7 @@ function drawLine(context, p1, p2, color = "#ffffff") {
 }
 
 function drawQuad(areaWidth, areaHeight, context, transform) {
-  MainCanvas.get2dContext().fillStyle = "#ffffff";
+  MainCanvas.get2dContext().fillStyle = '#ffffff';
   // console.log("drawing transform ", transform);
   drawLineNormalizedExtended(
     areaWidth,
@@ -73,9 +112,10 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
     context,
     transform.topleft,
     transform.topright,
-    "#00ffff",
+    '#00ffff',
     transform.topleft.slopex * 2,
-    transform.topright.slopex * 2
+    transform.topright.slopex * 2,
+    'slopex'
   );
   drawLineNormalizedExtended(
     areaWidth,
@@ -83,9 +123,10 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
     context,
     transform.topleft,
     transform.bottomleft,
-    "#00ffff",
+    '#00ffff',
     transform.topleft.slopey * 2,
-    transform.bottomleft.slopey * 2
+    transform.bottomleft.slopey * 2,
+    'slopey'
   );
   drawLineNormalizedExtended(
     areaWidth,
@@ -93,9 +134,10 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
     context,
     transform.bottomleft,
     transform.bottomright,
-    "#00ffff",
+    '#00ffff',
     transform.bottomleft.slopex * 2,
-    transform.bottomright.slopex * 2
+    transform.bottomright.slopex * 2,
+    'slopex'
   );
   drawLineNormalizedExtended(
     areaWidth,
@@ -103,9 +145,10 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
     context,
     transform.bottomright,
     transform.topright,
-    "#00ffff",
+    '#00ffff',
     transform.bottomright.slopey * 2,
-    transform.topright.slopey * 2
+    transform.topright.slopey * 2,
+    'slopey'
   );
   //
   // diagonal lines following
@@ -128,8 +171,8 @@ function drawQuad(areaWidth, areaHeight, context, transform) {
 
 const handler = function () {
   // paint markers in the corners
-  MainCanvas.get2dContext().fillStyle = "#ffffff";
-  MainCanvas.get2dContext().strokeStyle = "#ffffff";
+  MainCanvas.get2dContext().fillStyle = '#ffffff';
+  MainCanvas.get2dContext().strokeStyle = '#ffffff';
   MainCanvas.get2dContext().lineWidth = 2;
   var size = 8;
   MainCanvas.get2dContext().strokeRect(
@@ -201,7 +244,7 @@ const handler = function () {
 
 export default {
   drawQuad: drawQuad,
-  name: "Debug Grid",
+  name: 'Debug Grid',
   handle: function (grid) {
     handler(grid);
   },
