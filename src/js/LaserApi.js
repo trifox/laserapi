@@ -42,6 +42,41 @@ function contrastMatrix(contrast) {
     [t, t, t, 1],
   ];
 }
+function saturationMatrix(saturation) {
+  var luminance = { x: 0.3086, y: 0.6094, z: 0.082 };
+
+  var oneMinusSat = 1.0 - saturation;
+
+  var red = {
+    x: luminance.x * oneMinusSat,
+    y: luminance.x * oneMinusSat,
+    z: luminance.x * oneMinusSat,
+  };
+  red.x += saturation;
+  var green = {
+    x: luminance.y * oneMinusSat,
+    y: luminance.y * oneMinusSat,
+    z: luminance.y * oneMinusSat,
+  };
+  green.y += saturation;
+
+  var blue = {
+    x: luminance.z * oneMinusSat,
+    y: luminance.z * oneMinusSat,
+    z: luminance.z * oneMinusSat,
+  };
+  blue.z += saturation;
+
+  const res = [
+    [red.x, red.y, red.z, 0],
+    [green.x, green.y, green.z, 0],
+    [blue.x, blue.y, blue.z, 0],
+    [0, 0, 0, 1],
+  ];
+
+  // console.log('saturation matrix is', saturation, res);
+  return res;
+}
 function matrixMul(a, b) {
   let sum = 0;
   let result = [
@@ -291,8 +326,11 @@ var LaserApi = {
 
     // calculate color matrices
     var colormatrix = matrixMul(
-      brightnessMatrix(laserConfig.brightness),
-      contrastMatrix(laserConfig.contrast)
+      matrixMul(
+        brightnessMatrix(laserConfig.brightness),
+        contrastMatrix(laserConfig.contrast)
+      ),
+      saturationMatrix(laserConfig.saturation)
     );
 
     if (!superKernel) {

@@ -805,6 +805,10 @@ function loadHtmlFromSettings(settings) {
     document.getElementById('brightness').value = settings.brightness;
     laserConfig.brightness = settings.brightness;
   }
+  if (settings.saturation !== undefined) {
+    document.getElementById('saturation').value = settings.saturation;
+    laserConfig.saturation = settings.saturation;
+  }
   if (settings.showHelp !== undefined) {
     document.getElementById('showHelp').checked = settings.showHelp;
     laserConfig.showHelp = settings.showHelp;
@@ -971,6 +975,7 @@ function animationHandler() {
   laserConfig.debugVideo = document.getElementById('debugVideo').checked;
   laserConfig.showDebug = document.getElementById('showDebug').checked;
   laserConfig.contrast = Number(document.getElementById('contrast').value);
+  laserConfig.saturation = Number(document.getElementById('saturation').value);
   laserConfig.brightness = Number(document.getElementById('brightness').value);
   laserConfig.showHelp = document.getElementById('showHelp').checked;
   laserConfig.showGame = document.getElementById('showGame').checked;
