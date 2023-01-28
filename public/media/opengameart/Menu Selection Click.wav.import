@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Menu Selection Click.wav-d73ea108b00a2f4c15c7174b1df71e78.sample"
+
+[deps]
+
+source_file="res://assets/audio/opengameart/Menu Selection Click.wav"
+dest_files=[ "res://.import/Menu Selection Click.wav-d73ea108b00a2f4c15c7174b1df71e78.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

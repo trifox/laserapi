@@ -1,31 +1,37 @@
-var laserConfig = require("../LaserApiConfig").default;
-var MainCanvas = require("../MasterCanvas").default;
+import { getRgbSpread } from '../util';
 
-var GPU = require("gpu.js").GPU;
-var lastResolution = -1;
+var laserConfig = require('../LaserApiConfig').default;
+var MainCanvas = require('../MasterCanvas').default;
+
+var GPU = require('gpu.js').GPU;
 
 const gpu = new GPU();
 
 var kernel;
-var gridBuffer
-var lastGridResolution
-
 const handler = function (laserGrid) {
-
-
-
   const ctx = MainCanvas.get2dContext();
   // console.log("render debug", laserConfig);
   if (!kernel) {
     kernel = gpu
-      .createKernel(function (gameRect, gridResolution, outWidth, outHeight) {
+      .createKernel(function (
+        gameRect,
+        gridResolution,
+        outWidth,
+        outHeight,
+        testColor
+      ) {
         var xpos = Math.floor((this.thread.x / outWidth) * gridResolution);
         var ypos = Math.floor(
           ((outHeight - this.thread.y) / outHeight) * gridResolution
         );
         var value = gameRect[xpos + ypos * gridResolution];
 
-        this.color(value, value, value, value);
+        this.color(
+          (value * testColor[0]) / 255,
+          (value * testColor[1]) / 255,
+          (value * testColor[2]) / 255,
+          1
+        );
       })
       .setOutput([
         laserConfig.canvasResolution.width,
@@ -33,18 +39,20 @@ const handler = function (laserGrid) {
       ])
       .setGraphical(true);
   }
+  // console.log("testcolor is", laserConfig.testColor);
   kernel(
     laserGrid,
     laserConfig.gridResolution,
     laserConfig.canvasResolution.width,
-    laserConfig.canvasResolution.height
+    laserConfig.canvasResolution.height,
+    getRgbSpread(laserConfig.testColor, 0.5)
   );
   ctx.drawImage(kernel.canvas, 0, 0);
 };
 
 export default {
-  name: "Debug Grid",
-  init:()=>{},
+  name: 'Debug Grid',
+  init: () => {},
   handle: function (grid) {
     handler(grid);
   },

@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Ability Learn.ogg-389a54a70d5e1868ed1cc979c206fec9.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/opengameart/Ability Learn.ogg"
+dest_files=[ "res://.import/Ability Learn.ogg-389a54a70d5e1868ed1cc979c206fec9.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

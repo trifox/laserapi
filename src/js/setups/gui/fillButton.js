@@ -1,130 +1,271 @@
+import { renderText } from '../../util.js';
+
 /**
  * fillButton is a circular area that becomes filled, once filled the state switches to 'ON'
  *
  */
-var MasterCanvas = require("../../MasterCanvas").default;
-var util = require("../../util.js").default;
+var MasterCanvas = require('../../MasterCanvas').default;
+var util = require('../../util.js').default;
 
+var laserConfig = require('../../LaserApiConfig').default;
 function moveToHelper_getGridPixel(data, x, y) {
   const gridSize = Math.floor(Math.sqrt(data.length));
   return data[Math.floor(x) + Math.floor(y) * gridSize];
 }
 
 export default ({
-  label = "Sample Buttohn",
+  label = 'Sample Button',
   posX,
   posY,
   radius = 10,
-  speedUp = 1,
-  speedDown = 0.1,
-  activeColor = "#ffff00",
-  growColor = "#00ffff",
-  normalColor = "#0000ff",
+  speedUp = 50,
+  counterReset = false,
+  edges = 5,
+  edges2,
+  speedDown = 25,
+  keyCode=undefined,
+  angle = 0,
+  lineWidth = 3,
+  activeColor = '#00bbff',
+  growColor = '#0088ff',
+  normalColor = '#0044ff',
   activeValue = 75,
+  minValue = 25,
   onEnterActive,
   onExitActive,
-  minValue = 25,
 }) => {
-  var sleeper = 0;
+  var currentX = posX;
+  var currentY = posY;
   var counter = 0;
-  var lastTime = performance.now();
-  var state = "normal";
-  return {
-    name: "GUI flipButton",
+  var currentEdges = edges;
+  var currentRadius = radius;
+  var currentColor = normalColor;
+  var currentLabel = label;
+  var currentGrowColor = growColor;
+  var currentActiveColor = activeColor;
+  var state = 'normal';
+  var result = {
+    name: 'GUI flipButton',
     init: function () {},
     data: {
       fillState: 0,
     },
-    handle: function (grid) {
-      if (sleeper-- <= 0) {
-        sleeper = 1; //update always 1
-        var currentTime = performance.now();
-        const elapsed = (currentTime - lastTime) / 1000;
+    getColor() {
+      return currentColor;
+    },
+    getLabel() {
+      return currentLabel;
+    },
+    getEdges() {
+      return edges;
+    },
+    getEdges2() {
+      return edges2;
+    },
+    setLabel(label) {
+      currentLabel = label;
+    },
+    setColor(newcol) {
+      currentColor = newcol;
+    },
+    getValue() {
+      return counter;
+    },
+    setValue(newcol) {
+      counter = newcol;
+    },
+    getGrowColor() {
+      return currentGrowColor;
+    },
+    setGrowColor(newcol) {
+      currentGrowColor = newcol;
+    },
+    getActiveColor() {
+      return currentActiveColor;
+    },
+    setActiveColor(newcol) {
+      currentActiveColor = newcol;
+    },
+    setX(newX) {
+      currentX = newX;
+    },
+    getX() {
+      return currentX;
+    },
+    setY(newX) {
+      currentY = newX;
+    },
+    setEdges(newX) {
+      currentEdges = newX;
+    },
+    setCounter(newX) {
+      counter = newX;
+    },
+    getY() {
+      return currentY;
+    },
+    getRadius() {
+      return currentRadius;
+    },
+    setRadius(newRadius) {
+      currentRadius = newRadius;
+    },
+    handle: function (grid, elapsed) {
+      var ctx = MasterCanvas.get2dContext();
 
-        lastTime = currentTime;
-        /**
-         * here we need to think about how to improve performance, would a shader with one output help here?
-         * i think not because the shader would iterate over each field anyways
-         *
-         * the only thing for performance is that we not go through all the grid, but just rasterize the given circle
-         * and query the grid data array for non zero values
-         */
+      /**
+       * here we need to think about how to improve performance, would a shader with one output help here?
+       * i think not because the shader would iterate over each field anyways
+       *
+       * the only thing for performance is that we not go through all the grid, but just rasterize the given circle
+       * and query the grid data array for non zero values
+       */
 
-        const gridSize = Math.sqrt(grid.length);
+      const gridSize = Math.sqrt(grid.length);
 
-        const factx = MasterCanvas.getCanvas().width / gridSize;
-        const facty = MasterCanvas.getCanvas().height / gridSize;
-        var found = false;
-        for (var x = 0; x <= (radius * 2) / factx; x++) {
-          for (var y = 0; y <= (radius * 2) / facty; y++) {
-            // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
-            if (
-              moveToHelper_getGridPixel(
-                grid,
-                x + Math.floor((posX - radius) / factx),
-                y + Math.floor((posY - radius) / facty)
-              ) > 0
-            ) {
-              // console.log("found increment!!!!!!!!!!!!!!!");
-              found = true;
-              break;
-            }
-            if (found) break;
-          }
-          if (found) {
-            counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
-            sleeper = 1;
-          } else {
-            counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
-            // make a sleep
-            sleeper = 5 + Math.round(Math.random() * 25);
-            sleeper = 1;
+      const factx = MasterCanvas.getCanvas().width / gridSize;
+      const facty = MasterCanvas.getCanvas().height / gridSize;
+      var found = false;
+
+      for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
+        for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
+          // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
+          if (
+            moveToHelper_getGridPixel(
+              grid,
+              x + Math.floor((currentX - currentRadius) / factx),
+              y + Math.floor((currentY - currentRadius) / facty)
+            ) > 0
+          ) {
+            // ctx.fillRect(
+            //   currentX - radius + x * factx,
+            //   currentY - radius + y * facty,
+            //   (radius)/(currentRadius * 2) / factx ,
+            //   (radius)/(currentRadius * 2) / facty ,
+            // );
+            //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
+            found = true;
+            break;
           }
         }
+        if (found) break;
       }
-      var ctx = MasterCanvas.get2dContext();
+      if (found) {
+        counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
+      } else {
+        counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
+      }
+
+      if(laserConfig.pressedKeys[keyCode]){
+        counter=activeValue+1
+        state='grow'
+      }
 
       //        ctx.strokeStyle = util.rgbToHex(0, 255, 255);
       var oldstate = state;
       if (counter > activeValue) {
-        ctx.strokeStyle = activeColor;
-        state = "active";
+        ctx.strokeStyle = currentActiveColor;
+        ctx.fillStyle = currentActiveColor;
+        state = 'active';
       } else if (counter > minValue) {
-        ctx.strokeStyle = growColor;
-        state = "grow";
+        ctx.strokeStyle = currentGrowColor;
+        ctx.fillStyle = currentGrowColor;
+        state = 'grow';
       } else {
-        ctx.strokeStyle = normalColor;
-        state = "normal";
+        ctx.strokeStyle = currentColor;
+        ctx.fillStyle = currentColor;
+        state = 'normal';
       }
-      if (oldstate != state) {
-        if (oldstate == "grow" && state == "active") {
-          if (onEnterActive) {
-            onEnterActive();
-          }
-        }
-        if (oldstate == "active" && state == "grow") {
-          if (onExitActive) {
-            onExitActive();
-          }
-        }
-      }
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(posX, posY, radius, 0, 2 * Math.PI);
-      ctx.arc(posX, posY, radius * (counter / 100), 0, 2 * Math.PI);
-      ctx.rect(posX - radius, posY - radius, radius * 2, radius * 2);
-      ctx.stroke();
+      ctx.lineWidth = 4;
+      // ctx.beginPath();
+      // ctx.arc(currentX, currentY, currentRadius, 0, 2 * Math.PI);
+      // ctx.arc(
+      //   currentX,
+      //   currentY,
+      //   currentRadius * (counter / 100),
+      //   0,
+      //   2 * Math.PI
+      // );
+      // ctx.rect(
+      //   currentX - currentRadius,
+      //   currentY - currentRadius,
+      //   currentRadius * 2,
+      //   currentRadius * 2
+      // );
+      // ctx.stroke();
 
       // ctx.fillText(label, posX, posY - radius);
 
+      if(!keyCode){
+      util.drawNgon({
+        ctx,
+        color: ctx.strokeStyle,
+        Xcenter: currentX,
+        Ycenter: currentY,
+        size: currentRadius,
+        numberOfSides: currentEdges,
+        angle,
+        lineWidth,
+      });
+      if (edges2) {
+        util.drawNgon({
+          ctx,
+          color: ctx.strokeStyle,
+          Xcenter: currentX,
+          Ycenter: currentY,
+          size: currentRadius / 2,
+          numberOfSides: edges2,
+          angle,
+          lineWidth: lineWidth / 2,
+        });
+      }
+      util.drawNgon({
+        ctx,
+        color: ctx.strokeStyle,
+        Xcenter: currentX,
+        Ycenter: currentY,
+        size: currentRadius * (counter / 100),
+        numberOfSides: edges,
+        filled: false,
+        angle,
+        lineWidth,
+      });
       util.renderText({
         ctx,
-        text: label,
-        x: posX,
-        y: posY - 10,
-        fontSize: "25px",
-        fillStyle: "white",
+        text: currentLabel,
+        x: currentX,
+        y: currentY - 10,
+        fillStyle: normalColor,
+        fontSize: '25px',
       });
+
+    }else{
+      // render keycode information
+      renderText({
+ctx,text:'Press <SPACE> to start!',
+fontSize:'24px',
+x: currentX,
+y: currentY - 10,
+
+      })
+    }
+      if (oldstate != state) {
+        if (oldstate == 'grow' && state == 'active') {
+          if (onEnterActive) {
+            onEnterActive(result);
+          }
+          if (counterReset) {
+            counter = 0;
+            state = 'normal';
+          }
+        }
+        if (oldstate == 'active' && state == 'grow') {
+          if (onExitActive) {
+            onExitActive(result);
+          }
+        }
+      }
     },
   };
+  return result;
 };

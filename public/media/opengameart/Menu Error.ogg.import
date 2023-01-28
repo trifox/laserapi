@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Menu Error.ogg-bd61eafbe164cf4fa6afa09408b7c5e3.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/opengameart/Menu Error.ogg"
+dest_files=[ "res://.import/Menu Error.ogg-bd61eafbe164cf4fa6afa09408b7c5e3.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

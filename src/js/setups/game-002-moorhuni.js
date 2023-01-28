@@ -1,17 +1,17 @@
-var laserConfig = require("../LaserApiConfig.js").default;
-var MasterCanvas = require("../MasterCanvas").default;
+var laserConfig = require('../LaserApiConfig.js').default;
+var MasterCanvas = require('../MasterCanvas').default;
 
 var knobPositions = [];
 
 var moveSpeed = 250;
-var itemCount = 8;
+var itemCount = 10;
 var itemSize = 200;
 
 function getItemSize() {
   return itemSize * laserConfig.playfieldScale;
 }
-const MODE_LEFTRIGHT = "leftright";
-const MODE_BOTH = "both";
+const MODE_LEFTRIGHT = 'leftright';
+const MODE_BOTH = 'both';
 var gameMode = MODE_BOTH;
 var center = true;
 var lastTime = performance.now();
@@ -235,7 +235,7 @@ function init(data) {
       left: 100,
       speed: 250,
       top: 100 + i * (getItemSize() + 20),
-      color: "#00ff88",
+      color: '#00ff88',
       lineWidth: 2,
     });
 
@@ -244,7 +244,7 @@ function init(data) {
       left: 100 + getItemSize() + 20,
       speed: 350,
       top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
-      color: "#00ff88",
+      color: '#00ff88',
       lineWidth: 2,
     });
   }
@@ -254,7 +254,7 @@ function init(data) {
       left: laserConfig.canvasResolution.width - 100 - getItemSize(),
       speed: 250,
       top: 100 + i * (getItemSize() + 20),
-      color: "#00ff88",
+      color: '#00ff88',
       lineWidth: 1,
     });
 
@@ -268,7 +268,7 @@ function init(data) {
         20,
       speed: 350,
       top: 100 + i * (getItemSize() + 20) + getItemSize() / 4,
-      color: "#00ff88",
+      color: '#00ff88',
       lineWidth: 1,
     });
   }
@@ -279,7 +279,7 @@ function init(data) {
         laserConfig.canvasResolution.width / 2 - knobPositions[i].width / 2;
     }
   }
-  console.log("initialised ", knobPositions);
+  console.log('initialised ', knobPositions);
 }
 
 var lastResolution = -1;
@@ -345,11 +345,11 @@ function checkOut() {
 }
 
 export default {
-  name: "Obstacle Game",
+  name: 'Obstacle Game',
   init: function (data) {
     init(data);
 
-    console.log("init game moorhuni ", knobPositions);
+    console.log('init game moorhuni ', knobPositions);
   },
   handle: function (grid) {
     if (lastResolution != grid.length) {
@@ -361,18 +361,18 @@ export default {
     checkOut();
 
     var canvas2d = MasterCanvas.get2dContext();
-    canvas2d.font = "40px Arial  ";
-    canvas2d.fillStyle = "#008800";
-    canvas2d.textAlign = "left";
+    canvas2d.font = '40px Arial  ';
+    canvas2d.fillStyle = '#008800';
+    canvas2d.textAlign = 'left';
     canvas2d.fillText(
-      winPointsTeam1 + " : " + winPpointsTeam2 + " Matches ",
+      winPointsTeam1 + ' : ' + winPpointsTeam2 + ' Matches ',
       0,
       laserConfig.canvasResolution.height
     );
-    canvas2d.fillStyle = "#0088ff";
-    canvas2d.textAlign = "right";
+    canvas2d.fillStyle = '#0088ff';
+    canvas2d.textAlign = 'right';
     canvas2d.fillText(
-      "Current " + pointsTeam1 + " : " + pointsTeam2,
+      'Current ' + pointsTeam1 + ' : ' + pointsTeam2,
       laserConfig.canvasResolution.width,
       laserConfig.canvasResolution.height
     );

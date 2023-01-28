@@ -15,12 +15,99 @@
  * 3. create 1 dimensional resultarray out of video image (gridResolution)
  *
  */
-var hermite = require("cubic-hermite");
-var helper = require("./helper.js");
-var GPU = require("gpu.js").GPU;
-var laserConfig = require("./LaserApiConfig.js").default;
+var hermite = require('cubic-hermite');
+import { lerp, lerp2d, lerp3d } from './math.js';
+var helper = require('./helper.js');
+var GPU = require('gpu.js').GPU;
+var laserConfig = require('./LaserApiConfig.js').default;
+var gpuTools = require('./gpuTools').default;
 
 const gpu = new GPU();
+function brightnessMatrix(brightness) {
+  return [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [brightness, brightness, brightness, 1],
+  ];
+}
+function saturationMatrix(saturation) {
+  var luminance = { x: 0.3086, y: 0.6094, z: 0.082 };
+
+  var oneMinusSat = 1.0 - saturation;
+
+  var red = {
+    x: luminance.x * oneMinusSat,
+    y: luminance.x * oneMinusSat,
+    z: luminance.x * oneMinusSat,
+  };
+  red.x += saturation;
+  var green = {
+    x: luminance.y * oneMinusSat,
+    y: luminance.y * oneMinusSat,
+    z: luminance.y * oneMinusSat,
+  };
+  green.y += saturation;
+
+  var blue = {
+    x: luminance.z * oneMinusSat,
+    y: luminance.z * oneMinusSat,
+    z: luminance.z * oneMinusSat,
+  };
+  blue.z += saturation;
+
+  const res = [
+    [red.x, red.y, red.z, 0],
+    [green.x, green.y, green.z, 0],
+    [blue.x, blue.y, blue.z, 0],
+    [0, 0, 0, 1],
+  ];
+
+  //  console.log('saturation matrix is', saturation, res);
+  return res;
+}
+function contrastMatrix(contrast) {
+  var t = (1.0 - contrast) / 2.0;
+
+  return [
+    [contrast, 0, 0, 0],
+    [0, contrast, 0, 0],
+    [0, 0, contrast, 0],
+    [t, t, t, 1],
+  ];
+}
+function matrixMul(a, b) {
+  let sum = 0;
+  let result = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  for (let x = 0; x < 4; x++) {
+    for (let y = 0; y < 4; y++) {
+      sum = 0;
+      for (let i = 0; i < 4; i++) {
+        sum += a[y][i] * b[i][x];
+      }
+      result[x][y] = sum;
+    }
+  }
+  return result;
+}
+gpu.addFunction(function matrixMulVec(mat, vec) {
+  let sum = 0;
+  let result = [0, 0, 0, 0];
+  for (let i = 0; i < 4; i++) {
+    sum = 0;
+    for (let x = 0; x < 4; x++) {
+      sum += mat[x][i] * vec[i];
+    }
+    result[i] = sum;
+  }
+  return result;
+});
+
 gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
   var ti = t - 1,
     t2 = t * t,
@@ -41,84 +128,50 @@ gpu.addFunction(function cubicHermite(p0, v0, p1, v1, t) {
   return h00 * p0 + h10 * v0 + h01 * p1 + h11 * v1;
 });
 
-gpu.addFunction(function rgb2hsv(r, g, b) {
-  let rr = 0,
-    gg = 0,
-    bb = 0,
-    h = 0,
-    s = 0;
-  let v = Math.max(r, g);
-  v = Math.max(v, b);
-
-  let minv = Math.min(r, g);
-  minv = Math.min(minv, b);
-  let diff = v - minv;
-
-  function diffc(c, v, diff) {
-    return (v - c) / 6 / diff + 1 / 2;
-  }
-
-  if (diff == 0) {
-    h = s = 0;
-  } else {
-    s = diff / v;
-    rr = diffc(r, v, diff);
-    gg = diffc(g, v, diff);
-    bb = diffc(b, v, diff);
-
-    if (r === v) {
-      h = bb - gg;
-    } else if (g === v) {
-      h = 1 / 3 + rr - bb;
-    } else if (b === v) {
-      h = 2 / 3 + gg - rr;
-    }
-
-    if (h < 0) {
-      h += 1;
-    } else if (h > 1) {
-      h -= 1;
-    }
-  }
-
-  return [Math.round(h * 360), Math.round(s * 100), Math.round(v * 100)];
-});
+gpu.addFunction(gpuTools.rgb2hsv);
 gpu.addFunction(
-  function getColorDistance(col1, col2) {
-    var diff = [col1[0] - col2[0], col1[1] - col2[1], col1[2] - col2[2]];
+  function getColorDistance(col1, referenceColor, colorWeights) {
+    var diff = [
+      col1[0] - referenceColor[0],
+      col1[1] - referenceColor[1],
+      col1[2] - referenceColor[2],
+    ];
     var result = Math.sqrt(
       diff[0] * diff[0] + diff[1] * diff[1] + diff[2] * diff[2]
     );
-
-    // // console.log('diff is .', col1, col2, result);
-
-    // // use hsv color distances for
-    // var hsv1 = rgb2hsv(col1[0], col1[1], col1[2]);
-    // var hsv2 = rgb2hsv(col2[0], col2[1], col2[2]);
-    // var hsvdiff = [
-    //   Math.abs(hsv1[0] - hsv2[0]),
-    //   Math.abs(hsv1[1] - hsv2[1]),
-    //   Math.abs(hsv1[2] - hsv2[2]),
-    // ];
-
-    // var result2 = Math.sqrt(hsvdiff[0] * hsvdiff[0]);
     return result;
+    // // console.log('diff is .', col1, col2, result);
+    // // use hsv color distances for
+    var hsv1a = rgb2hsv(col1[0], col1[1], col1[2]);
+    var hsv2a = rgb2hsv(
+      referenceColor[0],
+      referenceColor[1],
+      referenceColor[2]
+    );
+
+    var hsv1 = [hsv1a[0] / 360, hsv1a[1] / 100, hsv1a[2] / 100];
+    var hsv2 = [hsv2a[0] / 360, hsv2a[1] / 100, hsv2a[2] / 100];
+
+    var hsvdiff = [
+      Math.pow(colorWeights[0] * (hsv1[0] - hsv2[0]), 2),
+      Math.pow(colorWeights[1] * (hsv1[1] - hsv2[1]), 2),
+      Math.pow(colorWeights[2] * (hsv1[2] - hsv2[2]), 2),
+    ];
+    // return result;
+    // var result2 = Math.sqrt(hsvdiff[0] * hsvdiff[0]);
+    return Math.sqrt(
+      hsvdiff[0] * hsvdiff[0] +
+        hsvdiff[1] * hsvdiff[1] +
+        hsvdiff[2] * hsvdiff[2]
+    );
   },
-  { argumentTypes: { col1: "Array(3)", col2: "Array(3)" } }
+  { argumentTypes: { col1: 'Array(3)', col2: 'Array(3)' } }
 );
 
 gpu.addFunction(function lerpSin(v0, v1, t) {
   return lerp(v0, v1, 1 - (Math.cos(t * Math.PI) * 0.5 + 0.5));
 });
-gpu.addFunction(
-  function lerp(v0, v1, t) {
-    return (1 - t) * v0 + t * v1;
-  },
-  {
-    argumentTypes: { v0: "Number", v1: "Number", t: "Number" },
-    returnType: "Number",
-  }
-);
+gpu.addFunction(lerp);
 gpu.addFunction(
   function lerp2d(v0, v1, t) {
     return [lerp(v0[0], v1[0], t), lerp(v0[1], v1[1], t)];
@@ -130,8 +183,8 @@ gpu.addFunction(
     ];
   },
   {
-    argumentTypes: { v0: "Array(2)", v1: "Array(2)", t: "Number" },
-    returnType: "Array(2)",
+    argumentTypes: { v0: 'Array(2)', v1: 'Array(2)', t: 'Number' },
+    returnType: 'Array(2)',
   }
 );
 gpu.addFunction(
@@ -200,13 +253,13 @@ gpu.addFunction(
   },
   {
     argumentTypes: {
-      coord: "Array(2)",
-      mapTopLeft: "Array(4)",
-      mapTopRight: "Array(4)",
-      mapBottomLeft: "Array(4)",
-      mapBottomRight: "Array(4)",
+      coord: 'Array(2)',
+      mapTopLeft: 'Array(4)',
+      mapTopRight: 'Array(4)',
+      mapBottomLeft: 'Array(4)',
+      mapBottomRight: 'Array(4)',
     },
-    returnType: "Array(2)",
+    returnType: 'Array(2)',
   }
 );
 
@@ -244,24 +297,12 @@ function transformCoordinate(coord, mapping) {
   return result;
 }
 
-function getColorDistance(col1, col2) {
-  var diff = [];
-  diff[0] = col1[0] - col2[0];
-  diff[1] = col1[1] - col2[1];
-  diff[2] = col1[2] - col2[2];
-  var result = Math.sqrt(
-    diff[0] * diff[0] + diff[1] * diff[1] + diff[2] * diff[2]
-  );
-
-  // console.log('diff is .', col1, col2, result);
-
-  return result;
-}
-var lastDate = performance.now();
-
+var compiledKernelExtractInterestRegionFilter;
 var compiledKernelExtractInterestRegion;
 var compiledKernelExtractGrid;
 var superKernel;
+var superKernel2;
+var superKernel3;
 var LaserApi = {
   lerp: lerp,
   lerp2d: lerp2d,
@@ -271,6 +312,53 @@ var LaserApi = {
   //globalImageData: null,
   video: null,
   canvas: null,
+  getColorMatrix() {
+    return matrixMul(
+      matrixMul(
+        brightnessMatrix(laserConfig.brightness),
+        contrastMatrix(laserConfig.contrast)
+      ),
+      saturationMatrix(laserConfig.saturation)
+    );
+  },
+  getVideoFilter(videoInput) {
+    if (!superKernel2) {
+      superKernel2 = this.createFilterKernel();
+      superKernel3 = this.createFilterKernel();
+    }
+    // console.log('super kernel 2 is filtering', superKernel2);
+    superKernel2(
+      videoInput,
+      [
+        // gaussian blur 0.0625,
+
+        0.0625, 0.125, 0.0625, 0.125, 0.5, 0.125, 0.0625, 0.125, 0.0625,
+
+        // sharpen
+        // 0, -1, 0, -1, 5, -1, 0, -1, 0,
+        // outline
+        //-1, -1, -1, -1, 8, -1, -1, -1, -1,
+        // identity
+        //  0, 0, 0, 0, 1, 0, 0, 0, 0,
+      ]
+    );
+    superKernel3(
+      superKernel2.canvas,
+      [
+        // gaussian blur 0.0625,
+
+        0.0625, 0.125, 0.0625, 0.125, 0.25, 0.125, 0.0625, 0.125, 0.0625,
+
+        // sharpen
+        // 0, -1, 0, -1, 5, -1, 0, -1, 0,
+        // outline
+        //-1, -1, -1, -1, 8, -1, -1, -1, -1,
+        // identity
+        // 0, 0, 0, 0, 1, 0, 0, 0, 0,
+      ]
+    );
+    return superKernel3.canvas;
+  },
   getFine(videoInput) {
     /**
      * this method performs the full input filtering and transformation
@@ -281,12 +369,22 @@ var LaserApi = {
      * 2. subsample to scale down to what is used as working space of the games, creating a 1dimensional output array of dots indicating true or false wether a laser pointer
      * has been detected for that location....
      */
+
+    // calculate color matrices
+    var colormatrix = this.getColorMatrix();
+
     if (!superKernel) {
       const videoKernel = this.createVideoKernel();
       const downscaleKernel = this.createDownScaleKernel();
+      const filterKernel = this.createFilterKernel();
+      const filterKernel2 = this.createFilterKernel();
+      const lastCanvasSubtractKernel = this.createSubtractLastCanvasKernel();
       superKernel = gpu.combineKernels(
         videoKernel,
         downscaleKernel,
+        filterKernel,
+        filterKernel2,
+        lastCanvasSubtractKernel,
         function (
           imageData,
           resX,
@@ -295,19 +393,73 @@ var LaserApi = {
           inputResY,
           mapping,
           referenceColor,
+          referenceColor2,
           threshold,
-          gridResolution
+          gridResolution,
+          colorWeights,
+          colormatrix
         ) {
           return downscaleKernel(
             videoKernel(
-              imageData,
+              filterKernel(
+                filterKernel2(
+                  imageData,
+                  [
+                    // gaussian blur 0.0625,
+                    0.0625, 0.125, 0.0625, 0.125, 0.25, 0.125, 0.0625, 0.125,
+                    0.0625,
+                    // sharpen
+                    // 0, -1, 0, -1, 5, -1, 0, -1, 0,
+                    // outline
+                    // -1, -1, -1, -1, 8, -1, -1, -1, -1,
+                  ]
+                ),
+                [
+                  // gaussian blur 0.0625,
+                  //0.125, 0.0625, 0.125, 0.25, 0.125, 0.0625, 0.125, 0.0625,
+                  // sharpen
+                  0, -1, 0, -1, 5, -1, 0, -1, 0,
+                  // outline
+                  // -1, -1, -1, -1, 8, -1, -1, -1, -1,
+                ]
+              ),
+              // imageData,
               resX,
               resY,
               inputResX,
               inputResY,
               mapping,
               referenceColor,
-              threshold
+              referenceColor2,
+              threshold,
+              colorWeights,
+              [
+                [
+                  colormatrix[0][0],
+                  colormatrix[0][1],
+                  colormatrix[0][2],
+                  colormatrix[0][3],
+                ],
+                [
+                  colormatrix[1][0],
+                  colormatrix[1][1],
+                  colormatrix[1][2],
+                  colormatrix[1][3],
+                ],
+                [
+                  colormatrix[2][0],
+                  colormatrix[2][1],
+                  colormatrix[2][2],
+                  colormatrix[2][3],
+                ],
+                [
+                  colormatrix[3][0],
+                  colormatrix[3][1],
+                  colormatrix[3][2],
+                  colormatrix[3][3],
+                ],
+              ],
+              0
             ),
             gridResolution,
             gridResolution,
@@ -351,12 +503,44 @@ var LaserApi = {
         ],
       ],
       [
-        laserConfig.testColor[0],
-        laserConfig.testColor[1],
-        laserConfig.testColor[2],
+        laserConfig.testColor[0] / 255,
+        laserConfig.testColor[1] / 255,
+        laserConfig.testColor[2] / 255,
+      ],
+      [
+        laserConfig.testColor2[0] / 255,
+        laserConfig.testColor2[1] / 255,
+        laserConfig.testColor2[2] / 255,
       ],
       Number(laserConfig.threshold),
-      laserConfig.gridResolution
+      laserConfig.gridResolution,
+      laserConfig.colorWeights,
+      [
+        [
+          colormatrix[0][0],
+          colormatrix[0][1],
+          colormatrix[0][2],
+          colormatrix[0][3],
+        ],
+        [
+          colormatrix[1][0],
+          colormatrix[1][1],
+          colormatrix[1][2],
+          colormatrix[1][3],
+        ],
+        [
+          colormatrix[2][0],
+          colormatrix[2][1],
+          colormatrix[2][2],
+          colormatrix[2][3],
+        ],
+        [
+          colormatrix[3][0],
+          colormatrix[3][1],
+          colormatrix[3][2],
+          colormatrix[3][3],
+        ],
+      ]
     );
   },
 
@@ -370,7 +554,11 @@ var LaserApi = {
         inputResY,
         mapping,
         referenceColor,
-        threshold
+        referenceColor2,
+        threshold,
+        colorWeights,
+        colormatrix,
+        returnMode
       ) {
         var x = this.thread.x;
         var y = resY - this.thread.y;
@@ -385,34 +573,105 @@ var LaserApi = {
         var x2 = Math.floor(transformedCoord[0] * inputResX);
         var y2 = Math.floor(transformedCoord[1] * inputResY);
         const pixel = imageData[y2][x2];
+
         // var index = (x2 + y2 * inputResX) * 4;
-        var colorDistance = getColorDistance(
-          [pixel[0], pixel[1], pixel[2]],
-          [
-            referenceColor[0] / 255,
-            referenceColor[1] / 255,
-            referenceColor[2] / 255,
-          ]
-        );
-        if (colorDistance < threshold / 255) {
-          this.color(
-            referenceColor[0] / 255,
-            referenceColor[1] / 255,
-            referenceColor[2] / 255,
-            0
-          );
-        } else {
-          this.color(0, 0, 0, 0);
-          // const pixel33 = imageData[y2][x2];
-          // // const pixel = imageData[this.thread.y][this.thread.x];
-          // this.color(pixel[0], pixel[1], pixel[2], pixel[3]);
+
+        // goddam matrix mul, not able to handle with function call and 2dim matrix
+        let sum = 0;
+        let sum2 = 0;
+        let result = [0, 0, 0, 0];
+        let result2 = [0, 0, 0, 0];
+        for (let i = 0; i < 4; i++) {
+          sum = 0;
+          for (let x = 0; x < 4; x++) {
+            sum += colormatrix[x][i] * pixel[i];
+         
+          }
+          result[i] = sum; 
         }
+
+        var colorDistance1 = getColorDistance(
+          [result[0], result[1], result[2]],
+          [referenceColor[0], referenceColor[1], referenceColor[2]],
+          [colorWeights[0], colorWeights[1], colorWeights[2]]
+        );
+        var colorDistance2 = getColorDistance(
+          [result[0], result[1], result[2]],
+          [referenceColor2[0], referenceColor2[1], referenceColor2[2]],
+          [colorWeights[0], colorWeights[1], colorWeights[2]]
+        );
+        var colorDistance=Math.min(colorDistance1, colorDistance2);
+        if (returnMode == 0) {
+          if (colorDistance < threshold) {
+            this.color(1, 1, 1, 1);
+          } else {
+            this.color(0, 0, 0, 1);
+            // const pixel33 = imageData[y2][x2];
+            // // const pixel = imageData[this.thread.y][this.thread.x];
+            // this.color(pixel[0], pixel[1], pixel[2], pixel[3]);
+          }
+        } else if (returnMode == 1) {
+          // result 1 is transformed and saturated, brightnessinated, contrastinated result
+          this.color(result[0], result[1], result[2], 1);
+        } else if (returnMode == 2) {
+          this.color(colorDistance, colorDistance, colorDistance, 1);
+        }
+
+        // this.color(
+        //   (threshold - colorDistance) * (1 / threshold),
+        //   (threshold - colorDistance) * (1 / threshold),
+        //   (threshold - colorDistance) * (1 / threshold),
+        //   1
+        // );
+        // this.color(1, 1, 1, 1);
         // this.color(
         //   imageData[index] / 255,
         //   imageData[index + 1] / 255,
         //   imageData[index + 2] / 255,
         //   1
         // );
+        // this.color(result[0], result[1], result[2], 1);
+      })
+      .setOutput([
+        laserConfig.testResolution.width,
+        laserConfig.testResolution.height,
+      ])
+      .setGraphical(true);
+  },
+  createSubtractLastCanvasKernel() {
+    return gpu
+      .createKernel(function (lastCanvas, currentCanvas) {
+        var x = this.thread.x;
+        var y = resY - this.thread.y;
+        this.color(1, 0, 0, 1);
+      })
+      .setOutput([
+        laserConfig.testResolution.width,
+        laserConfig.testResolution.height,
+      ])
+      .setGraphical(true);
+  },
+  createFilterKernel() {
+    return gpu
+      .createKernel(function (image, kernel) {
+        // goddam for loop, implement kernel functionality to be applied on pixel
+        const applied = [0, 0, 0];
+        const kernelizee = 3;
+        for (var x = 0; x < kernelizee; x += 1) {
+          for (var y = 0; y < kernelizee; y += 1) {
+            var pixel =
+              image[this.thread.y - Math.floor(kernelizee / 2) + y][
+                this.thread.x - Math.floor(kernelizee / 2) + x
+              ];
+            pixel[0] *= kernel[x + y * kernelizee];
+            pixel[1] *= kernel[x + y * kernelizee];
+            pixel[2] *= kernel[x + y * kernelizee];
+            applied[0] += pixel[0];
+            applied[1] += pixel[1];
+            applied[2] += pixel[2];
+          }
+        }
+        this.color(applied[0], applied[1], applied[2], 1);
       })
       .setOutput([
         laserConfig.testResolution.width,
@@ -421,10 +680,11 @@ var LaserApi = {
       .setGraphical(true);
   },
 
-  getInterestReqionGPU(context, canvasColorOriginal) {
+  getInterestReqionGPU(context, canvasColorOriginal, mode = 0) {
     if (!compiledKernelExtractInterestRegion) {
       compiledKernelExtractInterestRegion = this.createVideoKernel();
     }
+
     compiledKernelExtractInterestRegion(
       canvasColorOriginal,
       laserConfig.testResolution.width,
@@ -458,11 +718,19 @@ var LaserApi = {
         ],
       ],
       [
-        laserConfig.testColor[0],
-        laserConfig.testColor[1],
-        laserConfig.testColor[2],
+        laserConfig.testColor[0] / 255,
+        laserConfig.testColor[1] / 255,
+        laserConfig.testColor[2] / 255,
       ],
-      Number(laserConfig.threshold)
+      [
+        laserConfig.testColor2[0] / 255,
+        laserConfig.testColor2[1] / 255,
+        laserConfig.testColor2[2] / 255,
+      ],
+      Number(laserConfig.threshold),
+      laserConfig.colorWeights,
+      this.getColorMatrix(),
+      mode
     );
 
     // create imageData object
@@ -533,8 +801,8 @@ var LaserApi = {
   init: function (video, canvas) {
     LaserApi.video = video;
     LaserApi.canvas = canvas;
-    LaserApi.context = canvas.getContext("2d");
-    console.log("LaserApi Init() called", video, canvas);
+    LaserApi.context = canvas.getContext('2d');
+    console.log('LaserApi Init() called', video, canvas);
 
     // ask for mic permission
     navigator.getUserMedia(
@@ -545,11 +813,11 @@ var LaserApi = {
         },
       },
       function (stream) {
-        console.log("Stream received", stream);
+        console.log('Stream received', stream);
         video.srcObject = stream;
         video.onloadedmetadata = function (e) {
-          console.log("Metadata received", this);
-          console.log("Metadata received", e);
+          console.log('Metadata received', this);
+          console.log('Metadata received', e);
           // Do something with the video here.
           video.play();
           LaserApi.canvas.width = Math.floor(video.videoWidth);

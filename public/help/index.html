@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>A Basic HTML5 Template</title>
+    <meta
+      name="description"
+      content="A simple HTML5 Template for new projects."
+    />
+    <meta name="author" content="SitePoint" />
+
+    <meta property="og:title" content="A Basic HTML5 Template" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://www.sitepoint.com/a-basic-html5-template/"
+    />
+    <meta
+      property="og:description"
+      content="A simple HTML5 Template for new projects."
+    />
+    <meta property="og:image" content="image.png" />
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="stylesheet" href="css/styles.css?v=1.0" />
+    <style>
+      body {
+        font-size: 2em;
+      }
+    </style>
+  </head>
+
+  <a>
+    <h1>Einrichtung der Laserpointerspiele</h1>
+(c) 27.02.2022 Georg Buchrucker (georgbuchrucker@web.de), Christian Kleinhuis (ck@froso.de)
+
+<h2>Begleitende Video Anleitung</h2>
+
+<a href="https://youtu.be/cUE4FXVsr8Q">Laser Pointer Trailer </a><br/>
+
+<a href="https://youtu.be/NTpKHWzS0to">Laser Pointer Spiele Youtube Video </a><br/>
+
+<a href="https://youtu.be/IAEaHGP5wjY">Begleitendes Youtube Video Anleitung</a><br/>
+
+    <h2>1. Einrichten der Webcam und Projektion</h2>
+    <p>
+      Wir öffnen im Browser laser.froso.de und erlauben den Videokamera-Zugriff
+      vom Browser aus. Die Einstellungen werden automatisch auf dem Computr
+      gesichert. Wir drücken die „f“ Taste, um in den Vollbildmodus zu wechseln.
+      Wir richten einen Computer mit Beamer und Webcam ein. Dazu drücken wir die
+      Taste „v“ und zeigen dadurch das Videobild an. Die Webcam muss auf die
+      Beamer- Projektion ausgerichtet sein und diese komplett erfassen. Richten
+      Sie die Kamera in Ruhe aus. Im Hintergrund sollte nur das Videobild zu
+      sehen sein. Wir drücken die „r“ Taste, um das rote Raster zu aktivieren.
+      Dieses Raster hat in seinen Ecken vier rote große Quadrate mit einem
+      schwarzen Fleck in den äußersten Ecken. Die schwarzen Flecken helfen uns
+      die Kamera auszurichten. Die Kamera muss alle vier Ecken des Rasters
+      komplett erfassen. Perspektivische Verzerrungen werden wir in Schritt 3
+      korrigieren; wichtig ist zunächst nur, dass alle vier Ecken von der Webcam
+      erfasst werden.
+    </p>
+
+    <h2>2. Einrichten der Projektion</h2>
+    <p>
+      Wir drücken die „t“ Taste, um das weiße Zielquadrat anzuzeigen. Die
+      Transformation wird an das Webcam- Signal angepasst. Die linke obere Ecke
+      des Quadrats ist mit einem Fadenkreuz markiert. Dieses muss auf den linken
+      Bereich der abgefilmten Projektion gelegt werden. Wir greifen diese Ecke
+      mit der Maus und ziehen sie auf die äußerste linke obere Ecke des
+      abgefilmten Rasters, rot markiert mit einem kleinen schwarzen Eckpunkt.
+      Danach verfahren wir mit den anderen drei Ecken genauso und legen sie
+      jeweils auf die anderen Ecken des roten gefilmten Rasters.
+    </p>
+    <h2>3. Eingeben der Farbe</h2>
+    <p>
+      Wir drücken die SHIFT+„f“ Taste und öffnen damit die Eingabemaske. Wir
+      drücken die "m" Taste und öffnen damit die Vorschau der Monitore. In
+      diesem Fenster scrollen wir soweit runter, dass die Checkboxen oben noch
+      zu sehen sind und die vier Vorschaumonitore. Wir drücken die "v" Taste, um
+      das Videobild verschwinden zu lassen. Diese Vorschau zeigt die linke obere
+      Ecke des Projektionserfassungsbereiches, wenn wir in . Mit einem der
+      mitgelieferten grünen augensicheren Laserpointern zielen wir in die linke
+      obere Ecke. Er sollte auf dem linken unteren Vorschaumonitor zu sehen
+      sein. Wir haben die Konfiguration auf diese Laserpointer voreingestellt,
+      aber sie kann im Bedarfsfall angepasst werden.Die Regler für Helligkeit,
+      Kontrast und Sättigung sind auf „0“ voreingestellt. Falls die
+      Lichtverhältnisse nicht optimal sind, kann mit diesen Reglern das Signal
+      im linken unteren Vorschaumonitor verbessert werden.
+    </p>
+
+    Falls die Laserpointerfarbe angepasst werden muss, geht das wie folgt:
+    <p>
+      Man zielt in die obere linke Ecke und drückt die „m“ Taste. Dadurch friert
+      das Vorschau- Monitorbild im Kontrollbereich ein. Dann geht man mit der
+      Maus auf den Signalpunkt auf dem eingefrorenen Vorschaumonitor unten links
+      und greift sich mit einem Klick die Farbe. Die zweite Farbe muss man
+      manuell einstellen. Falls der Laserpointer als weiß erkannt wird, macht
+      Weiß als zweite Farbe Sinn. Die erste Farbe ist dann Grün oder Rot, je
+      nach Laserpointerfarbe.
+    </p>
+
+    <h2>4. Korrektur der Projektion</h2>
+    <p>
+      Jetzt richten wir das Raster ein. Dafür müssen wir den Treshhold Regler
+      feinjustieren. Der Treshhold bezeichnet die erlaubte Abweichung der
+      Zielfarbe. Wir nutzen zwei Zielfarben. Die erste Zielfarbe ist auch die
+      Farbe des Rasters. Jede gescannte Farbe wird als Laserpointer
+      interpretiert, so auch das Raster. Dies wird deutlich im Debugmodus. Dafür
+      drücken wir die „D“ Taste, um den Debugmodus zu aktivieren. Der Debugmodus
+      zeigt abhängig von der Scan- Auflösung die Grundlage für die Laser- Api.
+      Wir versuchen mit dem Treshholdregler eine größtmögliche Synchronisation
+      zwischen Laserpointer- Signal und registriertem Debug- Raster
+      herzustellen. Nun suchen wir die Steigungsanfasser auf den
+      Verbindungslinien des Projektionsquadrates, um sie zu justieren. Jede
+      Verbindung hat einen horizontalen und vertikalen Anschluss, welcher durch
+      einen Steigungsparameter eingestellt werden kann. Dieser
+      Steigungsparameter kann mit einem orangefarbenen Knopf entlang der
+      Verbindungslinie via drag und drop eingestellt werden. Je geradliniger und
+      perspektivisch verzerrungsfreier die Aufnahme ist, desto weniger notwendig
+      ist das Einstellen hier. Ziel ist es, die angezeigten Debug- Rasterlinien
+      so genau wie möglich mit den projizierten Farben abzugleichen. Die Debug-
+      Quadrate sollen symmetrisch parallel direkt unter den Rasterlinien liegen.
+      Falls das nicht gelingt, führt das zu einem Versatz, falls die Kamera
+      schräg positioniert ist.
+    </p>
+
+    <h2>5. Finaler Schritt</h2>
+    <p>
+      Abschließend schalten wir die Debug- Funktionen durch Betätigen von „r“
+      aus, um das Debug- Hilfsraster zu entfernen. Drücken Sie auch die Taste
+      „t“, um die rechteckige Transformation für den Projektionsbereich
+      auszublenden. Nun sehen Sie die Debug- Punkte, wenn Sie mit den
+      Laserpointern auf die Leinwand zeigen. Wechseln Sie in den Spielmodus
+      durch Betätigen der Taste „g“. Wechseln Sie zwischen den Spielen durch
+      PgUp und PgDown.
+    </p>
+  </body>
+</html>
