@@ -1,7 +1,10 @@
 var config = {
+  pressedKeys:{},
   gameIndex: 0,
   debugVideo: true,
   testColor: [255, 32, 32],
+  testColor2: [255, 32, 32],
+  colorWeights: [1, 1, 0.1],
   gridResolution: 64,
   playfieldScale: 1,
   tickIntervalMilliseconds: 25,

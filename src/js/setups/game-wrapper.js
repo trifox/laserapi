@@ -4,13 +4,26 @@ class GameWapper {
   }
 
   getName() {
-    console.log("this is ", this);
+    //console.log("this is ", this);
     if (this.game.getName) {
       return this.game.getName();
     }
 
     if (this.game.name) {
       return this.game.name;
+    }
+
+    return "defaultName";
+  }
+
+  getDescription() {
+   // console.log("this is ", this);
+    if (this.game.getDescription) {
+      return this.game.getDescription();
+    }
+
+    if (this.game.description) {
+      return this.game.description;
     }
 
     return "defaultName";
@@ -28,9 +41,9 @@ class GameWapper {
     }
   }
 
-  handle(grid) {
+  handle(grid,elapsed) {
     if (this.game.handle) {
-      this.game.handle(grid);
+      this.game.handle(grid,elapsed);
     }
   }
 }

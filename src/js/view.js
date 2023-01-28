@@ -1,37 +1,58 @@
-import { Solver } from "p2";
-import util from "./util.js";
-var helper = require("./helper.js");
-var laserConfig = require("./LaserApiConfig").default;
-var Util = require("./util").default;
-var CanvasVideo = require("./CanvasVideo").default;
-var LaserApi = require("./LaserApi.js").default;
-var LaserApiPresets = require("./LaserApiPresets").default;
-var w3 = require("./../css/w3.css").default;
+import { Solver } from 'p2';
+import util, { getRgbSpreadHex, renderText } from './util.js';
+import { length, lerp2d } from './math.js';
+var helper = require('./helper.js');
+var laserConfig = require('./LaserApiConfig').default;
+var Util = require('./util').default;
+var CanvasVideo = require('./CanvasVideo').default;
+var LaserApi = require('./LaserApi.js').default;
+var LaserApiPresets = require('./LaserApiPresets').default;
+var w3 = require('./../css/w3.css').default;
 //var game01 = require('./setups/game-001-play-midi').default
 //var shader = require('./shader').default
-var MainCanvas = require("./MasterCanvas").default;
+var MainCanvas = require('./MasterCanvas').default;
 // var game01 = require('./setups/game-002-moorhuni').default
 //var game01 = require('./setups/game-003-pong').default
 //var game01 = require('./setups/game-004-paint').default
-var gameDebug = require("./setups/game-004-debug").default;
-var gameDebugCorners = require("./setups/game-004-debug-corners").default;
-var gameDebugTransform = require("./setups/game-004-debug-transform").default;
-var GameWrapper = require("./setups/game-wrapper").default;
+var gameDebug = require('./setups/game-004-debug').default;
+var gameDebugCorners = require('./setups/game-004-debug-corners').default;
+var gameDebugTransform = require('./setups/game-004-debug-transform').default;
+var GameWrapper = require('./setups/game-wrapper').default;
+var gameChanged = 0;
 //var game01 = require('./setups/game-005-switch').default
 var games = [
+  // new GameWrapper(require('./setups/game-006-montagsmaler').default),
+  // new GameWrapper(require('./setups/game-019-dienstagsmaler').default),
+  new GameWrapper(require('./setups/game-014-fire').default),
   // new GameWrapper(require("./setups/game-001-play-midi").default),
   // new GameWrapper(require("./setups/game-002-moorhuni").default),
-  new GameWrapper(require("./setups/game-003-pong").default),
+  // new GameWrapper(require('./setups/game-012-reversi').default),
+  new GameWrapper(require('./setups/game-009-paradise').default),
+  new GameWrapper(require('./setups/game-003-pong').default),
+  new GameWrapper(require('./setups/game-015-flap').default),
+  new GameWrapper(require('./setups/game-013-lasertorpedo').default),
   // new GameWrapper(require("./setups/game-005-switch").default),
-  new GameWrapper(require("./setups/game-006-fade").default),
   // new GameWrapper(require("./setups/game-007-c64-evoke17").default),
   // new GameWrapper(require("./setups/game-007-c64").default),
-  new GameWrapper(require("./setups/game-008-mandelbrot").default),
+  new GameWrapper(require('./setups/game-011-basefight').default),
+  new GameWrapper(require('./setups/game-017-thehorde').default),
+  new GameWrapper(require('./setups/game-016-lasershark').default),
+  new GameWrapper(require('./setups/game-016b-lasersharkpool').default),
+  // new GameWrapper(require('./setups/game-017-thehorde').default),
+  new GameWrapper(require('./setups/game-018-voter').default),
+  // new GameWrapper(require('./setups/game-019-dienstagsmaler').default),
+
+
+  new GameWrapper(require('./setups/game-008-mandelbrot').default),
 ];
-console.log("games are", games);
+
+
+
+const Lowpassfilter = require('./setups/game-000000000-lowpassfilter').default;
+console.log('games are', games);
 /* make sure to use https as the web audio api does not like http */
-MainCanvas.init(document.getElementById("canvas"));
-CanvasVideo.init(document.getElementById("video"));
+MainCanvas.init(document.getElementById('canvas'));
+CanvasVideo.init(document.getElementById('video'));
 
 function startGame(index) {
   if (games[index].init) {
@@ -40,12 +61,11 @@ function startGame(index) {
 }
 function stopGame(index) {
   if (games[index].stop) {
-    f;
     games[index].stop();
   }
 }
 startGame(0);
-
+var avgElapsed = 0;
 var lastGameIndex = -1;
 async function scaleImageData(imageData, width, height) {
   const resizeWidth = width >> 0;
@@ -61,16 +81,118 @@ async function scaleImageData(imageData, width, height) {
       resizeHeight,
     }
   );
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement('canvas');
   canvas.width = resizeWidth;
   canvas.height = resizeHeight;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   ctx.scale(resizeWidth / imageData.width, resizeHeight / imageData.height);
   ctx.drawImage(ibm, 0, 0);
   return ctx.getImageData(0, 0, resizeWidth, resizeHeight);
 }
+var elapsed = 0;
+var lastTime = 0;
 async function frameHandler() {
+  //elapsed calculation globally
+  var currentTime = performance.now();
+  elapsed = (currentTime - lastTime) / 1000;
+  lastTime = currentTime;
+
+  ///// elapsed end
+
   // console.time("frameHandler");
+  const zoomctx = document.getElementById('zoomcanvas').getContext('2d');
+  const filterctx = document.getElementById('filtercanvas').getContext('2d');
+  const filter2ctx = document.getElementById('filter2canvas').getContext('2d');
+  const previewctx = document.getElementById('previewcanvas').getContext('2d');
+  const transformctx = document
+    .getElementById('transformcanvas')
+    .getContext('2d');
+  const debugctx = document.getElementById('debugcanvas').getContext('2d');
+  const zoomx = document.getElementById('zoom_x').value;
+  const zoomy = document.getElementById('zoom_y').value;
+  zoomctx.imageSmoothingEnabled = false;
+  if (laserConfig.showMapping) {
+    zoomctx.drawImage(
+      CanvasVideo.getVideo(),
+      -zoomx * 3,
+      -zoomy * 3,
+      1920 * 3,
+      1080 * 3
+    );
+
+    // paint the transform as well
+    zoomctx.lineWidth = 10;
+    util.drawLine(
+      zoomctx,
+      laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+      laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+      laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+      laserConfig.transform.topright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      '#00ff00'
+    );
+    util.drawLine(
+      zoomctx,
+      laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+      laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
+      zoomy * 3,
+      laserConfig.transform.bottomleft.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+      laserConfig.transform.bottomleft.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      '#00ff00'
+    );
+    util.drawLine(
+      zoomctx,
+      laserConfig.transform.bottomright.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+      laserConfig.transform.bottomright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      laserConfig.transform.bottomleft.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+      laserConfig.transform.bottomleft.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      '#00ff00'
+    );
+    util.drawLine(
+      zoomctx,
+      laserConfig.transform.bottomright.x *
+      laserConfig.videoResolution.width *
+      3 -
+      zoomx * 3,
+      laserConfig.transform.bottomright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
+      zoomx * 3,
+      laserConfig.transform.topright.y *
+      laserConfig.videoResolution.height *
+      3 -
+      zoomy * 3,
+      '#00ff00'
+    );
+  }
+  // end of zoomarea
+
   var ctx = MainCanvas.get2dContext();
   // console.log('Re Rendering');
   // console.log('Re Rendering', MainCanvas.getCanvas());
@@ -99,7 +221,6 @@ async function frameHandler() {
    * we start with drawing the video frame as initial input
    */
   if (laserConfig.debugVideo) {
-    ctx.save();
     // ctx.translate(0, laserConfig.videoResolution.height);
     // ctx.scale(1, -1);
     ctx.drawImage(
@@ -109,7 +230,6 @@ async function frameHandler() {
       laserConfig.videoResolution.width,
       laserConfig.videoResolution.height
     );
-    ctx.restore();
   }
   // console.time("frameHandler");
   /**
@@ -140,11 +260,37 @@ async function frameHandler() {
    * here we map out the designated area of interest from the input video frame
    * it comes back as imagedata
    */
-  // var canvasColorInterest = LaserApi.getInterestReqionGPU(
-  //   MainCanvas.get2dContext(),
-  //   CanvasVideo.getVideo()
-  // );
+  if (laserConfig.showMapping) {
+    var canvasColorInterestc = LaserApi.getVideoFilter(CanvasVideo.getVideo());
+    // console.log('filter view is ', canvasColorInterestc);
+    filterctx.drawImage(
+      canvasColorInterestc,
+      -zoomx * 3,
+      -zoomy * 3,
+      1920 * 3,
+      1080 * 3
+    );
 
+    var canvasColorInterest = LaserApi.getInterestReqionGPU(
+      MainCanvas.get2dContext(),
+      CanvasVideo.getVideo(),
+      2
+    );
+
+    transformctx.drawImage(canvasColorInterest, 0, 0, 400 * 3, 200 * 3);
+    var canvasColorInteresta = LaserApi.getInterestReqionGPU(
+      MainCanvas.get2dContext(),
+      CanvasVideo.getVideo(),
+      1
+    );
+    previewctx.drawImage(canvasColorInteresta, 0, 0, 400 * 3, 200 * 3);
+    var canvasColorInterestb = LaserApi.getInterestReqionGPU(
+      MainCanvas.get2dContext(),
+      CanvasVideo.getVideo(),
+      0
+    );
+    debugctx.drawImage(canvasColorInterestb, 0, 0, 400 * 3, 200 * 3);
+  }
   // console.timeEnd("getInterestRegionGPU");
   // var canvasColorInterestOld = LaserApi.getInterestReqion(
   //   MainCanvas.get2dContext(),
@@ -188,37 +334,108 @@ async function frameHandler() {
    */
   //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
   var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
+
+  laserGrid = Lowpassfilter.handle(laserGrid, elapsed);
+
+  if (laserConfig.showDebug) {
+    gameDebug.handle(laserGrid, elapsed);
+  }
+
   // console.timeEnd("frameHandler");
   // console.log("Lasergrid is", laserGrid);
   // console.timeEnd("GetRectGPU");
 
   // console.log(laserGrid);
-  if (laserConfig.showDebug) {
-    gameDebug.handle(laserGrid);
-  }
 
   if (lastGameIndex !== laserConfig.gameIndex) {
     if (games[lastGameIndex] && games[lastGameIndex].stop) {
       games[lastGameIndex].stop(laserGrid);
+      games[laserConfig.gameIndex].init();
+      gameChanged = 100;
     }
     lastGameIndex = laserConfig.gameIndex;
   }
   if (laserConfig.showGame) {
-    // console.time("GameHandler")
-    games[laserConfig.gameIndex || 0].handle(laserGrid);
-    // console.timeEnd("GameHandler")
+    if (gameChanged > 0) {
+      gameChanged -= 1;
+      renderText({
+        ctx: ctx,
+        x: 1920 / 2,
+        y: 150,
+        fontSize: '125px',
+        align: 'center',
+        fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+        text: games[laserConfig.gameIndex].getName(),
+      });
+      renderText({
+        ctx: ctx,
+        x: 1920 / 2,
+        y: 1080 / 2 - 300,
+        fontSize: '50px',
+        lineHeight: 50,
+        align: 'center',
+        fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+        text: games[laserConfig.gameIndex].getDescription(),
+      });
+      ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.75);
+      ctx.fillRect(0, 1080 - 200, 1920 * (gameChanged / 1000), 200);
+    } else {
+      // console.time("GameHandler")
+      try {
+        // console.log('caller elapsed is', elapsed);
+        games[laserConfig.gameIndex || 0].handle(laserGrid, elapsed);
+      } catch (e) {
+        console.log(
+          'nervermind dude, dudess and du,something happened in game',
+          games[laserConfig.gameIndex || 0].name,
+          e
+        );
+        games[laserConfig.gameIndex || 0].error = e;
+      }
+
+      if (games[laserConfig.gameIndex || 0].error) {
+        renderText({
+          ctx: ctx,
+          fontSize: '25px',
+          align: 'left',
+          fillStyle: 'red',
+          text: 'ERROR:' + games[laserConfig.gameIndex || 0].error.toString(),
+        });
+      }
+      // console.timeEnd("GameHandler")
+    }
   }
 
   //setTimeout(frameHandler, 0);
 
-  if (laserConfig.showTransform) {
-    gameDebugTransform.handle();
-  }
   if (laserConfig.showGrid) {
-    gameDebugCorners.handle();
+    gameDebugCorners.handle(laserGrid, elapsed);
   }
+  if (laserConfig.showTransform) {
+    gameDebugTransform.handle(laserGrid, elapsed);
+  }
+  var currentTime2 = performance.now();
+  var elapsed2 = (currentTime2 - currentTime) / 1000;
+  avgElapsed = (avgElapsed + elapsed2) / 2;
   if (laserConfig.showHelp) {
     showHelp(ctx);
+    renderText({
+      ctx: ctx,
+      fontSize: '25px',
+      align: 'left',
+      fillStyle: 'red',
+      text: `FPS = ${(1 / avgElapsed).toFixed(2)}`,
+    });
+  }
+  if (1 / avgElapsed < 30) {
+    renderText({
+      ctx: ctx,
+      y: 150,
+      fontSize: '25px',
+      align: 'left',
+      fillStyle: 'green',
+      text: `WARNING LOW FPS = ${(1 / avgElapsed).toFixed(2)}`,
+    });
   }
   window.requestAnimationFrame(frameHandler);
   // console.timeEnd("frameHandler");
@@ -230,60 +447,260 @@ var presets = [];
 // document.addEventListener('fullscreenchange', exitHandler, false);
 
 if (document.addEventListener) {
-  document.addEventListener("webkitfullscreenchange", exitHandler, false);
+  document.addEventListener('webkitfullscreenchange', exitHandler, false);
 }
+if (document.addEventListener) {
+  /**
+   * return the location of the click (or another mouse event) relative to the given element (to increase accuracy).
+   * @param {DOM Object} element A dom element (button,canvas,input etc)
+   * @param {DOM Event} event An event generate by an event listener.
+   */
+  function getEventLocation(element, event) {
+    // Relies on the getElementPosition function.
+    var crect = element.getBoundingClientRect();
+    // console.log(crect);
+    return {
+      x: event.pageX - crect.x,
+      y: event.pageY - crect.y,
+    };
+  }
+
+  // document.getElementById('zoomcanvas').addEventListener(
+  //   'click',
+  //   (evt) => {
+  //     // set color click handler
+  //     const ctx = document.getElementById('zoomcanvas').getContext('2d');
+  //     const testcolorinput = document.getElementById('lasercolor');
+  //     console.log('canvas clicked for color');
+  //     var loc = getEventLocation(document.getElementById('zoomcanvas'), evt);
+  //     var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
+  //     console.log('color is', c);
+  //     testcolorinput.value = util.rgbToHex(c[0], c[1], c[2]);
+  //   },
+  //   false
+  // );
+
+  document.getElementById('previewcanvas').addEventListener(
+    'click',
+    (evt) => {
+      // set color click handler
+      const ctx = document.getElementById('previewcanvas').getContext('2d');
+      const testcolorinput = document.getElementById('lasercolor');
+      console.log('canvas clicked for color');
+      var loc = getEventLocation(document.getElementById('previewcanvas'), evt);
+      var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
+      console.log('color is', c);
+      testcolorinput.value = util.rgbToHex(c[0], c[1], c[2], c[4]);
+      evt.preventDefault()
+      event.stopImmediatePropagation()
+    },
+    false
+  );
+  document.getElementById('previewcanvas').addEventListener(
+    'contextmenu',
+    (evt) => {
+      // set color click handler
+      const ctx = document.getElementById('previewcanvas').getContext('2d');
+      const testcolorinput = document.getElementById('lasercolor2');
+      console.log('canvas clicked for color2');
+      var loc = getEventLocation(document.getElementById('previewcanvas'), evt);
+      var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
+      console.log('color is', c);
+      testcolorinput.value = util.rgbToHex(c[0], c[1], c[2], c[4]);
+      evt.preventDefault()
+      event.stopImmediatePropagation()
+    },
+    false
+  );
+
+  document.getElementById('canvas').addEventListener('click', (evt) => {
+    // set zoom position to click location
+    var loc = getEventLocation(evt.target, evt);
+    document.getElementById('zoom_y').value =
+      loc.y - document.getElementById('zoomcanvas').height / 8;
+    document.getElementById('zoom_x').value =
+      loc.x - document.getElementById('zoomcanvas').width / 8;
+  });
+
+  function makeMarker(
+    coorName,
+    coorHorizName,
+    coorVertiName,
+    dirx = 1,
+    diry = 1
+  ) {
+    var mouseDown = false;
+
+    document.getElementById('canvas').addEventListener('mousedown', (evt) => {
+      // check if marker has been hit
+      var loc = getEventLocation(evt.target, evt);
+      var transform = laserConfig.transform[coorName];
+      var diff = [loc.x - transform.x * 1920, loc.y - transform.y * 1080];
+
+      var control1 = lerp2d(
+        transform,
+        laserConfig.transform[coorHorizName],
+        transform.slopex / 4
+      );
+      var control2 = lerp2d(
+        transform,
+        laserConfig.transform[coorVertiName],
+        transform.slopey / 4
+      );
+
+      var diff1 = [loc.x - control1.x * 1920, loc.y - control1.y * 1080];
+      var diff2 = [loc.x - control2.x * 1920, loc.y - control2.y * 1080];
+
+      console.log('check', coorName, loc, transform, diff);
+      if (length(diff) < 10) {
+        console.log('clickkediclicked');
+        mouseDown = 1;
+      }
+      if (length(diff1) < 10) {
+        console.log('clickkediclicked');
+        mouseDown = 2;
+      }
+      if (length(diff2) < 10) {
+        console.log('clickkediclicked');
+        mouseDown = 3;
+      }
+    });
+    document.getElementById('canvas').addEventListener('mousemove', (evt) => {
+      // check if marker has been hit
+      var loc = getEventLocation(evt.target, evt);
+
+      if (mouseDown > 0) {
+        console.log('check', loc);
+        if (mouseDown === 1) {
+          document.getElementById(coorName + '_x').value =
+            (loc.x / 1920) * 10000;
+          document.getElementById(coorName + '_y').value =
+            (loc.y / 1080) * 10000;
+        }
+
+        if (mouseDown === 2) {
+          if (dirx === 1) {
+            document.getElementById('slope' + coorName + '_x').value =
+              (loc.x / 1920) * 10000;
+          } else {
+            document.getElementById('slope' + coorName + '_x').value =
+              10000 - (loc.x / 1920) * 10000;
+          }
+        }
+
+        if (mouseDown === 3) {
+          if (diry === 1) {
+            document.getElementById('slope' + coorName + '_y').value =
+              (loc.y / 1080) * 10000;
+          } else {
+            document.getElementById('slope' + coorName + '_y').value =
+              10000 - (loc.y / 1080) * 10000;
+          }
+        }
+      }
+    });
+    document.getElementById('canvas').addEventListener('mouseup', (evt) => {
+      mouseDown = -1;
+    });
+  }
+  makeMarker('topleft', 'topright', 'bottomleft', 1, 1);
+  makeMarker('topright', 'topleft', 'bottomright', -1, 1);
+  makeMarker('bottomright', 'bottomleft', 'topright', -1, -1);
+  makeMarker('bottomleft', 'bottomright', 'topleft', 1, -1);
+}
+
+document.onkeyup = function (e) {
+  laserConfig.pressedKeys[e.code] = false;
+  console.log(laserConfig.pressedKeys)
+}
+
 document.onkeydown = function (evt) {
+  laserConfig.pressedKeys[evt.code] = true;
+  console.log(laserConfig.pressedKeys)
   if (isNaN(evt.key)) {
     console.log(evt.key);
     switch (evt.key) {
-      case "d":
+      case 'PageUp':
+        document.getElementById('game-selector').selectedIndex = Math.max(
+          document.getElementById('game-selector').selectedIndex - 1, 0);
+        break;
+      case 'Home':
+        document.getElementById('game-selector').selectedIndex = 0;
+        break;
+      case 'PageDown':
+        document.getElementById('game-selector').selectedIndex = Math.min(
+          (document.getElementById('game-selector').selectedIndex + 1), document.getElementById('game-selector').length - 1)
+        break;
+      case 'd':
         //   console.log('doing it ',laserConfig.showDebug )
         laserConfig.showDebug = !laserConfig.showDebug;
-        document.getElementById("showDebug").checked = laserConfig.showDebug;
+        document.getElementById('showDebug').checked = laserConfig.showDebug;
         break;
-      case "v":
+      case 'v':
         //   console.log('doing it ',laserConfig.showDebug )
         laserConfig.debugVideo = !laserConfig.debugVideo;
-        document.getElementById("debugVideo").checked = laserConfig.debugVideo;
+        document.getElementById('debugVideo').checked = laserConfig.debugVideo;
         break;
-      case "g":
-        console.log("doing it ", laserConfig.showGame);
+      case 'g':
+        console.log('doing it ', laserConfig.showGame);
         laserConfig.showGame = !laserConfig.showGame;
-        document.getElementById("showGame").checked = laserConfig.showGame;
+        document.getElementById('showGame').checked = laserConfig.showGame;
+        if (laserConfig.showGame) {
+          laserConfig.showGrid = false;
+          laserConfig.debugVideo = false;
+          laserConfig.showMapping = false;
+          laserConfig.showDebug = false;
+          laserConfig.showTransform = false;
+          document.getElementById('showGame').checked = laserConfig.showGame;
+          document.getElementById('showGrid').checked = laserConfig.showGrid;
+          document.getElementById('showMapping').checked =
+            laserConfig.showMapping;
+          document.getElementById('showTransform').checked =
+            laserConfig.showTransform;
+          document.getElementById('debugVideo').checked =
+            laserConfig.debugVideo;
+          document.getElementById('showDebug').checked = laserConfig.showDebug;
+        }
         break;
 
-      case "r":
-        console.log("showing raster it ", laserConfig.showGrid);
+      case 'r':
+        console.log('showing raster it ', laserConfig.showGrid);
         laserConfig.showGrid = !laserConfig.showGrid;
-        document.getElementById("showGrid").checked = laserConfig.showGrid;
+        document.getElementById('showGrid').checked = laserConfig.showGrid;
         break;
-      case "h":
-        console.log("showing help ", laserConfig.showHelp);
+      case 'm':
+        console.log('showing mapping it ', laserConfig.showMapping);
+        laserConfig.showMapping = !laserConfig.showMapping;
+        document.getElementById('showMapping').checked =
+          laserConfig.showMapping;
+        break;
+      case 'h':
+        console.log('showing help ', laserConfig.showHelp);
         laserConfig.showHelp = !laserConfig.showHelp;
-        document.getElementById("showHelp").checked = laserConfig.showHelp;
+        document.getElementById('showHelp').checked = laserConfig.showHelp;
         break;
-      case "t":
-        console.log("showing transform it ", laserConfig.showTransform);
+      case 't':
+        console.log('showing transform it ', laserConfig.showTransform);
         laserConfig.showTransform = !laserConfig.showTransform;
-        document.getElementById("showTransform").checked =
+        document.getElementById('showTransform').checked =
           laserConfig.showTransform;
         break;
-      case "f":
+      case 'f':
         fullscreen();
 
         break;
-      case "F":
+      case 'F':
         fullscreenEdit();
 
         break;
-      case "s":
+      case 's':
         // make snapshot
 
-        var canvas = document.getElementById("canvas");
-        var snapshotCanvasHtml = document.getElementById("snapshotCanvas");
-        var video = document.getElementById("video");
-        var canvasVideo = document.getElementById("canvasVideo");
-        var context2dVideo = canvasVideo.getContext("2d");
+        var canvas = document.getElementById('canvas');
+        var snapshotCanvasHtml = document.getElementById('snapshotCanvas');
+        var video = document.getElementById('video');
+        var canvasVideo = document.getElementById('canvasVideo');
+        var context2dVideo = canvasVideo.getContext('2d');
 
         canvasVideo.width = 1920;
         canvasVideo.height = 1080;
@@ -298,24 +715,21 @@ document.onkeydown = function (evt) {
           laserConfig.transform
         );
 
-        var snapshotVideoHtml = document.getElementById("snapshotVideo");
-        var snapshotImage = canvas.toDataURL("image/png");
+        var snapshotVideoHtml = document.getElementById('snapshotVideo');
+        var snapshotImage = canvas.toDataURL('image/png');
         snapshotCanvasHtml.src = snapshotImage;
 
-        var snapshotVideoImage = canvasVideo.toDataURL("image/png");
+        var snapshotVideoImage = canvasVideo.toDataURL('image/png');
         snapshotVideoHtml.src = snapshotVideoImage;
 
-        //     console.log('video image is ', snapshotVideoImage)
+        console.log('video image is ', snapshotVideoImage);
 
         break;
     }
-  } else {
-    document.getElementById("presets-selector").value = evt.key;
-    loadPreset(presets[evt.key]);
   }
 };
 function showHelp(ctx) {
-  ctx.fillStyle = "#00000088";
+  ctx.fillStyle = '#00000088';
   ctx.fillRect(
     laserConfig.canvasResolution.width * 0.05,
     220,
@@ -324,9 +738,9 @@ function showHelp(ctx) {
   );
   util.renderTextDropShadow({
     ctx,
-    text: "Laser-Api",
-    fontSize: "150px",
-    fillStyle: "green",
+    text: 'Laser-Api',
+    fontSize: '150px',
+    fillStyle: 'green',
     x: laserConfig.canvasResolution.width / 2,
     y: 200,
   });
@@ -349,7 +763,7 @@ SHIFT+'f' - Fullscreen Edit Mode, showing the transform edit controls
 Setting Up:
 1. Setting up
     a. Select Rectangle of interest - Display the Video (v) and display the Transform (t), hide all other (r,g,d). 
-      Use the input form (SHFT-F)to place the corners of the rectangle to the projection, either monitor or projector.
+      Use the input form (SHFT-F) to place the corners of the rectangle to the projection, either monitor or projector.
     b. Fine Tune Perspective - The Perspective is corrected using the handles on each corner,
       one for horizontal and one for vertical called slopeX and slopeY. Use the Raster (r) and Debug (d) to match.
     c. Setup Laser Color - provide a color matching the video stream color of the laserpointer color to look for.
@@ -357,14 +771,14 @@ Setting Up:
     a. Use input form (SHIFT-F) to select a game in the game dropdown.
     b. Display the game (g), hide all other views (d,v,r,t).
                                                                                                              Have Fun!
-Copyright 2022 C.Kleinhuis 
+Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
-    fontSize: "26px",
-    font: "Courier",
+    fontSize: '26px',
+    font: 'Courier',
     lineHeight: 30,
-    align: "left",
-    fillStyle: "#ffffff",
+    align: 'left',
+    fillStyle: '#ffffff',
     x: 50,
     y: 250,
     dropDistX: 4,
@@ -372,7 +786,7 @@ Copyright 2022 I-Love-Chaos`,
   });
 }
 function exitHandler(data) {
-  console.log("exitHandler", data);
+  console.log('exitHandler', data);
   if (
     document.webkitIsFullScreen ||
     document.mozFullScreen ||
@@ -381,7 +795,7 @@ function exitHandler(data) {
   } else {
     /* Run code on exit */
     console.log(
-      "RESETTING RESOLUTION TO DEFAULT",
+      'RESETTING RESOLUTION TO DEFAULT',
       laserConfig.canvasResolution
     );
     laserConfig.canvasResolution.width = 1920;
@@ -390,14 +804,14 @@ function exitHandler(data) {
   }
 }
 function fullscreen() {
-  console.log("fullscreen clicked");
-  var elem = document.getElementById("canvas");
-  var canvascontainer = document.getElementById("canvascontainer");
-  var editor = document.getElementById("editor");
-  console.log("element is ", elem);
-  editor.style.display = "none";
+  console.log('fullscreen clicked');
+  var elem = document.getElementById('canvas');
+  var canvascontainer = document.getElementById('canvascontainer');
+  var editor = document.getElementById('editor');
+  console.log('element is ', elem);
+  editor.style.display = 'none';
 
-  console.log("element is ", elem.getBoundingClientRect());
+  console.log('element is ', elem.getBoundingClientRect());
 
   // laserConfig.canvasResolution.width =
   //   screen.width * document.getElementById("playfieldScale").value;
@@ -407,7 +821,7 @@ function fullscreen() {
   canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2;
   canvas.style.width = laserConfig.canvasResolution.width;
   canvas.style.height = laserConfig.canvasResolution.height;
-  console.log("resolution is clicked", laserConfig.canvasResolution);
+  console.log('resolution is clicked', laserConfig.canvasResolution);
   if (canvascontainer.webkitRequestFullscreen) {
     canvascontainer.webkitRequestFullscreen();
   }
@@ -415,24 +829,24 @@ function fullscreen() {
   games[laserConfig.gameIndex || 0].init();
 }
 function fullscreenEdit() {
-  console.log("fullscreenedit clicked");
+  console.log('fullscreenedit clicked');
   var elem = document.body;
-  var editor = document.getElementById("editor");
-  var canvascontainer = document.getElementById("canvascontainer");
-  console.log("element is ", elem);
-  editor.style.display = "block";
+  var editor = document.getElementById('editor');
+  var canvascontainer = document.getElementById('canvascontainer');
+  console.log('element is ', elem);
+  editor.style.display = 'block';
 
-  var canvas = document.getElementById("canvas");
-  console.log("element is ", elem);
-  console.log("element is ", canvascontainer);
-  console.log("element is ", elem.getBoundingClientRect());
+  var canvas = document.getElementById('canvas');
+  console.log('element is ', elem);
+  console.log('element is ', canvascontainer);
+  console.log('element is ', elem.getBoundingClientRect());
 
   // laserConfig.canvasResolution.width = 640
   // laserConfig.canvasResolution.height = 480
-  console.log("-----");
-  console.log("Screen Width and height is ", screen.width);
-  console.log("Screen Width and height is ", screen.height);
-  console.log("-----");
+  console.log('-----');
+  console.log('Screen Width and height is ', screen.width);
+  console.log('Screen Width and height is ', screen.height);
+  console.log('-----');
 
   // laserConfig.canvasResolution.width =
   //   screen.width * document.getElementById("playfieldScale").value;
@@ -442,7 +856,7 @@ function fullscreenEdit() {
   canvas.style.height = laserConfig.canvasResolution.height;
   canvas.style.left = (screen.width - laserConfig.canvasResolution.width) / 2;
   canvas.style.top = (screen.height - laserConfig.canvasResolution.height) / 2;
-  console.log("resolution is clicked", laserConfig.canvasResolution);
+  console.log('resolution is clicked', laserConfig.canvasResolution);
   if (canvascontainer.webkitRequestFullscreen) {
     canvascontainer.webkitRequestFullscreen();
   }
@@ -450,100 +864,100 @@ function fullscreenEdit() {
   games[laserConfig.gameIndex || 0].init();
 }
 function initHTML() {
-  document.getElementById("fullscreen_button").onclick = fullscreen;
-  document.getElementById("fullscreenedit_button").onclick = fullscreenEdit;
-  document.getElementById("save-preset-button").onclick = function () {
-    console.log("saving preset");
+  document.getElementById('fullscreen_button').onclick = fullscreen;
+  document.getElementById('fullscreenedit_button').onclick = fullscreenEdit;
+  // document.getElementById('save-preset-button').onclick = function () {
+  //   console.log('saving preset');
 
-    presets = JSON.parse(window.localStorage.getItem("laserPresets"));
-    if (presets === null) {
-      presets = {
-        presets: [],
-      };
-    }
+  //   presets = JSON.parse(window.localStorage.getItem('laserPresets'));
+  //   if (presets === null) {
+  //     presets = {
+  //       presets: [],
+  //     };
+  //   }
 
-    presets.presets.push({
-      name: document.getElementById("preset-name").value,
-      config: laserConfig,
-    });
+  //   presets.presets.push({
+  //     name: document.getElementById('preset-name').value,
+  //     config: laserConfig,
+  //   });
 
-    window.localStorage.setItem("laserPresets", JSON.stringify(presets));
-  };
+  //   window.localStorage.setItem('laserPresets', JSON.stringify(presets));
+  // };
 
   for (var i = 0; i < games.length; i++) {
-    var option = document.createElement("option");
-    option.text = "Game #" + i + " - " + games[i].getName();
+    var option = document.createElement('option');
+    option.text = 'Game #' + i + ' - ' + games[i].getName();
     option.value = i;
     if (i === laserConfig.gameIndex) {
       option.selected = true;
     }
-    console.log("game found: ", option.text);
-    document.getElementById("game-selector").add(option);
+    console.log('game found: ', option.text);
+    document.getElementById('game-selector').add(option);
   }
 
-  document.getElementById("game-selector").onchange = function (evt) {
+  document.getElementById('game-selector').onchange = function (evt) {
     laserConfig.gameIndex = evt.target.value;
   };
 
-  document.getElementById("presets-selector").onchange = function (evt) {
-    document.getElementById("preset-name").value =
-      presets[evt.target.value].name;
-    console.log(
-      "selector changed",
-      evt.target.value,
-      presets[evt.target.value]
-    );
-    var preset = presets[evt.target.value];
-    var config = preset.config;
-    delete config.transform;
-    delete config.videoTransform;
-    loadHtmlFromSettings(presets[evt.target.value].config);
-    games[laserConfig.gameIndex || 0].init(preset.initData);
-  };
+  // document.getElementById('presets-selector').onchange = function (evt) {
+  //   document.getElementById('preset-name').value =
+  //     presets[evt.target.value].name;
+  //   console.log(
+  //     'selector changed',
+  //     evt.target.value,
+  //     presets[evt.target.value]
+  //   );
+  //   var preset = presets[evt.target.value];
+  //   var config = preset.config;
+  //   delete config.transform;
+  //   delete config.videoTransform;
+  //   loadHtmlFromSettings(presets[evt.target.value].config);
+  //   games[laserConfig.gameIndex || 0].init(preset.initData);
+  // };
 }
 
-function loadPreset(preset) {
-  if (preset === undefined) {
-    return;
-  }
-  if (preset === null) {
-    return;
-  }
-  var config = preset.config;
-  delete config.transform;
-  delete config.videoTransform;
-  loadHtmlFromSettings(config);
-  games[laserConfig.gameIndex || 0].init(preset.initData);
-}
+// function loadPreset(preset) {
+//   if (preset === undefined) {
+//     return;
+//   }
+//   if (preset === null) {
+//     return;
+//   }
+//   var config = preset.config;
+//   delete config.transform;
+//   delete config.videoTransform;
+//   loadHtmlFromSettings(config);
+//   games[laserConfig.gameIndex || 0].init(preset.initData);
+// }
 
-function loadPresetsFromLocalStorage() {
-  var data = JSON.parse(window.localStorage.getItem("laserPresets"));
+// function loadPresetsFromLocalStorage() {
+//   var data = JSON.parse(window.localStorage.getItem('laserPresets'));
 
-  presets = LaserApiPresets;
-  if (data) {
-    //    presets = presets.join(data.presets)
-  }
+//   presets = LaserApiPresets;
+//   if (data) {
+//     //    presets = presets.join(data.presets)
+//   }
 
-  console.log("presets data is ", data);
-}
+//   console.log('presets data is ', data);
+// }
 function loadFromLocalStorage() {
-  loadPresetsFromLocalStorage();
-  var data = JSON.parse(window.localStorage.getItem("laser"));
+  // loadPresetsFromLocalStorage();
+  var data = JSON.parse(window.localStorage.getItem('laser'));
   if (data !== null) {
-    console.log("last data is ", data);
+    console.log('last data is ', data);
 
     loadHtmlFromSettings(data.laserConfig);
   }
 }
 
 function loadHtmlFromSettings(settings) {
-  console.log("loading settings", settings);
+  console.log('loading settings', settings);
   if (settings.treshold !== undefined) {
-    document.getElementById("threshold").value = settings.treshold;
+    document.getElementById('threshold').value = settings.treshold;
     laserConfig.threshold = settings.treshold;
   }
   if (settings.testColor !== undefined) {
-    document.getElementById("lasercolor").value = Util.rgbToHex(
+    document.getElementById('lasercolor').value = Util.rgbToHex(
       settings.testColor[0],
       settings.testColor[1],
       settings.testColor[2]
@@ -551,49 +965,81 @@ function loadHtmlFromSettings(settings) {
 
     laserConfig.testColor = settings.testColor;
   }
+  if (settings.testColor2 !== undefined) {
+    document.getElementById('lasercolor2').value = Util.rgbToHex(
+      settings.testColor2[0],
+      settings.testColor2[1],
+      settings.testColor2[2]
+    );
+
+    laserConfig.testColor2 = settings.testColor2;
+  }
   if (settings.debugVideo !== undefined) {
-    document.getElementById("debugVideo").value = settings.debugVideo;
+    document.getElementById('debugVideo').value = settings.debugVideo;
     laserConfig.debugVideo = settings.debugVideo;
   }
   if (settings.playfieldScale !== undefined) {
-    document.getElementById("playfieldScale").value = settings.playfieldScale;
+    document.getElementById('playfieldScale').value = settings.playfieldScale;
     laserConfig.debugVideo = settings.playfieldScale;
   }
   if (settings.showGame !== undefined) {
-    document.getElementById("showGame").checked = settings.showGame;
+    document.getElementById('showGame').checked = settings.showGame;
     laserConfig.showGame = settings.showGame;
   }
   if (settings.threshold !== undefined) {
-    document.getElementById("threshold").value = settings.threshold;
+    document.getElementById('threshold').value = settings.threshold;
     laserConfig.threshold = settings.threshold;
   }
   if (settings.showGrid !== undefined) {
-    document.getElementById("showGrid").checked = settings.showGrid;
+    document.getElementById('showGrid').checked = settings.showGrid;
     laserConfig.showGrid = settings.showGrid;
   }
   if (settings.showTransform !== undefined) {
-    document.getElementById("showTransform").checked = settings.showTransform;
+    document.getElementById('showTransform').checked = settings.showTransform;
     laserConfig.showTransform = settings.showTransform;
   }
   if (settings.gameIndex !== undefined) {
-    console.log("loading settings gameIndex", settings);
+    console.log('loading settings gameIndex', settings);
     laserConfig.gameIndex = settings.gameIndex;
-    document.getElementById("game-selector").value = settings.gameIndex;
+    document.getElementById('game-selector').value = settings.gameIndex;
   }
   if (settings.showDebug !== undefined) {
-    document.getElementById("showDebug").checked = settings.showDebug;
+    document.getElementById('showDebug').checked = settings.showDebug;
     laserConfig.showDebug = settings.showDebug;
   }
+  if (settings.showMapping !== undefined) {
+    document.getElementById('showMapping').checked = settings.showMapping;
+    laserConfig.showMapping = settings.showMapping;
+  }
+  if (settings.contrast !== undefined) {
+    document.getElementById('contrast').value = settings.contrast;
+    laserConfig.contrast = settings.contrast;
+  }
+  if (settings.brightness !== undefined) {
+    document.getElementById('brightness').value = settings.brightness;
+    laserConfig.brightness = settings.brightness;
+  }
+  if (settings.saturation !== undefined) {
+    document.getElementById('saturation').value = settings.saturation;
+    laserConfig.saturation = settings.saturation;
+  }
   if (settings.showHelp !== undefined) {
-    document.getElementById("showHelp").checked = settings.showHelp;
+    document.getElementById('showHelp').checked = settings.showHelp;
     laserConfig.showHelp = settings.showHelp;
   }
+  // if (settings.colorWeights !== undefined) {
+  //   document.getElementById('weightColor').value = settings.colorWeights[0];
+  //   document.getElementById('weightBrightness').value =
+  //     settings.colorWeights[1];
+  //   document.getElementById('weightDarkness').value = settings.colorWeights[2];
+  //   laserConfig.colorWeights = settings.colorWeights;
+  // }
   if (settings.debugVideo !== undefined) {
-    document.getElementById("debugVideo").checked = settings.debugVideo;
+    document.getElementById('debugVideo').checked = settings.debugVideo;
     laserConfig.debugVideo = settings.debugVideo;
   }
   if (settings.gridResolution !== undefined) {
-    document.getElementById("gridResolution").value = settings.gridResolution;
+    document.getElementById('gridResolution').value = settings.gridResolution;
     laserConfig.gridResolution = settings.gridResolution;
   }
   /*
@@ -636,17 +1082,17 @@ function saveToLocalStorage() {
     laserConfig: laserConfig,
   });
   if (lastStore != data) {
-    console.log("Saving to localstorage", data);
+    console.log('Saving to localstorage', data);
     lastStore = data;
-    window.localStorage.setItem("laser", data);
+    window.localStorage.setItem('laser', data);
   }
 }
 
 function getCoordinatesForInputElement(elemprefix) {
-  var elem1x = document.getElementById(elemprefix + "_x");
-  var elem1y = document.getElementById(elemprefix + "_y");
-  var elem1yslope = document.getElementById("slope" + elemprefix + "_y");
-  var elem1xslope = document.getElementById("slope" + elemprefix + "_x");
+  var elem1x = document.getElementById(elemprefix + '_x');
+  var elem1y = document.getElementById(elemprefix + '_y');
+  var elem1yslope = document.getElementById('slope' + elemprefix + '_y');
+  var elem1xslope = document.getElementById('slope' + elemprefix + '_x');
   return {
     x: elem1x.value / 10000.0,
     y: elem1y.value / 10000.0,
@@ -656,10 +1102,10 @@ function getCoordinatesForInputElement(elemprefix) {
 }
 
 function setCoordinatesForInputElement(elemprefix, data) {
-  var elem1x = document.getElementById(elemprefix + "_x");
-  var elem1y = document.getElementById(elemprefix + "_y");
-  var elem1xslope = document.getElementById("slope" + elemprefix + "_x");
-  var elem1yslope = document.getElementById("slope" + elemprefix + "_y");
+  var elem1x = document.getElementById(elemprefix + '_x');
+  var elem1y = document.getElementById(elemprefix + '_y');
+  var elem1xslope = document.getElementById('slope' + elemprefix + '_x');
+  var elem1yslope = document.getElementById('slope' + elemprefix + '_y');
   elem1x.value = data.x * 10000.0;
   elem1y.value = data.y * 10000.0;
   if (elem1xslope) elem1xslope.value = (data.slopex || 1) * 5000;
@@ -667,42 +1113,42 @@ function setCoordinatesForInputElement(elemprefix, data) {
 }
 function getCoordinates() {
   var result = {
-    topleft: getCoordinatesForInputElement("topleft"),
-    topright: getCoordinatesForInputElement("topright"),
-    bottomleft: getCoordinatesForInputElement("bottomleft"),
-    bottomright: getCoordinatesForInputElement("bottomright"),
+    topleft: getCoordinatesForInputElement('topleft'),
+    topright: getCoordinatesForInputElement('topright'),
+    bottomleft: getCoordinatesForInputElement('bottomleft'),
+    bottomright: getCoordinatesForInputElement('bottomright'),
   };
   // console.log("coordinates are", result);
   return result;
 }
 function getTransformOfVideoInput() {
   return {
-    rotate: document.getElementById("rotateVideo").value,
+    rotate: document.getElementById('rotateVideo').value,
     skew: {
-      x: document.getElementById("skewX").value,
-      y: document.getElementById("skewY").value,
+      x: document.getElementById('skewX').value,
+      y: document.getElementById('skewY').value,
     },
-    scale: document.getElementById("scaleVideo").value,
+    scale: document.getElementById('scaleVideo').value,
     translate: {
-      x: document.getElementById("translateVideoX").value,
-      y: document.getElementById("translateVideoY").value,
+      x: document.getElementById('translateVideoX').value,
+      y: document.getElementById('translateVideoY').value,
     },
   };
 }
 function setCoordinates(data) {
-  setCoordinatesForInputElement("topleft", data.topleft);
-  setCoordinatesForInputElement("topright", data.topright);
-  setCoordinatesForInputElement("bottomleft", data.bottomleft);
-  setCoordinatesForInputElement("bottomright", data.bottomright);
+  setCoordinatesForInputElement('topleft', data.topleft);
+  setCoordinatesForInputElement('topright', data.topright);
+  setCoordinatesForInputElement('bottomleft', data.bottomleft);
+  setCoordinatesForInputElement('bottomright', data.bottomright);
 }
 
 function updateKnobs(rect) {
   return;
-  var knob1 = document.getElementById("knob1");
-  var knob2 = document.getElementById("knob2");
-  var knob3 = document.getElementById("knob3");
-  var knob4 = document.getElementById("knob4");
-  var container = document.getElementById("video").getBoundingClientRect();
+  var knob1 = document.getElementById('knob1');
+  var knob2 = document.getElementById('knob2');
+  var knob3 = document.getElementById('knob3');
+  var knob4 = document.getElementById('knob4');
+  var container = document.getElementById('video').getBoundingClientRect();
   knob1.style.top = rect.topleft.y * container.height;
   knob1.style.left = rect.topleft.x * container.width;
   knob2.style.top = rect.topright.y * container.height;
@@ -717,18 +1163,18 @@ function updateKnobs(rect) {
 
 function setVideoTransform(transform) {
   return;
-  var video = document.getElementById("video");
+  var video = document.getElementById('video');
 
-  var trans = "";
+  var trans = '';
   //
   trans =
-    "translate(" +
+    'translate(' +
     transform.translate.x +
-    "px," +
+    'px,' +
     transform.translate.y +
-    "px) ";
-  trans += "scale(" + transform.scale + ") ";
-  trans += "rotate(" + transform.rotate + "deg) ";
+    'px) ';
+  trans += 'scale(' + transform.scale + ') ';
+  trans += 'rotate(' + transform.rotate + 'deg) ';
   video.style.transform = trans;
 
   //  console.log('set tranform to ', trans)
@@ -736,32 +1182,51 @@ function setVideoTransform(transform) {
 }
 
 function animationHandler() {
-  laserConfig.threshold = Number(document.getElementById("threshold").value);
+  laserConfig.threshold = Number(document.getElementById('threshold').value);
   laserConfig.gridResolution = Number(
-    document.getElementById("gridResolution").value
+    document.getElementById('gridResolution').value
   );
-  laserConfig.debugVideo = document.getElementById("debugVideo").checked;
-  laserConfig.showDebug = document.getElementById("showDebug").checked;
-  laserConfig.showHelp = document.getElementById("showHelp").checked;
-  laserConfig.showGame = document.getElementById("showGame").checked;
-  laserConfig.showGrid = document.getElementById("showGrid").checked;
-  laserConfig.showTransform = document.getElementById("showTransform").checked;
+  laserConfig.debugVideo = document.getElementById('debugVideo').checked;
+  laserConfig.showDebug = document.getElementById('showDebug').checked;
+  laserConfig.showMapping = document.getElementById('showMapping').checked;
+  laserConfig.contrast = Number(document.getElementById('contrast').value);
+  laserConfig.brightness = Number(document.getElementById('brightness').value);
+  laserConfig.saturation = Number(document.getElementById('saturation').value);
+  laserConfig.showHelp = document.getElementById('showHelp').checked;
+  laserConfig.showGame = document.getElementById('showGame').checked;
+  // laserConfig.colorWeights = [
+  //   Number(document.getElementById('weightColor').value),
+  //   Number(document.getElementById('weightBrightness').value),
+  //   Number(document.getElementById('weightDarkness').value),
+  // ];
+
+  laserConfig.showGrid = document.getElementById('showGrid').checked;
+  laserConfig.showTransform = document.getElementById('showTransform').checked;
   laserConfig.gameIndex = Number(
-    document.getElementById("game-selector").value
+    document.getElementById('game-selector').value
   );
   laserConfig.playfieldScale = Number(
-    document.getElementById("playfieldScale").value
+    document.getElementById('playfieldScale').value
   );
   //  laserConfig.videoTransform = getTransformOfVideoInput()
 
   laserConfig.testColor[0] = Util.hexToRgb(
-    document.getElementById("lasercolor").value
+    document.getElementById('lasercolor').value
   ).r;
   laserConfig.testColor[1] = Util.hexToRgb(
-    document.getElementById("lasercolor").value
+    document.getElementById('lasercolor').value
   ).g;
   laserConfig.testColor[2] = Util.hexToRgb(
-    document.getElementById("lasercolor").value
+    document.getElementById('lasercolor').value
+  ).b;
+  laserConfig.testColor2[0] = Util.hexToRgb(
+    document.getElementById('lasercolor2').value
+  ).r;
+  laserConfig.testColor2[1] = Util.hexToRgb(
+    document.getElementById('lasercolor2').value
+  ).g;
+  laserConfig.testColor2[2] = Util.hexToRgb(
+    document.getElementById('lasercolor2').value
   ).b;
   laserConfig.transform = getCoordinates();
   // console.log('config is ', laserConfig)
@@ -771,29 +1236,29 @@ function animationHandler() {
   saveToLocalStorage();
 }
 
-function updatePresetSelector() {
-  document.getElementById("presets-selector").innerHTML = "";
+// function updatePresetSelector() {
+//   // document.getElementById('presets-selector').innerHTML = '';
 
-  var option = document.createElement("option");
-  option.text = "Select Preset";
-  option.disabled = true;
-  option.selected = true;
+//   var option = document.createElement('option');
+//   option.text = 'Select Preset';
+//   option.disabled = true;
+//   option.selected = true;
 
-  console.log("game found: ", option.text);
-  document.getElementById("presets-selector").add(option);
-  for (var i = 0; i < presets.length; i++) {
-    var option = document.createElement("option");
-    option.text = "Preset #" + i + " - " + presets[i].name;
-    option.value = i;
+//   console.log('game found: ', option.text);
+//   document.getElementById('presets-selector').add(option);
+//   for (var i = 0; i < presets.length; i++) {
+//     var option = document.createElement('option');
+//     option.text = 'Preset #' + i + ' - ' + presets[i].name;
+//     option.value = i;
 
-    console.log("game preset found: ", option.text);
-    document.getElementById("presets-selector").add(option);
-  }
-}
-document.addEventListener("DOMContentLoaded", function (event) {
+//     console.log('game preset found: ', option.text);
+//     document.getElementById('presets-selector').add(option);
+//   }
+// }
+document.addEventListener('DOMContentLoaded', function (event) {
   initHTML();
   loadFromLocalStorage();
-  updatePresetSelector();
+  // updatePresetSelector();
   fullscreen();
   fullscreenEdit();
 

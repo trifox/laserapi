@@ -1,15 +1,19 @@
-var p2 = require("p2");
+var p2 = require('p2');
 var lastTime = performance.now();
-var laserConfig = require("../LaserApiConfig.js").default;
-var MasterCanvas = require("../MasterCanvas").default;
-var matter = require("matter-js");
-var intervalId = null;
-var ballSpeed = 250;
-var gameState = "game";
-var obstacleSizeY = 160;
-var obstacleSizeX = 160;
-var itemCount = 6;
+var laserConfig = require('../LaserApiConfig.js').default;
+var ballSpeed = 100;
+var gameState = 'game';
+var obstacleSizeY = 50;
+var obstacleSizeX = 50;
+var itemCount = 18;
 var planes = [];
+var won = 0;
+import soundBounce from '../../../public/media/opengameart/Transition.ogg';
+import soundBounce2 from '../../../public/media/bounce_523088_11537497-lq.mp3';
+import soundEinwurf from '../../../public/media/trillerpfeife.mp3';
+import soundGoal from '../../../public/media/goal148153_612195-lq.mp3';
+import soundGoal2 from '../../../public/media/goal2.mp3';
+import { getRgbSpread, getRgbSpreadHex, renderText, rgbToHex } from '../util';
 const addPlane = function (angle, world, collisionshape) {
   // Create a platform that the ball can bounce on
   var platformShape1 = new p2.Plane();
@@ -22,7 +26,7 @@ const addPlane = function (angle, world, collisionshape) {
     angle: angle,
   });
 
-  console.log("addPlane created ", angle, platformShape1, planeBody);
+  console.log('addPlane created ', angle, platformShape1, planeBody);
   planeBody.addShape(platformShape1);
   world.addBody(planeBody);
   // Create material for the platform
@@ -53,7 +57,7 @@ const addObstacle = function (world, collisionshape) {
     mass: 0,
     velocity: [0, 0],
   });
-  console.log("created obstacle", obstacleShape, obstacleBody);
+  console.log('created obstacle', obstacleShape, obstacleBody);
 
   obstacleBody.addShape(obstacleShape);
   world.addBody(obstacleBody);
@@ -79,15 +83,20 @@ var timeStep = 0.1; // seconds
 var circleBody = null;
 var circleShape = null;
 var world = null;
-function onTick() {
+var delayCount = 5;
+function onTick(elapsed) {
   // console.log('diff is ', (cTime - lastTime));
   // The step method moves the bodies forward in time.
   // timestep, delta, subframes
   //   console.log('ball is ', circleBody);
 
-  var cTime = performance.now();
-  world.step((cTime - lastTime) / 1000);
-  lastTime = cTime;
+  if (delayCount > 0) {
+    delayCount -= elapsed;
+  } else {
+    world.step(elapsed);
+  }
+
+  planeAnim -= elapsed;
   //  renderGame(MasterCanvas.get2dContext());
 
   //  intervalId = setTimeout(onTick, 25);
@@ -106,9 +115,14 @@ function getRandomBallSpeed() {
   ];
 }
 
-var ballRadius = 50;
+var ballRadius = 20;
+var bounceAudio = new Audio(soundBounce);
+var bounceAudio2 = new Audio(soundBounce2);
+var planeAnim = 0; //
+const PLANE_ANIM_TIME = 5; //
+var planeYPos = 100;
 const init2dPhysics = function (obstacleCount) {
-  console.log("init2dPhysics");
+  console.log('init2dPhysics');
   ///////////////////
   // Create a physics world, where bodies and constraints live
   world = new p2.World({
@@ -118,7 +132,30 @@ const init2dPhysics = function (obstacleCount) {
     broadphase: p2.NaiveBroadphase(),
     stiffness: Number.MAX_VALUE,
   });
-  console.log("world is ", world);
+  world.on('beginContact', (data) => {
+    console.log('contaaact', data);
+    if (data.bodyA.type != data.bodyB.type) {
+      console.log('circle is', data.shapeA, data.shapeB);
+      console.log(data.shapeA.constructor.name, data.shapeB.constructor.name);
+      if (
+        data.shapeA.constructor.name === 'Plane' ||
+        data.shapeB.constructor.name === 'Plane'
+      ) {
+        bounceAudio.pause();
+        bounceAudio.currentTime = 0;
+        bounceAudio.play();
+        planeAnim = PLANE_ANIM_TIME;
+        planeYPos = data.bodyB.position[1] > 1080 / 2 ? 1080 : 0;
+        // console.log('posy posis', data.bodyB.position);
+        // console.log('posy posis', data.bodyA.position);
+      } else {
+        bounceAudio2.pause();
+        bounceAudio2.currentTime = 0;
+        bounceAudio2.play();
+      }
+    }
+  });
+  console.log('world is ', world);
   // Create an empty dynamic body
   circleBody = new p2.Body({
     mass: 10,
@@ -137,7 +174,7 @@ const init2dPhysics = function (obstacleCount) {
   circleBody.damping = 0;
   circleBody.angularDamping = 0;
   circleBody.friction = 100;
-  console.log("body is", circleBody);
+  console.log('body is', circleBody);
   // ...and add the body to the world.
   // If we don't add it to the world, it won't be simulated.
   world.addBody(circleBody);
@@ -162,48 +199,98 @@ const init2dPhysics = function (obstacleCount) {
   ////////////////
 };
 function renderIntro(ctx) {
-  ctx.font = "140px Verdana        ";
-  ctx.fillStyle = "#0088ff";
-  ctx.textAlign = "center";
-  ctx.fillText("Laser-Pong", laserConfig.canvasResolution.width / 2, 200);
-  renderDescription(ctx);
+  ctx.font = '140px Verdana        ';
+  ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.5);
+  ctx.textAlign = 'center';
+  ctx.fillText('Laser-Pong', laserConfig.canvasResolution.width / 2, 200);
 }
 function renderGameOver(ctx) {
-  ctx.font = "140px Verdana        ";
-  ctx.fillStyle = "#0088ff";
-  ctx.textAlign = "center";
-  ctx.fillText(
-    "Game over and the winner is",
-    laserConfig.canvasResolution.width / 2,
-    200
-  );
-  renderDescription(ctx);
+  ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.6);
+  ctx.textAlign = 'center';
+  renderText({
+    ctx,
+    fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.6, 1, 0.5),
+    fontSize: '80px',
+    text: `Game Over
+${winPointsTeam1} : ${winPointsTeam2} 
+Winner:`,
+    x: laserConfig.canvasResolution.width / 2,
+    y: 200,
+  });
+  renderText({
+    ctx,
+    fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.6, 1, 1),
+    fontSize: '80px',
+    text: `
+
+
+Team ${won}`,
+    x: laserConfig.canvasResolution.width / 2,
+    y: 200,
+  });
 }
-function renderDescription(ctx) {
-  ctx.font = "43px Arial  ";
-  ctx.fillStyle = "#88ff88";
-  ctx.textAlign = "center";
-  ctx.fillText(
-    "Play with people and control the paddles left and right",
-    laserConfig.canvasResolution.width / 2,
-    400
-  );
-}
+
 function renderGame(canvas2d) {
   switch (gameState) {
-    case "game":
+    case 'game':
       renderGamePlayfield(canvas2d);
+
+      if (delayCount > 2) {
+        renderText({
+          ctx: canvas2d,
+          fontSize: '125px',
+          x: 1920 / 2,
+          fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+          y: 200,
+          text: `Current Leg  
+${pointsTeam1} : ${pointsTeam2} 
+Current Match  
+${winPointsTeam1} : ${winPointsTeam2} 
+> ${Math.ceil(delayCount)} <`,
+        });
+      }
+      if (winPointsTeam1 == 7 || winPointsTeam1 - winPointsTeam2 >= winPoints) {
+        gameState = 'gameover';
+        won = 1;
+        delayCount = 10;
+      }
+      if (winPointsTeam2 == 7 || winPointsTeam2 - winPointsTeam1 >= winPoints) {
+        gameState = 'gameover';
+        won = 2;
+        delayCount = 10;
+      }
       break;
-    case "intro":
-      renderIntro(canvas2d);
-      break;
-    case "gameover":
+
+    case 'gameover':
       renderGameOver(canvas2d);
+      if (delayCount > 0) {
+        renderText({
+          ctx: canvas2d,
+          fontSize: '125px',
+          x: 1920 / 2 + 2,
+          fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+          y: 1080 / 2 + 300,
+          text: `Restart in
+> ${Math.ceil(delayCount)} <`,
+        });
+      } else {
+        if (gamedata.callbackBallOutside) gamedata.callbackBallOutside();
+        gameState = 'game';
+        won = 0;
+        winPointsTeam1 = 0;
+        winPointsTeam2 = 0;
+        pointsTeam1 = 0;
+        pointsTeam2 = 0;
+      }
       break;
   }
 }
-function renderGamePlayfield(canvas2d) {
-  canvas2d.save();
+function renderGamePlayfield(ctx) {
+  ctx.save();
+  var playfieldColor1 = getRgbSpreadHex(laserConfig.testColor, 0.5);
+  var playfieldColor2 = getRgbSpreadHex(laserConfig.testColor, 0.35);
+  var playfieldColor3 = getRgbSpreadHex(laserConfig.testColor, 0.65);
+
   // for (var i = 0; i < planes.length; i++) {
   //   planes[i].position = [
   //     laserConfig.canvasResolution.width,
@@ -214,11 +301,11 @@ function renderGamePlayfield(canvas2d) {
   // canvas2d.translate(50, 50)
   for (var i = 0; i < itemCount; i++) {
     //  console.log('rendering obstacle', obstacles [i])
-    canvas2d.fillStyle = obstacles[i].color;
+    ctx.fillStyle = obstacles[i].color;
 
-    canvas2d.lineWidth = 2;
-    canvas2d.strokeStyle = "#00ff88";
-    canvas2d.strokeRect(
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = playfieldColor1;
+    ctx.strokeRect(
       obstacles[i].position[0] - obstacleSizeX / 2,
       obstacles[i].position[1] - obstacleSizeY / 2,
       obstacles[i].shapes[0].width,
@@ -227,10 +314,10 @@ function renderGamePlayfield(canvas2d) {
   }
 
   //draw a circle
-  canvas2d.beginPath();
-  canvas2d.fillStyle = "#0088ff";
-  canvas2d.strokeStyle = "#ff88ff";
-  canvas2d.arc(
+  ctx.beginPath();
+  ctx.fillStyle = playfieldColor3;
+  ctx.strokeStyle = playfieldColor2;
+  ctx.arc(
     circleBody.position[0],
     circleBody.position[1],
     ballRadius,
@@ -238,40 +325,74 @@ function renderGamePlayfield(canvas2d) {
     Math.PI * 2,
     true
   );
-  canvas2d.closePath();
-  canvas2d.fill();
-  canvas2d.lineWidth = 4;
-  canvas2d.beginPath();
-  canvas2d.moveTo(circleBody.position[0], circleBody.position[1]);
-  canvas2d.lineTo(
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.fillStyle = playfieldColor3;
+  ctx.strokeStyle = playfieldColor2;
+  ctx.arc(
+    circleBody.position[0],
+    circleBody.position[1],
+    ballRadius,
+    0,
+    Math.PI * 2,
+    true
+  );
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(circleBody.position[0], circleBody.position[1]);
+  ctx.lineTo(
     circleBody.position[0] + Math.cos(circleBody.angle) * ballRadius,
     circleBody.position[1] + Math.sin(circleBody.angle) * ballRadius
   );
-  canvas2d.stroke();
-  canvas2d.beginPath();
-  canvas2d.moveTo(circleBody.position[0], circleBody.position[1]);
-  canvas2d.lineTo(
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(circleBody.position[0], circleBody.position[1]);
+  ctx.lineTo(
     circleBody.position[0] + Math.cos(circleBody.angle + Math.PI) * ballRadius,
     circleBody.position[1] + Math.sin(circleBody.angle + Math.PI) * ballRadius
   );
-  canvas2d.stroke();
+  ctx.stroke();
 
-  canvas2d.restore();
-  canvas2d.font = "40px Arial  ";
-  canvas2d.fillStyle = "#008800";
-  canvas2d.textAlign = "right";
-  canvas2d.fillText(
-    "Current Leg " + pointsTeam1 + " : " + pointsTeam2 + " ",
-    laserConfig.canvasResolution.width,
-    laserConfig.canvasResolution.height - 20
+  ctx.restore();
+  ctx.font = '50px Arial  ';
+  ctx.fillStyle = playfieldColor2;
+  ctx.textAlign = 'right';
+  ctx.fillText(
+    'Current Leg ' + pointsTeam1 + ' : ' + pointsTeam2 + ' ',
+    laserConfig.canvasResolution.width - 100,
+    laserConfig.canvasResolution.height - 50
   );
-  canvas2d.textAlign = "left";
-  canvas2d.fillText(
-    " " + winPointsTeam1 + " : " + winPointsTeam2 + " Matches",
-    0,
-    laserConfig.canvasResolution.height - 20
+  ctx.textAlign = 'left';
+  ctx.fillText(
+    ' ' + winPointsTeam1 + ' : ' + winPointsTeam2 + ' Matches',
+    100,
+    laserConfig.canvasResolution.height - 50
   );
+  if (planeAnim > 0) {
+    var playfieldColor3 = getRgbSpreadHex(
+      laserConfig.testColor,
 
+      0.25 + planeAnim / PLANE_ANIM_TIME / 2,
+
+      (planeAnim / PLANE_ANIM_TIME)*0.5,
+      (planeAnim / PLANE_ANIM_TIME)*0.5
+    );
+    ctx.fillStyle = playfieldColor3;
+    if (planeYPos > 1080 / 2) {
+      ctx.fillRect(
+        0,
+        planeYPos - 12 * (planeAnim / PLANE_ANIM_TIME),
+        1920,
+        25 * (planeAnim / PLANE_ANIM_TIME)
+      );
+    } else {
+      ctx.fillRect(0, planeYPos, 1920, 12 * (planeAnim / PLANE_ANIM_TIME));
+    }
+  }
   checkBallOutSide();
 }
 var pointsTeam1 = 0;
@@ -290,10 +411,14 @@ function checkBallOutSide() {
     circleBody.angularVelocity = 0;
     circleBody.angle = 0;
     circleBody.velocity = getRandomBallSpeed();
+    var audio = new Audio(soundEinwurf);
+    audio.play();
+    delayCount = 2;
+
     return;
   }
 
-  if (circleBody.position[0] < ballRadius * 2) {
+  if (circleBody.position[0] < ballRadius) {
     pointsTeam2++;
     circleBody.position = [
       laserConfig.canvasResolution.width / 2,
@@ -302,10 +427,14 @@ function checkBallOutSide() {
     circleBody.angularVelocity = 0;
     circleBody.angle = 0;
     circleBody.velocity = getRandomBallSpeed();
+    if (gamedata.callbackBallOutside) gamedata.callbackBallOutside();
+    var audio = new Audio(soundGoal);
+    audio.play();
+    delayCount = 5;
   }
   if (
     circleBody.position[0] >
-    laserConfig.canvasResolution.width - ballRadius * 2
+    laserConfig.canvasResolution.width - ballRadius
   ) {
     pointsTeam1++;
     circleBody.angularVelocity = 0;
@@ -315,25 +444,33 @@ function checkBallOutSide() {
       laserConfig.canvasResolution.height / 2,
     ];
     circleBody.velocity = getRandomBallSpeed();
+    if (gamedata.callbackBallOutside) gamedata.callbackBallOutside();
+    var audio = new Audio(soundGoal2);
+    audio.play();
+    delayCount = 5;
   }
 
-  if (pointsTeam1 >= winPoints) {
+  if (pointsTeam1 >= winPoints || pointsTeam1 > 7) {
     winPointsTeam1++;
     pointsTeam1 = 0;
     pointsTeam2 = 0;
   }
-  if (pointsTeam2 >= winPoints) {
+  if (pointsTeam2 >= winPoints || pointsTeam2 > 7) {
     winPointsTeam2++;
     pointsTeam1 = 0;
     pointsTeam2 = 0;
   }
 }
-export default {
+var elapsed = 0;
+const gamedata = {
   getObstacle: function (index) {
     return obstacles[index];
   },
   step: onTick,
+  callbackBallOutside: undefined,
   init: function (data) {
+    delayCount = 5;
+
     if (data) {
       if (data.itemCount) {
         itemCount = data.itemCount;
@@ -368,8 +505,9 @@ export default {
     //   console.log('phiscs is', world)
   },
   stop: function () {
-    clearInterval(intervalId);
+    //clearInterval(intervalId);
   },
 
   render: renderGame,
 };
+export default gamedata;

@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Accept.mp3-f7b26d768100105bd2d1339d1386e658.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/opengameart/Accept.mp3"
+dest_files=[ "res://.import/Accept.mp3-f7b26d768100105bd2d1339d1386e658.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

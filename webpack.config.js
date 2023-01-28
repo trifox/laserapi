@@ -3,6 +3,7 @@ var HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin")
 var UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 var WebpackCleanupPlugin = require("webpack-cleanup-plugin");
 var webpack = require("webpack");
+var FileLoader = require("file-loader");
 var intlJSON = require("./src/res/en.json");
 var path = require("path");
 var intlJSONStringified = {};
@@ -52,6 +53,10 @@ var config = {
           fallback: "style-loader",
           use: "css-loader",
         }),
+      },
+      {
+        test: /\.(ogg|mp3|wav|mpe?g)$/i,
+        loader: "file-loader",
       },
     ],
     loaders: [

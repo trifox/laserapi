@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/MenuSFXPreview.ogg-1e846e787c30546a7833372c181813bc.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/opengameart/MenuSFXPreview.ogg"
+dest_files=[ "res://.import/MenuSFXPreview.ogg-1e846e787c30546a7833372c181813bc.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0
