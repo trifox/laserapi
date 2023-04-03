@@ -32,11 +32,12 @@ import { checkBorderAndSlowDown, repellAll } from './game-017-thehorde.js';
 
 var bgSound;
 var spawnButtons = [];
+var buttonsGameOverScreen = [];
 var larves = [];
 var fishes = [];
 var sharks = [];
 var gameState = 'game';
-var help = false; 
+var help = false;
 var gameTime = 0;
 var wonTime = 0;
 var foodGrid = [];
@@ -67,7 +68,7 @@ var helpButton = guiFillButton({
     help = false;
     // won = undefined;
   },
-}); 
+});
 function renderDots(ctx) {
   for (var i = 0; i < DOTCOUNT; i++) {
     for (var j = 0; j < DOTCOUNT; j++) {
@@ -89,13 +90,13 @@ function renderDots(ctx) {
 function getBubbleDist(bubble, obstacle) {
   return Math.sqrt(
     Math.pow(
-    ( bubble.getX()  -  obstacle.getX() ),
+      (bubble.getX() - obstacle.getX()),
       2
     ) +
-      Math.pow(
-  (bubble.getY()  - obstacle.getY() ),
-        2
-      )
+    Math.pow(
+      (bubble.getY() - obstacle.getY()),
+      2
+    )
   );
 }
 function checkCollisionWithObstacles(arr1Small, arr2Big) {
@@ -300,7 +301,7 @@ function createSpawnButton({
   color = 'green',
   growColor = 'red',
   activeColor = 'gold',
-}) { 
+}) {
   var butt = guiFillButton({
     label: '',
     posX: 50 + x * radius * 3,
@@ -319,8 +320,8 @@ function createSpawnButton({
       // removeItemFromArray(spawnButtons, butt);
       larves.push(
         createLarve({
-          x: butt.getX() ,
-          y: butt.getY() ,
+          x: butt.getX(),
+          y: butt.getY(),
           radius: radius * 2,
           // edges: butt.getEdges(),
           // edges2: butt.getEdges2(),
@@ -328,7 +329,7 @@ function createSpawnButton({
         })
       );
     },
-    onExitActive: () => {},
+    onExitActive: () => { },
   });
   return butt;
 }
@@ -436,6 +437,7 @@ export default {
   und brauchen Nahrung.
   
   `,
+  image: 'media/img/gametitles/laser-sharkpool-###4###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();
@@ -545,7 +547,7 @@ export default {
     spawnButtons.forEach((item) => item.handle(grid, elapsed));
     // spawn food
     foodSpawnCounter += elapsed;
-    if (foodSpawnCounter > foodSpawnInterval/(larves.length/3)) {
+    if (foodSpawnCounter > foodSpawnInterval / (larves.length / 3)) {
       foodSpawnCounter = 0;
       // console.log('spawnie food');
       // spawn a new dots

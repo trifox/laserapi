@@ -63,7 +63,7 @@ function createEnemyButton(
     getBaseDistance: () => {
       const res = Math.sqrt(
         Math.pow(spawningBaseRef.getX() - enemy.getX(), 2) +
-          Math.pow(spawningBaseRef.getY() - enemy.getY(), 2)
+        Math.pow(spawningBaseRef.getY() - enemy.getY(), 2)
       );
       //console.log('Base distance is', res);
       return res;
@@ -89,7 +89,8 @@ const createStartScreenButtons = () => [
   guiFillButton({
     label: 'Start Game',
     posX: 970,
-    posY: 640,keyCode:32,
+    posY: 640,
+    keyCode: 'Space',
     speedDown: 25,
     speedUp: 50,
     edges: 4,
@@ -194,8 +195,8 @@ function makeBase({
             // spawn enemy at location
             enemies.push(
               createEnemyButton(
-                sender.getX()+(sender.getX()-posX),
-                sender.getY()+(sender.getY()-posY),
+                sender.getX() + (sender.getX() - posX),
+                sender.getY() + (sender.getY() - posY),
                 color,
                 name,
                 edges,
@@ -286,6 +287,7 @@ export default {
 
   Überlebe so lange du kannst mit deiner Base.
    `,
+  image: 'media/img/gametitles/laser-basefight-###4###.png',
   init: function (data) {
     console.log('init game basefight ');
     startScreenButtons = createStartScreenButtons();
@@ -320,7 +322,7 @@ export default {
             if (!handled.includes(item2) && item !== item2) {
               const dist = Math.sqrt(
                 Math.pow(item.getGui().getX() - item2.getGui().getX(), 2) +
-                  Math.pow(item.getGui().getY() - item2.getGui().getY(), 2)
+                Math.pow(item.getGui().getY() - item2.getGui().getY(), 2)
               );
               if (
                 dist <
@@ -357,7 +359,7 @@ export default {
                 .getGui()
                 .setRadius(
                   item.item2.getGui().getRadius() * 0.5 +
-                    item.item1.getGui().getRadius()
+                  item.item1.getGui().getRadius()
                 );
               enemies = removeItemFromArray(enemies, item.item2);
             } else {
@@ -366,7 +368,7 @@ export default {
                 .getGui()
                 .setRadius(
                   item.item2.getGui().getRadius() +
-                    item.item1.getGui().getRadius() * 0.5
+                  item.item1.getGui().getRadius() * 0.5
                 );
               enemies = removeItemFromArray(enemies, item.item1);
             }
@@ -382,7 +384,7 @@ export default {
               .getGui()
               .setRadius(
                 item.item1.getGui().getRadius() -
-                  item.item2.getGui().getRadius() * 0.5
+                item.item2.getGui().getRadius() * 0.5
               );
             enemies = removeItemFromArray(enemies, item.item2);
           } else {
@@ -391,7 +393,7 @@ export default {
               .getGui()
               .setRadius(
                 item.item2.getGui().getRadius() -
-                  item.item1.getGui().getRadius() * 0.5
+                item.item1.getGui().getRadius() * 0.5
               );
             enemies = removeItemFromArray(enemies, item.item1);
           }
@@ -413,7 +415,7 @@ export default {
           if (base.getColor() !== enemy.getGui().getColor()) {
             const dist = Math.sqrt(
               Math.pow(base.getX() - enemy.getGui().getX(), 2) +
-                Math.pow(base.getY() - enemy.getGui().getY(), 2)
+              Math.pow(base.getY() - enemy.getGui().getY(), 2)
             );
             if (dist < base.getRadius() + enemy.getGui().getRadius()) {
               //
@@ -426,7 +428,7 @@ export default {
       baseCollisions.forEach((baseCollision) => {
         baseCollision.base.setRadius(
           baseCollision.base.getRadius() -
-            baseCollision.enemy.getGui().getRadius() * 0.5
+          baseCollision.enemy.getGui().getRadius() * 0.5
         );
         //('Remove Enemy collisition with base item');
         removeItemFromArray(enemies, baseCollision.enemy);

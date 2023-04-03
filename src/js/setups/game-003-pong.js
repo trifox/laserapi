@@ -175,7 +175,7 @@ const buttons = [
     label: 'Team 1',
     posX: 1920 / 2 - 400,
     posY: 650,
-    keyCode:32,
+    keyCode: 'Space',
     radius: 200,
     onEnterActive: () => {
       console.log('hrhr enter active1');
@@ -196,7 +196,7 @@ const buttons = [
   }),
   guiFillButton({
     label: 'Team 2',
-    keyCode:32,
+    keyCode: 'Space',
     posX: 1920 / 2 + 400,
     posY: 650,
     radius: 200,
@@ -222,18 +222,19 @@ const buttons = [
 export default {
   name: 'Laser-Pong',
   description: `
-  Laser-Pong aka Laser-Fussball.
+  Laser-Pong: Steuere dein Team zum Sieg!
   
   Wie beim Fussball geht es darum, 
   den Ball auf die gegnerische Seite zu bringen.
   
-  Kontrolliere die Position deiner Männchen.
+  Magnetische Kontrolle: Steuere deine Männchen mit einem Laserstrahl!
   
   Aber sei vorsichtig:
   das gegnerische Team kann auch deine bewegen...
 
   Es wird nach Sätzen mit 3 gewinnpunkten bis max 7 gespielt.
   `,
+  image: 'media/img/gametitles/laser-pong-###4###.png',
   init: function (data) {
     init(data);
 

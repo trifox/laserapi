@@ -81,8 +81,8 @@ function createSpawnButtonsScreen() {
       label: 'Start',
       posX: 1920 / 2,
       posY: 1080 / 2,
-      speedDown: 10, 
-      keyCode: 32,
+      speedDown: 10,
+      keyCode: 'Space',
       speedUp: 20,
       edges: Math.floor(3 + Math.random() * 8),
       edges2: Math.floor(3 + Math.random() * 8),
@@ -117,7 +117,7 @@ const createButtonsGameOverScreen = () => [
     speedDown: 50,
     speedUp: 100,
     edges: 3,
-    keyCode: 32,
+    keyCode: 'Space',
     radius: 200,
     normalColor: getRgbSpreadRandomHex(laserConfig.testColor),
     growColor: getRgbSpreadRandomHex(laserConfig.testColor),
@@ -421,6 +421,7 @@ export default {
    diese versperren sich.
   
   `,
+  image: 'media/img/gametitles/laser-flapping-###4###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
 

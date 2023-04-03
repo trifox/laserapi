@@ -1,5 +1,5 @@
 import { Solver } from 'p2';
-import util, { getRgbSpreadHex, renderText } from './util.js';
+import util, { getRgbSpreadHex, renderText, renderTextStroke } from './util.js';
 import { length, lerp2d } from './math.js';
 var helper = require('./helper.js');
 var laserConfig = require('./LaserApiConfig').default;
@@ -39,14 +39,23 @@ var games = [
   new GameWrapper(require('./setups/game-016-lasershark').default),
   new GameWrapper(require('./setups/game-016b-lasersharkpool').default),
   // new GameWrapper(require('./setups/game-017-thehorde').default),
-  new GameWrapper(require('./setups/game-018-voter').default),
   // new GameWrapper(require('./setups/game-019-dienstagsmaler').default),
 
 
   new GameWrapper(require('./setups/game-008-mandelbrot').default),
+  new GameWrapper(require('./setups/game-019-sorter').default),
+  new GameWrapper(require('./setups/game-020-defender').default),
+  new GameWrapper(require('./setups/game-020-defenderborder').default),
+  new GameWrapper(require('./setups/physics-game-defense/game-defense').default),
+  new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
+  // new GameWrapper(require('./setups/game-018-voter').default),
 ];
 
 
+
+// logo lasergames
+const logolasergames = new Image();
+logolasergames.src = 'media/img/logo-invert.png';
 
 const Lowpassfilter = require('./setups/game-000000000-lowpassfilter').default;
 console.log('games are', games);
@@ -351,34 +360,86 @@ async function frameHandler() {
     if (games[lastGameIndex] && games[lastGameIndex].stop) {
       games[lastGameIndex].stop(laserGrid);
       games[laserConfig.gameIndex].init();
-      gameChanged = 100;
+      gameChanged = 1000;
     }
     lastGameIndex = laserConfig.gameIndex;
   }
   if (laserConfig.showGame) {
     if (gameChanged > 0) {
+
       gameChanged -= 1;
+
+      ctx.drawImage(logolasergames, 10, 10, 250, 250);
+      const imageGame = games[laserConfig.gameIndex].getImage()
+      for (let i = 0; i < 5; i++) {
+        ctx.drawImage(imageGame,
+          i * 1280 + gameChanged - 3 * 1280,
+          270, 1280, 768
+        )
+
+      }
+
+
+      // gradient right
+      const gradient = ctx.createLinearGradient(1920 - 1200, 1080 / 2, 1920, 1080 / 2);
+
+      // Add three color stops
+      gradient.addColorStop(0, "rgba(0,0,0,0)");
+      gradient.addColorStop(1, "rgba(0,0,0,0.5");
+
+      // Set the fill style and draw a rectangle
+      ctx.fillStyle = gradient;
+      ctx.fillRect(1920 - 1200, 0, 1200, 1080);
+      // ----------------- gradiuent
+
+      // gradient left
+      const gradient2 = ctx.createLinearGradient(0, 1080 / 2, 400, 1080 / 2);
+
+      // Add three color stops
+      gradient2.addColorStop(0, "rgba(255,255,255,0.5)");
+      gradient2.addColorStop(1, "rgba(255,255,255,0");
+
+      // Set the fill style and draw a rectangle
+      ctx.fillStyle = gradient2;
+      ctx.fillRect(0, 270, 400, 768);
+      // ----------------- gradiuent
+
+
+
       renderText({
         ctx: ctx,
-        x: 1920 / 2,
-        y: 150,
+        x: 260 + (1920 - 260) / 2,
+        y: 10 + 172,
         fontSize: '125px',
         align: 'center',
-        fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+        fillStyle: 'darkgrey',
         text: games[laserConfig.gameIndex].getName(),
+
+      });
+      renderTextStroke({
+        ctx: ctx,
+        x: 260 + (1920 - 260) / 2,
+        y: 280 + 50,
+        fontSize: '40px',
+        lineHeight: 50,
+        align: 'center',
+        fillStyle: 'black',
+        text: games[laserConfig.gameIndex].getDescription(),
       });
       renderText({
         ctx: ctx,
-        x: 1920 / 2,
-        y: 1080 / 2 - 300,
-        fontSize: '50px',
+        x: 260 + (1920 - 260) / 2,
+        y: 280 + 50,
+        fontSize: '40px',
         lineHeight: 50,
         align: 'center',
-        fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
+        fillStyle: 'white',
         text: games[laserConfig.gameIndex].getDescription(),
       });
+
+
       ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.75);
-      ctx.fillRect(0, 1080 - 200, 1920 * (gameChanged / 1000), 200);
+      ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 1000), 32);
     } else {
       // console.time("GameHandler")
       try {

@@ -31,18 +31,18 @@ import { repellAll } from './game-017-thehorde.js';
 var enemies = createEnemies();
 
 function createEnemies() {
-  return [createEnemy() ];
+  return [createEnemy()];
 }
 var bgSound;
 var spawnButtons = [];
 var bubbles = [];
-var gameState = 'spawn';  
+var gameState = 'spawn';
 var gameTime = 0;
 var wonTime = 0;
 var foodGrid = [];
 var startAmount = 0;
 var bestWonTime = Number.MAX_SAFE_INTEGER;
-const DOTCOUNT = 10; 
+const DOTCOUNT = 10;
 var buttonsSpawnScreen = [];
 
 const createButtonsSpawnScreen = () => [
@@ -51,7 +51,7 @@ const createButtonsSpawnScreen = () => [
     posX: 1920 / 2,
     posY: 1080 / 2,
     speedDown: 10,
-    keyCode:32,
+    keyCode: 'Space',
     speedUp: 20,
     edges: Math.floor(3 + Math.random() * 8),
     edges2: Math.floor(3 + Math.random() * 8),
@@ -71,7 +71,7 @@ const createButtonsSpawnScreen = () => [
       foodGrid = createFoodGrid();
       bgSound.play();
     },
-    onExitActive: (sender) => {},
+    onExitActive: (sender) => { },
   }),
   // helpButton,
 ];
@@ -85,7 +85,7 @@ const createButtonsGameOverScreen = () => [
     speedDown: 12.5,
     speedUp: 25,
     edges: 3,
-    keyCode:32,
+    keyCode: 'Space',
     radius: 200,
     normalColor: getRgbSpreadHex(laserConfig.testColor, 0.4),
     growColor: getRgbSpreadHex(laserConfig.testColor, 0.5),
@@ -122,19 +122,19 @@ function renderDots(ctx) {
 function getBubbleDist(bubble, obstacle) {
   return Math.sqrt(
     Math.pow(
-    ( bubble.getX()  -  obstacle.getX() ),
+      (bubble.getX() - obstacle.getX()),
       2
     ) +
-      Math.pow(
-  (bubble.getY()  - obstacle.getY() ),
-        2
-      )
+    Math.pow(
+      (bubble.getY() - obstacle.getY()),
+      2
+    )
   );
 }
 function getBubbleDiff(bubble, obstacle) {
   return [
-     bubble.getX()  -obstacle.getX(),
-    bubble.getY() -obstacle.getY() ,
+    bubble.getX() - obstacle.getX(),
+    bubble.getY() - obstacle.getY(),
   ];
 }
 function checkCollisionWithObstacles() {
@@ -188,24 +188,24 @@ function createEnemy() {
   var currentEdges3 = 100;
   var currentAngle1 = Math.random() * 360;
   var currentAngle2 = Math.random() * 360;
-  var currentAngle3 = Math.random() * 360; 
+  var currentAngle3 = Math.random() * 360;
   var currentColor = 1;
   var currentFlapspeed = 1;
   var currentFlapspeed2 = 1;
 
   function init() {
-    window.onkeydown = function (e) { 
-      
+    window.onkeydown = function (e) {
+
       if (e.key == " " ||
-      e.code == "Space" ||      
-      e.keyCode == 32      
-  ) {
-    // todo space start game handlin
-    //your code
-  }
-    } 
+        e.code == "Space" ||
+        e.keyCode == 32
+      ) {
+        // todo space start game handlin
+        //your code
+      }
+    }
     x = 1920;
-    y = Math.floor(Math.random() * 10) * 90 + 50; 
+    y = Math.floor(Math.random() * 10) * 90 + 50;
     currentAngle1 = Math.random() * 360;
     currentAngle2 = Math.random() * 360;
     currentAngle3 = Math.random() * 360;
@@ -268,10 +268,10 @@ function createEnemy() {
         }
 
       }
-      if (x < 50) x =50;
+      if (x < 50) x = 50;
       if (y < 50) y = 50;
-      if (x > 1920 - 50) x =1920 - 50;
-      if (y > 1080 - 50) y =1080 - 50;
+      if (x > 1920 - 50) x = 1920 - 50;
+      if (y > 1080 - 50) y = 1080 - 50;
       x = x + dirX * elapsed;
       y = y + dirY * elapsed;
       drawNgon({
@@ -394,7 +394,7 @@ function createSpawnButton({
         })
       );
     },
-    onExitActive: (sender) => {},
+    onExitActive: (sender) => { },
   });
   return butt;
 }
@@ -463,6 +463,8 @@ export default {
 
   Aufgabe des Spiels ist es die Hai-Fische zu besiegen,
   indem du kleine punkte futterst bis du größer bist als die Haie.`,
+
+  image: 'media/img/gametitles/laser-shark-###4###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();
@@ -561,7 +563,7 @@ export default {
 
     // spawn food
     foodSpawnCounter += elapsed;
-    if (foodSpawnCounter > foodSpawnInterval/(bubbles.length/3)) {
+    if (foodSpawnCounter > foodSpawnInterval / (bubbles.length / 3)) {
       foodSpawnCounter = 0;
       console.log('spawnie food');
       // spawn a new dots

@@ -107,7 +107,9 @@ const createStartScreenButtons = () => {
       posX: 1920 / 2 - 250,
       posY: 1080 / 2 + 250,
       speedDown: 25,
-      speedUp: 50,keyCode:32,
+      speedUp: 50,
+
+      keyCode: 'Space',
       edges: 5,
       radius: 200,
       normalColor: randcol1[2],
@@ -139,7 +141,8 @@ const createStartScreenButtons = () => {
       posY: 1080 / 2 + 250,
       speedDown: 25,
       speedUp: 50,
-      edges: 5,keyCode:32,
+      edges: 5,
+      keyCode: 'Space',
       normalColor: randcol2[2],
       growColor: randcol2[1],
       activeColor: randcol2[0],
@@ -369,6 +372,7 @@ export default {
   Sobald ein Torpedo 
   die Batterie durchbricht ist das Spiel vorbei.
   `,
+  image: 'media/img/gametitles/laser-torpedo-###4###.png',
   init: function (data) {
     console.log('init game torpedo ', knobPositions);
     startScreenButtons = createStartScreenButtons();
@@ -426,9 +430,9 @@ export default {
           if (torpRef.getDirection() !== baseRef.getDirection()) {
             if (
               Math.abs(baseRef.getGui().getY() - torpRef.getGui().getY()) <=
-                50 &&
+              50 &&
               Math.abs(baseRef.getGui().getX() - torpRef.getGui().getX()) <
-                baseRef.getGui().getRadius()
+              baseRef.getGui().getRadius()
             ) {
               console.log('basecollision');
               toDeleteBaseCollisions.push({ baseRef, torpRef });

@@ -1,207 +1,136 @@
 <html>
-  <head>
-    <title><%= INTL_TITLE %></title>
-    <meta charset="utf-8" />
 
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-    <!-- <link rel="stylesheet" href="./styles.css" />  -->
-    <meta
-      id="meta-description"
-      name="description"
-      content="<%= INTL_META_DESCRIPTION %>"
-    />
-    <meta id="meta-tags" name="tags" content="<%= INTL_META_TAGS %>" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes"
-    />
-    <style>
-      body {
-        margin: 0px;
-        height: 100%;
-        width: 100%;
-        position: relative;
-        background-color: rgb(0, 0, 0);
-        color: white;
-      }
+<head>
+  <title>
+    <%= INTL_TITLE %>
+  </title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  <!-- <link rel="stylesheet" href="./styles.css" />  -->
+  <meta id="meta-description" name="description" content="<%= INTL_META_DESCRIPTION %>" />
+  <meta id="meta-tags" name="tags" content="<%= INTL_META_TAGS %>" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes" />
+  <style>
+    body {
+      margin: 0px;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      background-color: rgb(0, 0, 0);
+      color: white;
+    }
 
-      #editor2 {
-        background-color: rgb(78, 67, 0) !important;
-      }
+    #editor2 {
+      background-color: rgb(78, 67, 0) !important;
+    }
 
-      .c64 {
-        background-color: #a5a5ff;
-      }
+    .c64 {
+      background-color: #a5a5ff;
+    }
 
-      #canvascontainer {
-        height: 100%;
-        width: 100%;
+    #canvascontainer {
+      height: 100%;
+      width: 100%;
 
-        background-color: #000044;
-        <!-- border: solid gold 2px; -->
-      }
+      background-color: #000044;
+      < !-- border: solid gold 2px;
+      -->
+    }
 
-      #canvas {
-        overflow: hidden;
-        position: absolute;
-        margin: 0 auto;
-        border: solid green 0px;
-        width: 1920px;
-        height: 1080px;
-        background-color: #000000;
-      }
+    #canvas {
+      overflow: hidden;
+      position: absolute;
+      margin: 0 auto;
+      border: solid green 0px;
+      width: 1920px;
+      height: 1080px;
+      background-color: #000000;
+    }
 
-      .control {
-        width: 60%;
-        left: 20%;
-        bottom: 0px;
-        z-index: 10000;
-        overflow: scroll;
-        max-height: 500px;
-        position: absolute;
-      }
+    .control {
+      width: 60%;
+      left: 20%;
+      bottom: 0px;
+      z-index: 10000;
+      overflow: scroll;
+      max-height: 500px;
+      position: absolute;
+    }
 
-      #videocontainer {
-        display: none;
-        margin: 0px;
-        image-rendering: pixelated;
-        right: 0px;
-        z-index: 0;
-        top: 0px;
-        overflow: hidden;
-        position: absolute;
-      }
-    </style>
-  </head>
+    #videocontainer {
+      display: none;
+      margin: 0px;
+      image-rendering: pixelated;
+      right: 0px;
+      z-index: 0;
+      top: 0px;
+      overflow: hidden;
+      position: absolute;
+    }
+  </style>
+</head>
 
-  <body>
-    <div id="canvascontainer">
-      <canvas id="canvas"></canvas>
+<body>
+  <div id="canvascontainer">
+    <canvas id="canvas"></canvas>
 
-      <form class="w3-container" id="editor">
-        <div class="control" id="editor2">
-          <!-- <select class="w3-select" name="option" id="presets-selector">
+    <form class="w3-container" id="editor">
+      <div class="control" id="editor2">
+        <!-- <select class="w3-select" name="option" id="presets-selector">
             <option value="" disabled selected>Select Preset</option>
           </select> -->
-          <div class="w3-bar">
-            <input
-              type="button"
-              class="w3-input"
-              id="fullscreen_button"
-              value="fullscreen"
-            />
+        <div class="w3-bar">
+          <input type="button" class="w3-input" id="fullscreen_button" value="fullscreen" />
 
-            <input
-              type="button"
-              class="w3-input"
-              id="fullscreenedit_button"
-              value="fullscreen edit"
-            />
-          </div>
+          <input type="button" class="w3-input" id="fullscreenedit_button" value="fullscreen edit" />
+        </div>
 
-          <label>game</label>
-          <select class="w3-select" name="option" id="game-selector"></select>
+        <label>game</label>
+        <select class="w3-select" name="option" id="game-selector"></select>
+        <fieldset>
+          <label> scalePlafield</label>
+          <input type="range" class="w3-input" id="playfieldScale" value="1" step="0.000001" min="0" max="1" />
+        </fieldset>
+        <fieldset>
+          <label>gridresolution </label>
+          <input type="range" id="gridResolution" value="128" class="w3-input" step="1" min="2" max="1024" />
+
+          <label>debugVideo</label>
+          <input type="checkbox" id="debugVideo" class="w3-check" />
+
+          <label>showGame</label>
+          <input type="checkbox" id="showGame" class="w3-check" />
+
+          <label>showDebug</label>
+          <input type="checkbox" id="showDebug" class="w3-check" />
+          <label>showGrid</label>
+          <input type="checkbox" id="showGrid" class="w3-check" />
+          <label>showHelp</label>
+          <input type="checkbox" id="showHelp" class="w3-check" />
+          <label>showTransform</label>
+          <input type="checkbox" id="showTransform" class="w3-check" />
+          <label>showMapping</label>
+          <input type="checkbox" id="showMapping" class="w3-check" />
+        </fieldset>
+        <div style="display: grid; grid-template-columns: 1fr 1fr">
           <fieldset>
-            <label> scalePlafield</label>
-            <input
-              type="range"
-              class="w3-input"
-              id="playfieldScale"
-              value="1"
-              step="0.000001"
-              min="0"
-              max="1"
-            />
-          </fieldset>
-          <fieldset>
-            <label>gridresolution </label>
-            <input
-              type="range"
-              id="gridResolution"
-              value="128"
-              class="w3-input"
-              step="1"
-              min="2"
-              max="1024"
-            />
+            <label>brightness </label>
+            <input type="range" class="w3-input" id="brightness" min="0" max="2" step="0.0001" value="0" />
+            <label>contrast </label>
+            <input type="range" class="w3-input" id="contrast" step="0.0001" min="0" max="2" value="0" />
+            <label>saturation</label>
+            <input type="range" class="w3-input" id="saturation" step="0.0001" min="0" max="2" value="0" />
+            <label>threshold </label>
+            <input type="range" class="w3-input" id="threshold" min="0" max="3" value=".25" step=".001" />
+            <label> lasercolor </label>
+            <input type="color" style="height: 5em" class="w3-input" id="lasercolor" value="#00ff00" />
+            <label> lasercolor2 </label>
+            <input type="color" style="height: 5em" class="w3-input" id="lasercolor2" value="#aaffaa" />
 
-            <label>debugVideo</label>
-            <input type="checkbox" id="debugVideo" class="w3-check" />
-
-            <label>showGame</label>
-            <input type="checkbox" id="showGame" class="w3-check" />
-
-            <label>showDebug</label>
-            <input type="checkbox" id="showDebug" class="w3-check" />
-            <label>showGrid</label>
-            <input type="checkbox" id="showGrid" class="w3-check" />
-            <label>showHelp</label>
-            <input type="checkbox" id="showHelp" class="w3-check" />
-            <label>showTransform</label>
-            <input type="checkbox" id="showTransform" class="w3-check" />
-            <label>showMapping</label>
-            <input type="checkbox" id="showMapping" class="w3-check" />
-          </fieldset>
-          <div style="display: grid; grid-template-columns: 1fr 1fr">
-            <fieldset>
-              <label>brightness </label>
-              <input
-                type="range"
-                class="w3-input"
-                id="brightness"
-                min="0"
-                max="2"
-                step="0.0001"
-                value="0"
-              />
-              <label>contrast </label>
-              <input
-                type="range"
-                class="w3-input"
-                id="contrast"
-                step="0.0001"
-                min="0"
-                max="2"
-                value="0"
-              />
-              <label>saturation</label>
-              <input
-                type="range"
-                class="w3-input"
-                id="saturation"
-                step="0.0001"
-                min="0"
-                max="2"
-                value="0"
-              />
-              <label>threshold </label>
-              <input
-                type="range"
-                class="w3-input"
-                id="threshold"
-                min="0"
-                max="3"
-                value=".25"
-                step=".001"
-              />
-              <label> lasercolor </label>
-              <input
-                type="color"
-                style="height: 5em"
-                class="w3-input"
-                id="lasercolor"
-                value="#00ff00"
-              />
-              <label> lasercolor2 </label>
-              <input
-                type="color"
-                style="height: 5em"
-                class="w3-input"
-                id="lasercolor2"
-                value="#aaffaa"
-              />
-
-              <!-- <label>weightColor </label>
+            <!-- <label>weightColor </label>
               <input
                 type="range"
                 class="w3-input"
@@ -231,238 +160,95 @@
                 value="1"
                 step="0.001"
               /> -->
-            </fieldset>
-            <div>
-              <fieldset>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="zoom_x"
-                  min="0"
-                  step="0.00001"
-                  max="1920"
-                  value="0"
-                />
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="zoom_y"
-                  min="0"
-                  step="0.00001"
-                  max="1920"
-                  value="0"
-                />
-                <div style="display: grid; grid-template-columns: 1fr 1fr">
-                  <canvas id="zoomcanvas" width="400" height="200"></canvas>
-                  <canvas
-                    id="transformcanvas"
-                    width="400"
-                    height="200"
-                  ></canvas>
-                  <canvas id="previewcanvas" width="400" height="200" title="Use Left Mouse to set primary color, use right for secondary"></canvas>
-                  <canvas id="debugcanvas" width="400" height="200"></canvas>
-                  <canvas id="filtercanvas" width="400" height="200"></canvas>
-                  <canvas id="filter2canvas" width="400" height="200"></canvas>
-                </div>
-              </fieldset>
-            </div>
-
-            <fieldset style="display: grid; grid-template-columns: 1fr 1fr">
-              <div>
-                <label>topleftx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="topleft_x"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="1000"
-                />
-              </div>
-              <div>
-                <label>toplefty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="topleft_y"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="1000"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope topleftx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopetopleft_x"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope toplefty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopetopleft_y"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div>
-                <label>toprightx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="topright_x"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="9000"
-                />
-              </div>
-              <div>
-                <label>toprighty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="topright_y"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="1000"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope toprightx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopetopright_x"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope toprighty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopetopright_y"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div>
-                <label>bottomleftx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="bottomleft_x"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="1000"
-                />
-              </div>
-              <div>
-                <label>bottomlefty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="bottomleft_y"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="9000"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope bottomleftx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopebottomleft_x"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope bottomlefty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopebottomleft_y"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div>
-                <label>bottomrightx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="bottomright_x"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="9000"
-                />
-              </div>
-              <div>
-                <label>bottomrighty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="bottomright_y"
-                  min="0"
-                  step="0.00001"
-                  max="10000"
-                  value="9000"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope bottomrightx </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopebottomright_x"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
-              </div>
-              <div class="w3-blue-grey">
-                <label>slope bottomrighty </label>
-                <input
-                  type="range"
-                  class="w3-input"
-                  id="slopebottomright_y"
-                  min="0"
-                  step="0.00001"
-                  max="20000"
-                  value="0"
-                />
+          </fieldset>
+          <div>
+            <fieldset>
+              <input type="range" class="w3-input" id="zoom_x" min="0" step="0.00001" max="1920" value="0" />
+              <input type="range" class="w3-input" id="zoom_y" min="0" step="0.00001" max="1920" value="0" />
+              <div style="display: grid; grid-template-columns: 1fr 1fr">
+                <canvas id="zoomcanvas" width="400" height="200"></canvas>
+                <canvas id="transformcanvas" width="400" height="200"></canvas>
+                <canvas id="previewcanvas" width="400" height="200"
+                  title="Use Left Mouse to set primary color, use right for secondary"></canvas>
+                <canvas id="debugcanvas" width="400" height="200"></canvas>
+                <canvas id="filtercanvas" width="400" height="200"></canvas>
+                <canvas id="filter2canvas" width="400" height="200"></canvas>
               </div>
             </fieldset>
           </div>
-          <!-- <fieldset>
+
+          <fieldset style="display: grid; grid-template-columns: 1fr 1fr">
+            <div>
+              <label>topleftx </label>
+              <input type="range" class="w3-input" id="topleft_x" min="0" step="0.00001" max="10000" value="1000" />
+            </div>
+            <div>
+              <label>toplefty </label>
+              <input type="range" class="w3-input" id="topleft_y" min="0" step="0.00001" max="10000" value="1000" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope topleftx </label>
+              <input type="range" class="w3-input" id="slopetopleft_x" min="0" step="0.00001" max="20000" value="0" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope toplefty </label>
+              <input type="range" class="w3-input" id="slopetopleft_y" min="0" step="0.00001" max="20000" value="0" />
+            </div>
+            <div>
+              <label>toprightx </label>
+              <input type="range" class="w3-input" id="topright_x" min="0" step="0.00001" max="10000" value="9000" />
+            </div>
+            <div>
+              <label>toprighty </label>
+              <input type="range" class="w3-input" id="topright_y" min="0" step="0.00001" max="10000" value="1000" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope toprightx </label>
+              <input type="range" class="w3-input" id="slopetopright_x" min="0" step="0.00001" max="20000" value="0" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope toprighty </label>
+              <input type="range" class="w3-input" id="slopetopright_y" min="0" step="0.00001" max="20000" value="0" />
+            </div>
+            <div>
+              <label>bottomleftx </label>
+              <input type="range" class="w3-input" id="bottomleft_x" min="0" step="0.00001" max="10000" value="1000" />
+            </div>
+            <div>
+              <label>bottomlefty </label>
+              <input type="range" class="w3-input" id="bottomleft_y" min="0" step="0.00001" max="10000" value="9000" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomleftx </label>
+              <input type="range" class="w3-input" id="slopebottomleft_x" min="0" step="0.00001" max="20000"
+                value="0" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomlefty </label>
+              <input type="range" class="w3-input" id="slopebottomleft_y" min="0" step="0.00001" max="20000"
+                value="0" />
+            </div>
+            <div>
+              <label>bottomrightx </label>
+              <input type="range" class="w3-input" id="bottomright_x" min="0" step="0.00001" max="10000" value="9000" />
+            </div>
+            <div>
+              <label>bottomrighty </label>
+              <input type="range" class="w3-input" id="bottomright_y" min="0" step="0.00001" max="10000" value="9000" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomrightx </label>
+              <input type="range" class="w3-input" id="slopebottomright_x" min="0" step="0.00001" max="20000"
+                value="0" />
+            </div>
+            <div class="w3-blue-grey">
+              <label>slope bottomrighty </label>
+              <input type="range" class="w3-input" id="slopebottomright_y" min="0" step="0.00001" max="20000"
+                value="0" />
+            </div>
+          </fieldset>
+        </div>
+        <!-- <fieldset>
             <label>presetname</label>
             <input type="text" id="preset-name" class="w3-input" />
 
@@ -479,20 +265,21 @@
               value="Save Preset"
             />
           </fieldset> -->
-        </div>
-      </form>
-    </div>
-    <div id="videocontainer">
-      <video id="video" width="1920" height="1080"></video>
-    </div>
-    <div id="snapshots">
-      screenshots
-      <img id="snapshotCanvas" />
-      <img id="snapshotVideo" />
-      <canvas id="canvasVideo" style="display: none" />
-    </div>
-    <div id="stuff">
-      <div class="c64" />
-    </div>
-  </body>
+      </div>
+    </form>
+  </div>
+  <div id="videocontainer">
+    <video id="video" width="1920" height="1080"></video>
+  </div>
+  <div id="snapshots">
+    screenshots
+    <img id="snapshotCanvas" />
+    <img id="snapshotVideo" />
+    <canvas id="canvasVideo" style="display: none" />
+  </div>
+  <div id="stuff">
+    <div class="c64" />
+  </div>
+</body>
+
 </html>

@@ -23,7 +23,7 @@ export default ({
   edges = 5,
   edges2,
   speedDown = 25,
-  keyCode=undefined,
+  keyCode = undefined,
   angle = 0,
   lineWidth = 3,
   activeColor = '#00bbff',
@@ -33,6 +33,7 @@ export default ({
   minValue = 25,
   onEnterActive,
   onExitActive,
+  visible = true,
 }) => {
   var currentX = posX;
   var currentY = posY;
@@ -46,7 +47,7 @@ export default ({
   var state = 'normal';
   var result = {
     name: 'GUI flipButton',
-    init: function () {},
+    init: function () { },
     data: {
       fillState: 0,
     },
@@ -126,43 +127,44 @@ export default ({
       const factx = MasterCanvas.getCanvas().width / gridSize;
       const facty = MasterCanvas.getCanvas().height / gridSize;
       var found = false;
-
-      for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
-        for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
-          // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
-          if (
-            moveToHelper_getGridPixel(
-              grid,
-              x + Math.floor((currentX - currentRadius) / factx),
-              y + Math.floor((currentY - currentRadius) / facty)
-            ) > 0
-          ) {
-            // ctx.fillRect(
-            //   currentX - radius + x * factx,
-            //   currentY - radius + y * facty,
-            //   (radius)/(currentRadius * 2) / factx ,
-            //   (radius)/(currentRadius * 2) / facty ,
-            // );
-            //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
-            found = true;
-            break;
+      if (!keyCode) {
+        for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
+          for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
+            // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
+            if (
+              moveToHelper_getGridPixel(
+                grid,
+                x + Math.floor((currentX - currentRadius) / factx),
+                y + Math.floor((currentY - currentRadius) / facty)
+              ) > 0
+            ) {
+              // ctx.fillRect(
+              //   currentX - radius + x * factx,
+              //   currentY - radius + y * facty,
+              //   (radius)/(currentRadius * 2) / factx ,
+              //   (radius)/(currentRadius * 2) / facty ,
+              // );
+              //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
+              found = true;
+              break;
+            }
           }
+          if (found) break;
         }
-        if (found) break;
-      }
-      if (found) {
-        counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
+        if (found) {
+          counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
+        } else {
+          counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
+        }
       } else {
-        counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
+        if (laserConfig.pressedKeys[keyCode]) {
+          counter = activeValue + 1
+          state = 'grow'
+        }
       }
-
-      if(laserConfig.pressedKeys[keyCode]){
-        counter=activeValue+1
-        state='grow'
-      }
-
       //        ctx.strokeStyle = util.rgbToHex(0, 255, 255);
       var oldstate = state;
+
       if (counter > activeValue) {
         ctx.strokeStyle = currentActiveColor;
         ctx.fillStyle = currentActiveColor;
@@ -176,79 +178,81 @@ export default ({
         ctx.fillStyle = currentColor;
         state = 'normal';
       }
-      ctx.lineWidth = 4;
-      // ctx.beginPath();
-      // ctx.arc(currentX, currentY, currentRadius, 0, 2 * Math.PI);
-      // ctx.arc(
-      //   currentX,
-      //   currentY,
-      //   currentRadius * (counter / 100),
-      //   0,
-      //   2 * Math.PI
-      // );
-      // ctx.rect(
-      //   currentX - currentRadius,
-      //   currentY - currentRadius,
-      //   currentRadius * 2,
-      //   currentRadius * 2
-      // );
-      // ctx.stroke();
+      if (visible) {
+        ctx.lineWidth = 4;
+        // ctx.beginPath();
+        // ctx.arc(currentX, currentY, currentRadius, 0, 2 * Math.PI);
+        // ctx.arc(
+        //   currentX,
+        //   currentY,
+        //   currentRadius * (counter / 100),
+        //   0,
+        //   2 * Math.PI
+        // );
+        // ctx.rect(
+        //   currentX - currentRadius,
+        //   currentY - currentRadius,
+        //   currentRadius * 2,
+        //   currentRadius * 2
+        // );
+        // ctx.stroke();
 
-      // ctx.fillText(label, posX, posY - radius);
+        // ctx.fillText(label, posX, posY - radius);
 
-      if(!keyCode){
-      util.drawNgon({
-        ctx,
-        color: ctx.strokeStyle,
-        Xcenter: currentX,
-        Ycenter: currentY,
-        size: currentRadius,
-        numberOfSides: currentEdges,
-        angle,
-        lineWidth,
-      });
-      if (edges2) {
         util.drawNgon({
           ctx,
           color: ctx.strokeStyle,
           Xcenter: currentX,
           Ycenter: currentY,
-          size: currentRadius / 2,
-          numberOfSides: edges2,
+          size: currentRadius,
+          numberOfSides: currentEdges,
           angle,
-          lineWidth: lineWidth / 2,
+          lineWidth,
         });
+        if (edges2) {
+          util.drawNgon({
+            ctx,
+            color: ctx.strokeStyle,
+            Xcenter: currentX,
+            Ycenter: currentY,
+            size: currentRadius / 2,
+            numberOfSides: edges2,
+            angle,
+            lineWidth: lineWidth / 2,
+          });
+        }
+        util.drawNgon({
+          ctx,
+          color: ctx.strokeStyle,
+          Xcenter: currentX,
+          Ycenter: currentY,
+          size: currentRadius * (counter / 100),
+          numberOfSides: edges,
+          filled: false,
+          angle,
+          lineWidth,
+        });
+        util.renderText({
+          ctx,
+          text: currentLabel,
+          x: currentX,
+          y: currentY - 10,
+          fillStyle: normalColor,
+          fontSize: '25px',
+        });
+
+        // render keycode information
+        // console.log(laserConfig.pressedKeys)
+        if (keyCode) {
+          renderText({
+            ctx, text: `Press <${keyCode}> to start!`,
+            fontSize: '24px',
+            x: currentX,
+            y: currentY - 10,
+
+          })
+        }
       }
-      util.drawNgon({
-        ctx,
-        color: ctx.strokeStyle,
-        Xcenter: currentX,
-        Ycenter: currentY,
-        size: currentRadius * (counter / 100),
-        numberOfSides: edges,
-        filled: false,
-        angle,
-        lineWidth,
-      });
-      util.renderText({
-        ctx,
-        text: currentLabel,
-        x: currentX,
-        y: currentY - 10,
-        fillStyle: normalColor,
-        fontSize: '25px',
-      });
-
-    }else{
-      // render keycode information
-      renderText({
-ctx,text:'Press <SPACE> to start!',
-fontSize:'24px',
-x: currentX,
-y: currentY - 10,
-
-      })
-    }
       if (oldstate != state) {
         if (oldstate == 'grow' && state == 'active') {
           if (onEnterActive) {

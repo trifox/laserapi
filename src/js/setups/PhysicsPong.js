@@ -79,7 +79,6 @@ const addObstacle = function (world, collisionshape) {
   return obstacleBody;
 };
 const obstacles = [];
-var timeStep = 0.1; // seconds
 var circleBody = null;
 var circleShape = null;
 var world = null;
@@ -93,7 +92,7 @@ function onTick(elapsed) {
   if (delayCount > 0) {
     delayCount -= elapsed;
   } else {
-    world.step(elapsed);
+    world.step(1 / 60, elapsed);
   }
 
   planeAnim -= elapsed;
@@ -291,14 +290,7 @@ function renderGamePlayfield(ctx) {
   var playfieldColor2 = getRgbSpreadHex(laserConfig.testColor, 0.35);
   var playfieldColor3 = getRgbSpreadHex(laserConfig.testColor, 0.65);
 
-  // for (var i = 0; i < planes.length; i++) {
-  //   planes[i].position = [
-  //     laserConfig.canvasResolution.width,
-  //     laserConfig.canvasResolution.height,
-  //   ];
-  // }
-  //console.log('canvas size is ', laserConfig.canvasResolution)
-  // canvas2d.translate(50, 50)
+
   for (var i = 0; i < itemCount; i++) {
     //  console.log('rendering obstacle', obstacles [i])
     ctx.fillStyle = obstacles[i].color;
@@ -378,8 +370,8 @@ function renderGamePlayfield(ctx) {
 
       0.25 + planeAnim / PLANE_ANIM_TIME / 2,
 
-      (planeAnim / PLANE_ANIM_TIME)*0.5,
-      (planeAnim / PLANE_ANIM_TIME)*0.5
+      (planeAnim / PLANE_ANIM_TIME) * 0.5,
+      (planeAnim / PLANE_ANIM_TIME) * 0.5
     );
     ctx.fillStyle = playfieldColor3;
     if (planeYPos > 1080 / 2) {
