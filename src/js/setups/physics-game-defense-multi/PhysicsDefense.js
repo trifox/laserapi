@@ -266,7 +266,7 @@ const spawnManager = (elapsed) => {
         type: BALL_TYPES.RAMMBOCK
       }))
       spawnie.spawnPosX = (spawnie.spawnPosX + spawnie.spawnPosDirX) % 1920
-      spawnie.spawnPosY = (spawnie.spawnPosY + spawnie.spawnPosDirY) % (1080 - 400) + 50
+      spawnie.spawnPosY = (spawnie.spawnPosY + spawnie.spawnPosDirY) % (1080 - 400) + 75
       spawnie.spawnedBallsCount++
 
     }
@@ -280,14 +280,17 @@ const spawnManager = (elapsed) => {
     if (gamedata.callbackWaveBegin) {
       gamedata.callbackWaveBegin()
     }
-    spawnieTable.push(spawnWaveType_1_georg7({ waveCount }))
     if (waveCount % 5 == 4) {
 
+      spawnBurstCount = 3
 
       spawnieTable.push(spawnWaveType_1_georgendboss({ waveCount }))
 
+    } else {
+
+      spawnBurstCount = 10
+      spawnieTable.push(spawnWaveType_1_georg7({ waveCount }))
     }
-    spawnBurstCount = 10
     waveCount++
     console.log('spawned wave', spawnieTable)
   }
@@ -348,7 +351,7 @@ const spawnWaveType_1_georg7 = ({ waveCount = 0 }) => {
     spawnPosX: 250,
     // spawPosDirY = Math.random() * (60) - 30
     // spawPosDirX = Math.random() * (60) - 30
-    spawnPosDirY: Math.random() * Number.MAX_SAFE_INTEGER,
+    spawnPosDirY: 20 + Math.random() * 1080 - 400,
     spawnPosDirX: 0,
     spawnAngleStart: Math.random() * 180 - 90,
     // spawnAngleAdd: Math.random() * 50 - 25,
@@ -357,7 +360,7 @@ const spawnWaveType_1_georg7 = ({ waveCount = 0 }) => {
     // spawnBurstCount: 5 + currentSpawnCount / 2, // every 20 seconds new wave
     spawnedBallsCount: 0,
     spawnCount: 0,
-    spawnBallSpeed: 100 + Math.min(100 * waveCount, 500),
+    spawnBallSpeed: 100 + Math.min(100 * (waveCount + 1), 500),
     ballRadius: 20,
     spawnType: Math.random() > 0.5 ? BALL_TYPES.NORMAL : Math.random() > 0.5 ? BALL_TYPES.EXPLODE : BALL_TYPES.RAMMBOCK,
     // spawPosY = 100
@@ -368,8 +371,8 @@ const spawnWaveType_1_georgendboss = ({ waveCount = 0 }) => {
   return {
     // reset spawn mode to new settings
     spawnTime: 0,
-    spawnPosY: 100,
-    spawnPosX: 100,
+    spawnPosY: 1080 / 2 - 75,
+    spawnPosX: 150,
     // spawPosDirY = Math.random() * (60) - 30
     // spawPosDirX = Math.random() * (60) - 30
     spawnPosDirY: 50,
@@ -382,7 +385,7 @@ const spawnWaveType_1_georgendboss = ({ waveCount = 0 }) => {
     spawnedBallsCount: 0,
     spawnCount: 0,
     spawnBallSpeed: 100 + 75 * (waveCount / 5),
-    ballRadius: 100,
+    ballRadius: 150,
     spawnType: Math.random() > 0.5 ? BALL_TYPES.NORMAL : Math.random() > 0.5 ? BALL_TYPES.EXPLODE : BALL_TYPES.RAMMBOCK,
     // spawPosY = 100
 
