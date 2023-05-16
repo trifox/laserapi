@@ -409,10 +409,9 @@ export default {
   description: `Inspiriert von Flappy Bird.
   
   Erzeuge zu anfang des Spiels Blasen, 
-  die Blasen folgen deinem Laser-Pointer.
-
-  Wenn alle ihre Blasen erzeugt haben wird das Spiel
-  durch aktivieren des Start-Knopfes begonnen.
+ 
+  Magnetische Kontrolle:
+  Steuere deine Blase mit einem Laserstrahl!
 
   Aufgabe ist es mit deiner Blase zu überleben,
   weiche den hindernissen aus.

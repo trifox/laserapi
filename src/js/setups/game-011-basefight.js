@@ -274,7 +274,7 @@ var lastResolution = -1;
 export default {
   name: 'Laser-Basefight',
   description: `Es existieren 4 Basen, 
-  such dir als Team eine Basis aus.
+  such dir als Team eine Base aus.
   
   Die Basen erzeugen Blasen,
    welche ausserhalb der Basis vereinigt werden können.

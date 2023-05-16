@@ -237,7 +237,8 @@ function renderGame(canvas2d) {
       if (delayCount > 2) {
         renderText({
           ctx: canvas2d,
-          fontSize: '125px',
+          fontSize: '75px',
+          lineHeight: 85,
           x: 1920 / 2,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
           y: 200,
@@ -245,6 +246,8 @@ function renderGame(canvas2d) {
 ${pointsTeam1} : ${pointsTeam2} 
 Current Match  
 ${winPointsTeam1} : ${winPointsTeam2} 
+
+
 > ${Math.ceil(delayCount)} <`,
         });
       }
@@ -265,10 +268,10 @@ ${winPointsTeam1} : ${winPointsTeam2}
       if (delayCount > 0) {
         renderText({
           ctx: canvas2d,
-          fontSize: '125px',
+          fontSize: '75px',
           x: 1920 / 2 + 2,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
-          y: 1080 / 2 + 300,
+          y: 1080 / 2 + 500,
           text: `Restart in
 > ${Math.ceil(delayCount)} <`,
         });

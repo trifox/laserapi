@@ -453,16 +453,15 @@ export default {
   name: 'Laser-Shark',
   description: `
   
-    Erzeuge Blasen mit dem Laser-Pointer,
-   welche dem Laser-Pointer folgen.
-  
+Erzeuge Blasen mit dem Laser-Pointer,
+welche dem Laser-Pointer folgen. 
 
-  Starte das Spiel 
-  durch aktivieren des Start-Knopfes.
-  
 
-  Aufgabe des Spiels ist es die Hai-Fische zu besiegen,
-  indem du kleine punkte futterst bis du größer bist als die Haie.`,
+Aufgabe des Spiels ist es:
+
+den Hai-Fisch zu besiegen,
+indem du kleine punkte futterst,
+ bis du größer bist als der Hai.`,
 
   image: 'media/img/gametitles/laser-shark-###8###.png',
   init: function (data) {

@@ -227,10 +227,11 @@ export default {
   Wie beim Fussball geht es darum, 
   den Ball auf die gegnerische Seite zu bringen.
   
-  Magnetische Kontrolle: Steuere deine Männchen mit einem Laserstrahl!
+  Magnetische Kontrolle:
+  Steuere deine Männchen mit einem Laserstrahl!
   
   Aber sei vorsichtig:
-  das gegnerische Team kann auch deine bewegen...
+  das gegnerische Team kann auch von deinem Team bewegen...
 
   Es wird nach Sätzen mit 3 gewinnpunkten bis max 7 gespielt.
   `,
