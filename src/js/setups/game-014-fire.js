@@ -182,7 +182,7 @@ Copyright 2022 C.Kleinhuis and Georg Buchrucker
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
 
-      image: 'media/img/gametitles/laser-cowhorde-###4###.png',
+      image: 'media/img/gametitles/laser-cowhorde-###8###.png',
       fontSize: '26px',
       lineHeight: 25,
       fillStyle: '#ffffff',

@@ -287,7 +287,7 @@ export default {
 
   Überlebe so lange du kannst mit deiner Base.
    `,
-  image: 'media/img/gametitles/laser-basefight-###4###.png',
+  image: 'media/img/gametitles/laser-basefight-###8###.png',
   init: function (data) {
     console.log('init game basefight ');
     startScreenButtons = createStartScreenButtons();

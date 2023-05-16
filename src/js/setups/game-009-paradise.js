@@ -184,7 +184,7 @@ Ziel ist es soviele Kugeln wie möglich zu zerplatzen,
   
 ohne die 'verbotene' Frucht zu zerstören.`,
 
-  image: 'media/img/gametitles/laser-paradise-###4###.png',
+  image: 'media/img/gametitles/laser-paradise-###8###.png',
   init: function (data) {
     console.log('init game paradise ', knobPositions);
     buttons = createButtons();

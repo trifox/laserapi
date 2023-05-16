@@ -421,7 +421,7 @@ export default {
    diese versperren sich.
   
   `,
-  image: 'media/img/gametitles/laser-flapping-###4###.png',
+  image: 'media/img/gametitles/laser-flapping-###8###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
 

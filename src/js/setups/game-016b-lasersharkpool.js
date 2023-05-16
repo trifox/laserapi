@@ -10,6 +10,7 @@ import {
 var LARVE_RADIUS = 20;
 var FISH_RADIUS = 50;
 var SHARK_RADIUS = 100;
+var MAX_RADIUS = 150;
 var laserConfig = require('../LaserApiConfig.js').default;
 var MasterCanvas = require('../MasterCanvas').default;
 var guiFillButton = require('./gui/fillButton').default;
@@ -113,7 +114,11 @@ function checkCollisionWithObstacles(arr1Small, arr2Big) {
           obstacle.getRadius()
         );
         todelete.push(bubble);
-        obstacle.setRadius(obstacle.getRadius() + bubble.getRadius());
+        var newRadius = obstacle.getRadius() + bubble.getRadius()
+        if (newRadius > MAX_RADIUS) {
+          newRadius = MAX_RADIUS
+        }
+        obstacle.setRadius(newRadius);
       }
     });
   });
@@ -157,6 +162,7 @@ function createFish({ x, y, radius = FISH_RADIUS, color = 'green' }) {
   fish.handle = function handle(grid, elapsed) {
     orighandle(grid, elapsed);
 
+    fish.setRadius(fish.getRadius() - elapsed * 0.75);
     // fish.setAngle(Math.atan2(fish.getSpeedY(), fish.getSpeedX()));
     if (fish.getRadius() > SHARK_RADIUS) {
       removeItemFromArray(fishes, fish);
@@ -220,7 +226,7 @@ function createShark({ x, y, radius = 50, color = 'green' }) {
   var orighandle = shark.handle; // warning cross
   shark.handle = function handle(grid, elapsed) {
     orighandle(grid, elapsed);
-    shark.setRadius(shark.getRadius() - elapsed * 5);
+    shark.setRadius(shark.getRadius() - elapsed * 4);
     // fish.setAngle(Math.atan2(fish.getSpeedY(), fish.getSpeedX()));
     if (shark.getRadius() < FISH_RADIUS) {
       removeItemFromArray(sharks, shark);
@@ -420,7 +426,7 @@ var time = Math.random() * 1000;
 var lastTime = 0;
 var elapsed = 0;
 var foodSpawnCounter = 0;
-var foodSpawnInterval = 3;
+var foodSpawnInterval = 1;
 export default {
   name: 'Laser-SharkPool',
   description: `
@@ -437,7 +443,7 @@ export default {
   und brauchen Nahrung.
   
   `,
-  image: 'media/img/gametitles/laser-sharkpool-###4###.png',
+  image: 'media/img/gametitles/laser-sharkpool-###8###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();

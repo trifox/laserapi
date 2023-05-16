@@ -464,7 +464,7 @@ export default {
   Aufgabe des Spiels ist es die Hai-Fische zu besiegen,
   indem du kleine punkte futterst bis du größer bist als die Haie.`,
 
-  image: 'media/img/gametitles/laser-shark-###4###.png',
+  image: 'media/img/gametitles/laser-shark-###8###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();

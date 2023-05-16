@@ -340,7 +340,7 @@ export default {
 
   `,
 
-  image: 'media/img/gametitles/laser-cowhorde-###4###.png',
+  image: 'media/img/gametitles/laser-cowhorde-###8###.png',
   init: function (data) {
     console.log('init game laser cowhorde');
     spawnButtons = createSpawnButtons({});

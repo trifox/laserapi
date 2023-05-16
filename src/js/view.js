@@ -42,13 +42,14 @@ var games = [
   // new GameWrapper(require('./setups/game-019-dienstagsmaler').default),
 
 
-  new GameWrapper(require('./setups/game-008-mandelbrot').default),
-  new GameWrapper(require('./setups/game-019-sorter').default),
-  new GameWrapper(require('./setups/game-020-defender').default),
-  new GameWrapper(require('./setups/game-020-defenderborder').default),
-  new GameWrapper(require('./setups/physics-game-defense/game-defense').default),
-  new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
+  // new GameWrapper(require('./setups/game-019-sorter').default),
+  // new GameWrapper(require('./setups/game-020-defender').default),
+  // new GameWrapper(require('./setups/game-020-defenderborder').default),
+  // new GameWrapper(require('./setups/physics-game-defense/game-defense').default),
+  new GameWrapper(require('./setups/physics-game-defense-multi/game-defense').default),
+  // new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
   // new GameWrapper(require('./setups/game-018-voter').default),
+  new GameWrapper(require('./setups/game-008-mandelbrot').default),
 ];
 
 
@@ -360,15 +361,16 @@ async function frameHandler() {
     if (games[lastGameIndex] && games[lastGameIndex].stop) {
       games[lastGameIndex].stop(laserGrid);
       games[laserConfig.gameIndex].init();
-      gameChanged = 1000;
+      gameChanged = 250;
     }
     lastGameIndex = laserConfig.gameIndex;
   }
   if (laserConfig.showGame) {
     if (gameChanged > 0) {
 
-      gameChanged -= 1;
-
+      if (!laserConfig.pressedKeys['Space']) {
+        gameChanged -= 1;
+      }
       ctx.drawImage(logolasergames, 10, 10, 250, 250);
       const imageGame = games[laserConfig.gameIndex].getImage()
       for (let i = 0; i < 5; i++) {
@@ -439,7 +441,7 @@ async function frameHandler() {
 
 
       ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.75);
-      ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 1000), 32);
+      ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 250), 32);
     } else {
       // console.time("GameHandler")
       try {
@@ -887,7 +889,7 @@ function fullscreen() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[laserConfig.gameIndex || 0].init();
+  games[Math.min(laserConfig.gameIndex || 0, games.length - 1)].init();
 }
 function fullscreenEdit() {
   console.log('fullscreenedit clicked');
@@ -922,7 +924,7 @@ function fullscreenEdit() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[laserConfig.gameIndex || 0].init();
+  games[Math.min(laserConfig.gameIndex || 0, games.length - 1)].init();
 }
 function initHTML() {
   document.getElementById('fullscreen_button').onclick = fullscreen;

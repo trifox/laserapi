@@ -34,6 +34,7 @@ export default ({
   onEnterActive,
   onExitActive,
   visible = true,
+  singlePixel = true,
 }) => {
   var currentX = posX;
   var currentY = posY;
@@ -127,9 +128,12 @@ export default ({
       const factx = MasterCanvas.getCanvas().width / gridSize;
       const facty = MasterCanvas.getCanvas().height / gridSize;
       var found = false;
+      var foundCount = 0
+      var pixelCount = 0
       if (!keyCode) {
         for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
           for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
+            pixelCount++
             // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
             if (
               moveToHelper_getGridPixel(
@@ -146,13 +150,19 @@ export default ({
               // );
               //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
               found = true;
-              break;
+              if (singlePixel) break;
+              foundCount++
             }
           }
-          if (found) break;
+          if (found && singlePixel) break;
         }
         if (found) {
-          counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
+          if (singlePixel) {
+            counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
+          } else {
+            counter = Math.min(100, counter + Math.abs(speedUp * elapsed * (foundCount / pixelCount)));
+
+          }
         } else {
           counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
         }

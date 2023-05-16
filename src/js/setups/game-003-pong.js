@@ -234,7 +234,7 @@ export default {
 
   Es wird nach Sätzen mit 3 gewinnpunkten bis max 7 gespielt.
   `,
-  image: 'media/img/gametitles/laser-pong-###4###.png',
+  image: 'media/img/gametitles/laser-pong-###8###.png',
   init: function (data) {
     init(data);
 
