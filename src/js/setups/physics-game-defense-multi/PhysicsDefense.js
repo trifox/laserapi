@@ -42,6 +42,7 @@ export const BALL_TYPES = {
 }
 import soundBounce from '../../../../public/media/opengameart/Transition.ogg';
 import soundBounce2 from '../../../../public/media/bounce_523088_11537497-lq.mp3';
+import soundGameOver from '../../../../public/media/flash-253597_4508519-lq.mp3';
 import soundEinwurf from '../../../../public/media/trillerpfeife.mp3';
 import soundGoal from '../../../../public/media/goal148153_612195-lq.mp3';
 import soundGoal2 from '../../../../public/media/goal2.mp3';
@@ -356,7 +357,7 @@ const spawnWaveType_1_georg7 = ({ waveCount = 0 }) => {
     // spawnBurstCount: 5 + currentSpawnCount / 2, // every 20 seconds new wave
     spawnedBallsCount: 0,
     spawnCount: 0,
-    spawnBallSpeed: 100 + Math.min(75 * waveCount, 500),
+    spawnBallSpeed: 100 + Math.min(100 * waveCount, 500),
     ballRadius: 20,
     spawnType: Math.random() > 0.5 ? BALL_TYPES.NORMAL : Math.random() > 0.5 ? BALL_TYPES.EXPLODE : BALL_TYPES.RAMMBOCK,
     // spawPosY = 100
@@ -380,7 +381,7 @@ const spawnWaveType_1_georgendboss = ({ waveCount = 0 }) => {
     // spawnBurstCount: 5 + currentSpawnCount / 2, // every 20 seconds new wave
     spawnedBallsCount: 0,
     spawnCount: 0,
-    spawnBallSpeed: 100 + 75 * waveCount,
+    spawnBallSpeed: 100 + 75 * (waveCount / 5),
     ballRadius: 100,
     spawnType: Math.random() > 0.5 ? BALL_TYPES.NORMAL : Math.random() > 0.5 ? BALL_TYPES.EXPLODE : BALL_TYPES.RAMMBOCK,
     // spawPosY = 100
@@ -393,7 +394,7 @@ const spawnWaveType_1 = ({ waveCount = 0 }) => {
     // reset spawn mode to new settings
     spawnTime: 0,
     spawnPosY: 100,
-    spawnPosX: 200,
+    spawnPosX: 250,
     // spawPosDirY = Math.random() * (60) - 30
     // spawPosDirX = Math.random() * (60) - 30
     spawnPosDirY: 50,
@@ -490,6 +491,7 @@ function getRandomBallSpeed() {
 }
 
 var ballRadius = 15;
+var gameOverAudio = new Audio(soundGameOver);
 var bounceAudio = new Audio(soundBounce);
 var bounceAudio2 = new Audio(soundBounce2);
 const init2dPhysics = function () {
@@ -577,23 +579,14 @@ function renderGameOver(ctx) {
   ctx.textAlign = 'center';
   renderText({
     ctx,
-    fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.6, 1, 0.5),
-    fontSize: '80px',
-    lineHeight: 85,
-    text: `Game Over 
-Winner:`,
-    x: laserConfig.canvasResolution.width / 2,
-    y: 200,
-  });
-  renderText({
-    ctx,
     fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.6, 1, 1),
     fontSize: '80px',
     lineHeight: 85,
-    text: `
-
-
-Team ${won}`,
+    text: `Game Over
+    
+    Reached Wave
+    ${waveCount}
+    `,
     x: laserConfig.canvasResolution.width / 2,
     y: 200,
   });
@@ -609,14 +602,19 @@ function renderGame(canvas2d) {
           ctx: canvas2d,
           fontSize: '125px',
           x: 1920 / 2,
-          lineHeight: 85,
+          lineHeight: 125,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
           y: 200,
-          text: `Current Wave  
- >${waveCount}<`,
+          text: `Laser-Defense
+>${Math.round(delayCount)}<`,
         });
       }
       if (escapedBalls >= maxLife) {
+
+        gameOverAudio.pause();
+        gameOverAudio.currentTime = 0;
+        gameOverAudio.play();
+
         gameState = 'gameover';
         won = 1;
         delayCount = 10;
@@ -625,6 +623,8 @@ function renderGame(canvas2d) {
       break;
 
     case 'gameover':
+      renderGamePlayfield(canvas2d);
+
       renderGameOver(canvas2d);
       if (delayCount > 0) {
         renderText({

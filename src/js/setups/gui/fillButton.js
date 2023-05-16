@@ -242,14 +242,6 @@ export default ({
           angle,
           lineWidth,
         });
-        util.renderText({
-          ctx,
-          text: currentLabel,
-          x: currentX,
-          y: currentY - 10,
-          fillStyle: normalColor,
-          fontSize: '25px',
-        });
 
         // render keycode information
         // console.log(laserConfig.pressedKeys)
@@ -261,6 +253,16 @@ export default ({
             y: currentY - 10,
 
           })
+        } else {
+          util.renderText({
+            ctx,
+            text: currentLabel,
+            x: currentX,
+            y: currentY - 10,
+            fillStyle: normalColor,
+            fontSize: '25px',
+          });
+
         }
       }
       if (oldstate != state) {

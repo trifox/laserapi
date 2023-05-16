@@ -448,7 +448,7 @@ function drawSineLine({
 }
 var time = Math.random() * 1000;
 var foodSpawnCounter = 0;
-var foodSpawnInterval = 3;
+var foodSpawnInterval = 1;
 export default {
   name: 'Laser-Shark',
   description: `

@@ -52,7 +52,7 @@ var buttonsSpawnScreen = [];
 const createButtonsSpawnScreen = () => [
   guiFillButton({
     label: 'Start',
-    posX: 1920 / 2,
+    posX: 1920 / 2 + 50,
     posY: 1080 / 2,
     speedDown: 10,
     keyCode: 'Space',

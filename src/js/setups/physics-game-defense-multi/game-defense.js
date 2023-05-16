@@ -16,8 +16,8 @@ PhysicsPong.callbackBallOutside = () => {
 };
 
 PhysicsPong.callbackWaveBegin = () => {
-    const spawnType = Math.random() > 0.5 ? OBSTACLE_TYPES.CIRCLE : Math.random() > 0.5 ? OBSTACLE_TYPES.DIAMOND : OBSTACLE_TYPES.BOX
-
+    //    const spawnType = Math.random() > 0.5 ? OBSTACLE_TYPES.CIRCLE : Math.random() > 0.5 ? OBSTACLE_TYPES.DIAMOND : OBSTACLE_TYPES.BOX
+    const spawnType = OBSTACLE_TYPES.CIRCLE
     var minX = 1920
     var maxX = 1920 / 2
     var minY = (1080 - 400)
