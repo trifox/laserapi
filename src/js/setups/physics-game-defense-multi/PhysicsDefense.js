@@ -360,7 +360,7 @@ const spawnWaveType_1_georg7 = ({ waveCount = 0 }) => {
     // spawnBurstCount: 5 + currentSpawnCount / 2, // every 20 seconds new wave
     spawnedBallsCount: 0,
     spawnCount: 0,
-    spawnBallSpeed: 100 + Math.min(100 * (waveCount + 1), 500),
+    spawnBallSpeed: 100 + Math.min(200 * (waveCount + 1), 1000),
     ballRadius: 20,
     spawnType: Math.random() > 0.5 ? BALL_TYPES.NORMAL : Math.random() > 0.5 ? BALL_TYPES.EXPLODE : BALL_TYPES.RAMMBOCK,
     // spawPosY = 100
@@ -636,7 +636,7 @@ function renderGame(canvas2d) {
           fontSize: '125px',
           x: 1920 / 2 + 2,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
-          y: 1080 / 2 + 300,
+          y: 1080 / 2 + 250,
           text: `Restart in
 > ${Math.ceil(delayCount)} <`,
         });

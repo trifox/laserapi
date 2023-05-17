@@ -32,6 +32,7 @@ export default ({
   activeValue = 75,
   minValue = 25,
   onEnterActive,
+  scanRadiusFactor = 1,
   onExitActive,
   visible = true,
   singlePixel = true,
@@ -40,11 +41,12 @@ export default ({
   var currentY = posY;
   var counter = 0;
   var currentEdges = edges;
-  var currentRadius = radius;
+  var _currentRadius = radius;
   var currentColor = normalColor;
   var currentLabel = label;
   var currentGrowColor = growColor;
   var currentActiveColor = activeColor;
+
   var state = 'normal';
   var result = {
     name: 'GUI flipButton',
@@ -107,14 +109,14 @@ export default ({
       return currentY;
     },
     getRadius() {
-      return currentRadius;
+      return _currentRadius;
     },
     setRadius(newRadius) {
-      currentRadius = newRadius;
+      _currentRadius = newRadius;
     },
     handle: function (grid, elapsed) {
       var ctx = MasterCanvas.get2dContext();
-
+      var currentRadius = _currentRadius * scanRadiusFactor
       /**
        * here we need to think about how to improve performance, would a shader with one output help here?
        * i think not because the shader would iterate over each field anyways
@@ -214,7 +216,7 @@ export default ({
           color: ctx.strokeStyle,
           Xcenter: currentX,
           Ycenter: currentY,
-          size: currentRadius,
+          size: _currentRadius,
           numberOfSides: currentEdges,
           angle,
           lineWidth,
@@ -225,7 +227,7 @@ export default ({
             color: ctx.strokeStyle,
             Xcenter: currentX,
             Ycenter: currentY,
-            size: currentRadius / 2,
+            size: _currentRadius / 2,
             numberOfSides: edges2,
             angle,
             lineWidth: lineWidth / 2,
@@ -236,7 +238,7 @@ export default ({
           color: ctx.strokeStyle,
           Xcenter: currentX,
           Ycenter: currentY,
-          size: currentRadius * (counter / 100),
+          size: _currentRadius * (counter / 100),
           numberOfSides: edges,
           filled: false,
           angle,

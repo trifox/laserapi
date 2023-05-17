@@ -75,8 +75,9 @@ PhysicsPong.callBackBallCreated = (enemy) => {
             edges: 32,
             visible: true,
             edges2: undefined,
-            speedUp: 125 - (radios / 100) * 50,
+            speedUp: 125 - (radios / 150) * 50,
             speedDown: 0,
+            scanRadiusFactor: radios < 150 ? 1.75 : 1,
             radius: radios,
             singlePixel: radios < 100,
             onEnterActive: () => {
