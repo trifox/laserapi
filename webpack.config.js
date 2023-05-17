@@ -12,6 +12,7 @@ Object.keys(intlJSON).map(function (key) {
 });
 intlJSON = intlJSONStringified;
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CopyPlugin = require("webpack-copy-plugin");
 var isProduction = process.env.NODE_ENV === "production";
 
 console.log(
@@ -121,4 +122,5 @@ if (isProduction) {
   config.plugins.push(new HtmlWebpackInlineSourcePlugin());
 }
 
+config.plugins.push(new CopyPlugin({ dirs: [{ from: 'public', 'to': 'dist' }] }))
 module.exports = config;

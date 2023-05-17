@@ -1,7 +1,7 @@
 import {
   renderTextDropShadow,
-  removeItemFromArray, 
-  getRgbSpreadHex, 
+  removeItemFromArray,
+  getRgbSpreadHex,
   getRgbSpreadRandomHex,
   getRgbSpreadRandomHexTriplet,
 } from '../util.js';
@@ -33,7 +33,7 @@ var enemies = createEnemies();
 
 function createEnemies() {
   enemies = [];
-  enemies.push(createFlapAndHordeEnemy(enemies,0.2));
+  enemies.push(createFlapAndHordeEnemy(enemies, 0.2));
 
   return enemies;
 }
@@ -45,16 +45,17 @@ var help = false;
 var gameTime = 0;
 var wonTime = 0;
 var startAmount = 0;
-var bestWonTime = 0; 
+var bestWonTime = 0;
 var deathgram = [];
 var buttonsSpawnScreen = [];
 
 const createButtonsSpawnScreen = () => [
   guiFillButton({
     label: 'Start',
-    posX: 1920 / 2,
+    posX: 1920 / 2 + 50,
     posY: 1080 / 2,
-    speedDown: 10,keyCode:32,
+    speedDown: 10,
+    keyCode: 'Space',
     speedUp: 20,
     edges: Math.floor(3 + Math.random() * 8),
     edges2: Math.floor(3 + Math.random() * 8),
@@ -74,7 +75,7 @@ const createButtonsSpawnScreen = () => [
       bgSound.loop = true;
       bgSound.play();
     },
-    onExitActive: (sender) => {},
+    onExitActive: (sender) => { },
   }),
   // helpButton,
 ];
@@ -88,7 +89,7 @@ const createButtonsGameOverScreen = () => [
     speedDown: 12,
     speedUp: 25,
     edges: 3,
-    keyCode:32,
+    keyCode: 'Space',
     radius: 200,
     normalColor: getRgbSpreadHex(laserConfig.testColor, 0.5),
     onEnterActive: (sender) => {
@@ -107,7 +108,7 @@ function checkCollisionWithObstacles() {
   function getBubbleDist(bubble, obstacle) {
     return Math.sqrt(
       Math.pow(bubble.getX() - obstacle.getX(), 2) +
-        Math.pow(bubble.getY() - obstacle.getY(), 2)
+      Math.pow(bubble.getY() - obstacle.getY(), 2)
     );
   }
   bubbles.forEach((bubble) => {
@@ -137,6 +138,7 @@ export function repellAll({
   targetArray = undefined,
   elapsed = 1,
   bounce = 1,
+  fieldName = undefined
 }) {
   // console.log(';repellall', workArray);
   function getBubbleDif(a, b) {
@@ -148,8 +150,11 @@ export function repellAll({
       Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2)
     );
   }
-  workArray.forEach((bubble1) => {
-    targetArray.forEach((bubble2) => {
+  workArray.forEach((bubble1Elem) => {
+    const bubble1 = fieldName ? bubble1Elem[fieldName] : bubble1Elem;
+    targetArray.forEach((bubble2Elem) => {
+      const bubble2 = fieldName ? bubble2Elem[fieldName] : bubble2Elem;
+
       if (bubble1 !== bubble2) {
         // console.log('testing', bubble1, bubble2);
         const dist = getBubbleDist(bubble1, bubble2);
@@ -223,7 +228,7 @@ function createBubble({
     if (
       Math.sqrt(
         bubble.getSpeedX() * bubble.getSpeedX() +
-          bubble.getSpeedX() * bubble.getSpeedY()
+        bubble.getSpeedX() * bubble.getSpeedY()
       ) < 0.01
     ) {
       sinCounter += elapsed;
@@ -274,7 +279,7 @@ function createSpawnButton({
         );
       }
     },
-    onExitActive: (sender) => {},
+    onExitActive: (sender) => { },
   });
   return butt;
 }
@@ -316,7 +321,7 @@ export function checkBorderAndSlowDown(item, margin = 75) {
     item.setSpeedY(0);
   }
 }
-var time = Math.random() * 1000; 
+var time = Math.random() * 1000;
 
 var NEXT_LEVEL_INTERVAL = 20;
 var nextLevel = NEXT_LEVEL_INTERVAL;
@@ -334,6 +339,8 @@ export default {
   den Hindernissen auszuweichen so lange es geht.
 
   `,
+
+  image: 'media/img/gametitles/laser-cowhorde-###8###.png',
   init: function (data) {
     console.log('init game laser cowhorde');
     spawnButtons = createSpawnButtons({});
@@ -345,7 +352,7 @@ export default {
 
     nextLevel -= elapsed;
     if (nextLevel < 0) {
-      enemies.push(createFlapAndHordeEnemy(enemies,0.2));
+      enemies.push(createFlapAndHordeEnemy(enemies, 0.2));
       nextLevel = NEXT_LEVEL_INTERVAL;
       if (Math.floor(gameTime / NEXT_LEVEL_INTERVAL) % 2 === 0) {
         var audio = new Audio(soundLevelUp1);
@@ -423,7 +430,7 @@ export default {
       var audio = new Audio(soundGameOver);
       audio.play();
     }
-    bubbles.forEach(item=>checkBorderAndSlowDown(item));
+    bubbles.forEach(item => checkBorderAndSlowDown(item));
     renderEnemiesRightSidePreview(ctx, enemies);
   },
   renderDeathgram(ctx) {

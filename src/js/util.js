@@ -171,6 +171,28 @@ export function drawLine(ctx, x1, y1, x2, y2, color = '#ffffff') {
   ctx.lineTo(x2, y2);
   ctx.stroke();
 }
+export function renderTextStroke({
+  ctx,
+  text,
+  x = 100,
+  fontSize = '140px',
+  lineHeight = 25,
+  y = 100,
+  weight = 'bold',
+  font = 'Arvo',
+  fillStyle = '#0088ff',
+  align = 'center',
+
+  strokeStyle = 'black', strokeWidth = 12
+}) {
+  ctx.strokeStyle = strokeStyle;
+  ctx.lineWidth = strokeWidth;
+  ctx.font = weight + ' ' + fontSize + ' ' + font;
+  ctx.fillStyle = fillStyle;
+  ctx.textAlign = align;
+  const res = String(text).split('\n');
+  res.forEach((item, index) => ctx.strokeText(item, x, y + index * lineHeight));
+}
 export function renderText({
   ctx,
   text,
@@ -179,7 +201,7 @@ export function renderText({
   lineHeight = 25,
   y = 100,
   weight = 'bold',
-  font = 'Verdana',
+  font = 'Arvo',
   fillStyle = '#0088ff',
   align = 'center',
 }) {

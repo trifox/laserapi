@@ -17,18 +17,19 @@ const guiFollowCircle = ({
   radius = 100,
   speedUp = 0.1,
   speedDown = 0.1,
-  normalColor = '#008844', 
+  normalColor = '#008844',
   speedX = 0,
   edges,
   lineWidth = 4,
   edges2,
-  shrinkSpeed = 0, 
+  shrinkSpeed = 0,
   speedY = 0,
   onEnterActive,
   onExitActive,
   scanRadiusFactor = 1,
   innerRadiusFactor = 0.5,
   followTrueOrRepellFalse = true,
+  visible = true,
   angle = 0,
 }) => {
   var sleeper = 0;
@@ -45,9 +46,10 @@ const guiFollowCircle = ({
   var currentScanRadius = radius * currentScanRadiusFactor; // private value calculates the scan radius based on scan factor
   var lastTime = performance.now();
   var state = 'normal';
+  var laserPresent = false;
   return {
     name: 'GUI flipButton',
-    init: function () {},
+    init: function () { },
     data: {
       fillState: 0,
     },
@@ -62,6 +64,9 @@ const guiFollowCircle = ({
     },
     getInnerRadiusFactor() {
       return currentInnerRadiusFactor;
+    },
+    getIsCurrentlyHavingMoreThanZeroLaserPointersDetected() {
+      return laserPresent
     },
     getAngle() {
       return currentAngle;
@@ -99,10 +104,10 @@ const guiFollowCircle = ({
     getSpeedX() {
       return currentSpeedX;
     },
-    handle: function (grid,elapsed) {
+    handle: function (grid, elapsed) {
       if (sleeper-- <= 0) {
         sleeper = 1; //update always 1 
- 
+
         /**
          * here we need to think about how to improve performance, would a shader with one output help here?
          * i think not because the shader would iterate over each field anyways
@@ -140,6 +145,7 @@ const guiFollowCircle = ({
             }
           }
         }
+        laserPresent = count > 0;
         midCoord = {
           x: midCoord.x / count,
           y: midCoord.y / count,
@@ -147,7 +153,7 @@ const guiFollowCircle = ({
         if (!first) {
           // first flag indicates that one field has been found and a valid mass center is available
           if (followTrueOrRepellFalse) {
-          
+
             currentSpeedX = lerp(
               currentSpeedX,
               midCoord.x / ((currentScanRadius * 2) / factx) - 0.5,
@@ -178,7 +184,7 @@ const guiFollowCircle = ({
         currentX = currentX + currentSpeedX * elapsed * 1000;
         currentY = currentY + currentSpeedY * elapsed * 1000;
       }
-    
+
       var ctx = MasterCanvas.get2dContext();
 
       var oldstate = state;
@@ -197,43 +203,44 @@ const guiFollowCircle = ({
           }
         }
       }
+      if (visible) {
+        ctx.lineWidth = lineWidth;
 
-      ctx.lineWidth = lineWidth;
-    
-      util.renderText({
-        ctx,
-        text: label,
-        x: currentX,
-        y: currentY - 10,
-        fontSize: '25px',
-        fillStyle: normalColor,
-      });
-      if (edges) {
-        util.drawNgon({
+        util.renderText({
           ctx,
-          color: currentNormalColor,
-          Xcenter: currentX,
-          Ycenter: currentY,
-          size: currentRadius,
-          numberOfSides: edges,
-          angle: currentAngle,
-          lineWidth,
+          text: label,
+          x: currentX,
+          y: currentY - 10,
+          fontSize: '25px',
+          fillStyle: normalColor,
         });
+        if (edges) {
+          util.drawNgon({
+            ctx,
+            color: currentNormalColor,
+            Xcenter: currentX,
+            Ycenter: currentY,
+            size: currentRadius,
+            numberOfSides: edges,
+            angle: currentAngle,
+            lineWidth,
+          });
+        }
+        if (edges2) {
+          util.drawNgon({
+            ctx,
+            color: currentNormalColor,
+            Xcenter: currentX,
+            Ycenter: currentY,
+            size: currentRadius * currentInnerRadiusFactor,
+            numberOfSides: edges2,
+            angle: currentAngle,
+            lineWidth: lineWidth / 2,
+          });
+          ctx.arc(currentX, currentY, currentRadius, 0, Math.PI);
+        }
       }
-      if (edges2) {
-        util.drawNgon({
-          ctx,
-          color: currentNormalColor,
-          Xcenter: currentX,
-          Ycenter: currentY,
-          size: currentRadius * currentInnerRadiusFactor,
-          numberOfSides: edges2,
-          angle: currentAngle,
-          lineWidth: lineWidth / 2,
-        });
-        ctx.arc(currentX, currentY, currentRadius, 0, Math.PI);
-      }
-    },
+    }
   };
 };
 export default guiFollowCircle;

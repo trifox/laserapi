@@ -107,7 +107,9 @@ const createStartScreenButtons = () => {
       posX: 1920 / 2 - 250,
       posY: 1080 / 2 + 250,
       speedDown: 25,
-      speedUp: 50,keyCode:32,
+      speedUp: 50,
+
+      keyCode: 'Space',
       edges: 5,
       radius: 200,
       normalColor: randcol1[2],
@@ -139,7 +141,8 @@ const createStartScreenButtons = () => {
       posY: 1080 / 2 + 250,
       speedDown: 25,
       speedUp: 50,
-      edges: 5,keyCode:32,
+      edges: 5,
+      keyCode: 'Space',
       normalColor: randcol2[2],
       growColor: randcol2[1],
       activeColor: randcol2[0],
@@ -369,6 +372,7 @@ export default {
   Sobald ein Torpedo 
   die Batterie durchbricht ist das Spiel vorbei.
   `,
+  image: 'media/img/gametitles/laser-torpedo-###8###.png',
   init: function (data) {
     console.log('init game torpedo ', knobPositions);
     startScreenButtons = createStartScreenButtons();
@@ -379,45 +383,6 @@ export default {
     }
     if (won == 0) {
       this.handleGameScreen(grid, elapsed);
-      // check collisions torpedo torpedo
-      // check collisions torpedos bases
-
-      //torpedo torpedo collision check
-      // var handled = [];
-      // var toDeleteTorpedos = [];
-      // torpedos.forEach((torp) => {
-      //   if (torp.getGui().getX() < 0) {
-      //     toDeleteTorpedos.push(torp);
-      //   }
-      //   if (torp.getGui().getX() > 1920) {
-      //     toDeleteTorpedos.push(torp);
-      //   }
-      //   if (!handled.includes(torp)) {
-      //     torpedos.forEach((torp2) => {
-      //       if (!handled.includes(torp2) && torp !== torp2) {
-      //         if (torp2.getDirection() !== torp.getDirection()) {
-      //           if (
-      //             torp2.getGui().getY() === torp.getGui().getY() &&
-      //             Math.abs(torp2.getGui().getX() - torp.getGui().getX()) <
-      //               torp.getGui().getRadius()
-      //           ) {
-      //             console.log("torpedo collision", torp, torp2);
-      //             handled.push(torp);
-      //             handled.push(torp2);
-      //             toDeleteTorpedos.push(torp);
-      //             toDeleteTorpedos.push(torp2);
-
-      //             var audio = new Audio(sonarSound);
-      //             audio.play();
-      //           }
-      //         }
-      //       }
-      //     });
-      //   }
-      // });
-      // toDeleteTorpedos.forEach((torp) => {
-      //   removeItemFromArray(torpedos, torp);
-      // });
 
       // torpedo base
       const toDeleteBaseCollisions = [];
@@ -426,9 +391,9 @@ export default {
           if (torpRef.getDirection() !== baseRef.getDirection()) {
             if (
               Math.abs(baseRef.getGui().getY() - torpRef.getGui().getY()) <=
-                50 &&
+              50 &&
               Math.abs(baseRef.getGui().getX() - torpRef.getGui().getX()) <
-                baseRef.getGui().getRadius()
+              baseRef.getGui().getRadius()
             ) {
               console.log('basecollision');
               toDeleteBaseCollisions.push({ baseRef, torpRef });

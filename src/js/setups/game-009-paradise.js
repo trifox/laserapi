@@ -37,7 +37,7 @@ const createButtonsGameOverScreen = () => [
     posX: 1920 / 2,
     posY: 1080 / 2 + 200,
     speedDown: 12,
-    keyCode:32,
+    keyCode: 'Space',
     speedUp: 25,
     edges: Math.floor(3 + Math.random() * 8),
     edges2: undefined, //Math.floor(3 + Math.random() * 8),
@@ -53,7 +53,7 @@ const createButtonsGameOverScreen = () => [
       gameScore = 0;
       buttons = createButtons();
     },
-    onExitActive: (sender) => {},
+    onExitActive: (sender) => { },
   }),
 ];
 function createEnemyButton({ isApple = false } = { isApple: false }) {
@@ -70,11 +70,11 @@ function createEnemyButton({ isApple = false } = { isApple: false }) {
     normalColor: isApple
       ? getRgbSpreadHex(laserConfig.testColor, 0.3, 0.9, 0.9)
       : getRgbSpreadHex(
-          laserConfig.testColor,
-          0.5 + Math.random() * 0.2,
-          0.9,
-          0.9
-        ),
+        laserConfig.testColor,
+        0.5 + Math.random() * 0.2,
+        0.9,
+        0.9
+      ),
     growColor: isApple
       ? getRgbSpreadHex(laserConfig.testColor, 0.3, 0.75, 0.75)
       : getRgbSpreadHex(laserConfig.testColor, 0.6, 0.75, 0.75),
@@ -177,11 +177,14 @@ export default {
   name: 'Laser-Paradise',
   description: `
   
-  Willkommen im Paradies!
+Willkommen im Paradies!
 
 
-  Ziel ist es soviele Kugeln zu zerplatzen ohne
-  die 'verbotene' Frucht zu zerstören....`,
+Ziel ist es soviele Kugeln wie möglich zu zerplatzen,
+  
+ohne die 'verbotene' Frucht zu zerstören.`,
+
+  image: 'media/img/gametitles/laser-paradise-###8###.png',
   init: function (data) {
     console.log('init game paradise ', knobPositions);
     buttons = createButtons();

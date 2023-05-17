@@ -79,7 +79,6 @@ const addObstacle = function (world, collisionshape) {
   return obstacleBody;
 };
 const obstacles = [];
-var timeStep = 0.1; // seconds
 var circleBody = null;
 var circleShape = null;
 var world = null;
@@ -93,7 +92,7 @@ function onTick(elapsed) {
   if (delayCount > 0) {
     delayCount -= elapsed;
   } else {
-    world.step(elapsed);
+    world.step(1 / 60, elapsed);
   }
 
   planeAnim -= elapsed;
@@ -238,7 +237,8 @@ function renderGame(canvas2d) {
       if (delayCount > 2) {
         renderText({
           ctx: canvas2d,
-          fontSize: '125px',
+          fontSize: '75px',
+          lineHeight: 85,
           x: 1920 / 2,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
           y: 200,
@@ -246,6 +246,8 @@ function renderGame(canvas2d) {
 ${pointsTeam1} : ${pointsTeam2} 
 Current Match  
 ${winPointsTeam1} : ${winPointsTeam2} 
+
+
 > ${Math.ceil(delayCount)} <`,
         });
       }
@@ -266,10 +268,10 @@ ${winPointsTeam1} : ${winPointsTeam2}
       if (delayCount > 0) {
         renderText({
           ctx: canvas2d,
-          fontSize: '125px',
+          fontSize: '75px',
           x: 1920 / 2 + 2,
           fillStyle: getRgbSpreadHex(laserConfig.testColor, 0.5),
-          y: 1080 / 2 + 300,
+          y: 1080 / 2 + 500,
           text: `Restart in
 > ${Math.ceil(delayCount)} <`,
         });
@@ -291,14 +293,7 @@ function renderGamePlayfield(ctx) {
   var playfieldColor2 = getRgbSpreadHex(laserConfig.testColor, 0.35);
   var playfieldColor3 = getRgbSpreadHex(laserConfig.testColor, 0.65);
 
-  // for (var i = 0; i < planes.length; i++) {
-  //   planes[i].position = [
-  //     laserConfig.canvasResolution.width,
-  //     laserConfig.canvasResolution.height,
-  //   ];
-  // }
-  //console.log('canvas size is ', laserConfig.canvasResolution)
-  // canvas2d.translate(50, 50)
+
   for (var i = 0; i < itemCount; i++) {
     //  console.log('rendering obstacle', obstacles [i])
     ctx.fillStyle = obstacles[i].color;
@@ -378,8 +373,8 @@ function renderGamePlayfield(ctx) {
 
       0.25 + planeAnim / PLANE_ANIM_TIME / 2,
 
-      (planeAnim / PLANE_ANIM_TIME)*0.5,
-      (planeAnim / PLANE_ANIM_TIME)*0.5
+      (planeAnim / PLANE_ANIM_TIME) * 0.5,
+      (planeAnim / PLANE_ANIM_TIME) * 0.5
     );
     ctx.fillStyle = playfieldColor3;
     if (planeYPos > 1080 / 2) {

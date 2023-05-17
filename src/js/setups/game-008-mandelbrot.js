@@ -3,12 +3,12 @@ import util, {
   getRgbSpreadRandomHexTriplet,
   getRgbSpreadTriplet,
   removeItemFromArray,
-} from '../util.js'; 
+} from '../util.js';
 import guiSwitch from './gui/switch.js';
 
 var laserConfig = require('../LaserApiConfig.js').default;
 var MasterCanvas = require('../MasterCanvas').default;
-var guiFillButton = require('./gui/fillButton').default; 
+var guiFillButton = require('./gui/fillButton').default;
 var guiRangeSlider = require('./gui/rangeSlider').default;
 
 var knobPositions = [];
@@ -22,7 +22,7 @@ var xSlider;
 var ySlider;
 var xSeedSlider;
 var ySeedSlider;
-var buttons; 
+var buttons;
 var juliaSeedEnableButton
 const bottomBarCenterY = (1080 - bottomBarStartY) / 2 + bottomBarStartY;
 var zoomSlider;
@@ -93,30 +93,30 @@ const createGui = () => {
     normalColor: cold1[0],
     growColor: cold1[1],
     activeColor: cold1[2],
-    step : 0.02,
-  }); 
-    juliaSeedEnableButton = guiSwitch({
-      label: 'Julia Off',
-      label2: 'Julia On',
-      posX: leftStartX + 200,
-      posY: bottomBarCenterY+85,
-      speedDown: 25,
-      speedUp: 50,
-      radius: 50,
-      normalColor: cold2[0],
-      growColor: cold2[1],
-      activeColor: cold2[2],
-      onEnterActive: () => {
-        zoomSlider.reset();
-        xSlider.reset();
-        ySlider.reset();
-      },
-    }),
+    step: 0.02,
+  });
+  juliaSeedEnableButton = guiSwitch({
+    label: 'Julia Off',
+    label2: 'Julia On',
+    posX: leftStartX + 200,
+    posY: bottomBarCenterY + 85,
+    speedDown: 25,
+    speedUp: 50,
+    radius: 50,
+    normalColor: cold2[0],
+    growColor: cold2[1],
+    activeColor: cold2[2],
+    onEnterActive: () => {
+      zoomSlider.reset();
+      xSlider.reset();
+      ySlider.reset();
+    },
+  }),
     buttons = [
       guiFillButton({
         label: 'Reset',
         posX: leftStartX + 200,
-        posY: bottomBarCenterY-50,
+        posY: bottomBarCenterY - 50,
         speedDown: 25,
         speedUp: 50,
         radius: 50,
@@ -239,7 +239,7 @@ const handler = function (grid, elapsed) {
           this.color(0, 0, 0, 1);
         }
         // mark julia seed red
-        if (julia &&Math.sqrt(
+        if (julia && Math.sqrt(
           ((cIn[0] - seed[0]) * (cIn[0] - seed[0])) +
           ((cIn[1] - seed[1]) * (cIn[1] - seed[1])))
           < 0.1 * (zoomSize / 4)) {
@@ -257,20 +257,20 @@ const handler = function (grid, elapsed) {
   xSeedSlider.setStep(zoomSlider.getValue() / 12);
   ySeedSlider.setStep(zoomSlider.getValue() / 12);
 
-if(juliaSeedEnableButton.getIsChecked()){
+  if (juliaSeedEnableButton.getIsChecked()) {
 
 
-  removeItemFromArray(buttons,xSeedSlider)
-  removeItemFromArray(buttons,ySeedSlider) 
+    removeItemFromArray(buttons, xSeedSlider)
+    removeItemFromArray(buttons, ySeedSlider)
 
-}else{
-  if(buttons.indexOf(xSeedSlider)===-1){
-buttons.push(xSeedSlider)
+  } else {
+    if (buttons.indexOf(xSeedSlider) === -1) {
+      buttons.push(xSeedSlider)
+    }
+    if (buttons.indexOf(ySeedSlider) === -1) {
+      buttons.push(ySeedSlider)
+    }
   }
-  if(buttons.indexOf(ySeedSlider)===-1){
-buttons.push(ySeedSlider)
-  }
-}
   kernel(
     [xSlider.getValue(), ySlider.getValue()],
     zoomSlider.getValue(),
@@ -296,6 +296,7 @@ export default {
   Never Discredit Chaos!
  
   `,
+  image: 'media/img/gametitles/laser-mandelbrot-###4###.png',
   init: function (data) {
     console.log('init game mandelbrot ', knobPositions);
 

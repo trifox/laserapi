@@ -10,6 +10,7 @@ import {
 var LARVE_RADIUS = 20;
 var FISH_RADIUS = 50;
 var SHARK_RADIUS = 100;
+var MAX_RADIUS = 150;
 var laserConfig = require('../LaserApiConfig.js').default;
 var MasterCanvas = require('../MasterCanvas').default;
 var guiFillButton = require('./gui/fillButton').default;
@@ -32,11 +33,12 @@ import { checkBorderAndSlowDown, repellAll } from './game-017-thehorde.js';
 
 var bgSound;
 var spawnButtons = [];
+var buttonsGameOverScreen = [];
 var larves = [];
 var fishes = [];
 var sharks = [];
 var gameState = 'game';
-var help = false; 
+var help = false;
 var gameTime = 0;
 var wonTime = 0;
 var foodGrid = [];
@@ -67,7 +69,7 @@ var helpButton = guiFillButton({
     help = false;
     // won = undefined;
   },
-}); 
+});
 function renderDots(ctx) {
   for (var i = 0; i < DOTCOUNT; i++) {
     for (var j = 0; j < DOTCOUNT; j++) {
@@ -89,13 +91,13 @@ function renderDots(ctx) {
 function getBubbleDist(bubble, obstacle) {
   return Math.sqrt(
     Math.pow(
-    ( bubble.getX()  -  obstacle.getX() ),
+      (bubble.getX() - obstacle.getX()),
       2
     ) +
-      Math.pow(
-  (bubble.getY()  - obstacle.getY() ),
-        2
-      )
+    Math.pow(
+      (bubble.getY() - obstacle.getY()),
+      2
+    )
   );
 }
 function checkCollisionWithObstacles(arr1Small, arr2Big) {
@@ -112,7 +114,11 @@ function checkCollisionWithObstacles(arr1Small, arr2Big) {
           obstacle.getRadius()
         );
         todelete.push(bubble);
-        obstacle.setRadius(obstacle.getRadius() + bubble.getRadius());
+        var newRadius = obstacle.getRadius() + bubble.getRadius()
+        if (newRadius > MAX_RADIUS) {
+          newRadius = MAX_RADIUS
+        }
+        obstacle.setRadius(newRadius);
       }
     });
   });
@@ -156,6 +162,7 @@ function createFish({ x, y, radius = FISH_RADIUS, color = 'green' }) {
   fish.handle = function handle(grid, elapsed) {
     orighandle(grid, elapsed);
 
+    fish.setRadius(fish.getRadius() - elapsed * 0.75);
     // fish.setAngle(Math.atan2(fish.getSpeedY(), fish.getSpeedX()));
     if (fish.getRadius() > SHARK_RADIUS) {
       removeItemFromArray(fishes, fish);
@@ -219,7 +226,7 @@ function createShark({ x, y, radius = 50, color = 'green' }) {
   var orighandle = shark.handle; // warning cross
   shark.handle = function handle(grid, elapsed) {
     orighandle(grid, elapsed);
-    shark.setRadius(shark.getRadius() - elapsed * 5);
+    shark.setRadius(shark.getRadius() - elapsed * 4);
     // fish.setAngle(Math.atan2(fish.getSpeedY(), fish.getSpeedX()));
     if (shark.getRadius() < FISH_RADIUS) {
       removeItemFromArray(sharks, shark);
@@ -300,7 +307,7 @@ function createSpawnButton({
   color = 'green',
   growColor = 'red',
   activeColor = 'gold',
-}) { 
+}) {
   var butt = guiFillButton({
     label: '',
     posX: 50 + x * radius * 3,
@@ -319,8 +326,8 @@ function createSpawnButton({
       // removeItemFromArray(spawnButtons, butt);
       larves.push(
         createLarve({
-          x: butt.getX() ,
-          y: butt.getY() ,
+          x: butt.getX(),
+          y: butt.getY(),
           radius: radius * 2,
           // edges: butt.getEdges(),
           // edges2: butt.getEdges2(),
@@ -328,7 +335,7 @@ function createSpawnButton({
         })
       );
     },
-    onExitActive: () => {},
+    onExitActive: () => { },
   });
   return butt;
 }
@@ -419,7 +426,7 @@ var time = Math.random() * 1000;
 var lastTime = 0;
 var elapsed = 0;
 var foodSpawnCounter = 0;
-var foodSpawnInterval = 3;
+var foodSpawnInterval = 1;
 export default {
   name: 'Laser-SharkPool',
   description: `
@@ -436,6 +443,7 @@ export default {
   und brauchen Nahrung.
   
   `,
+  image: 'media/img/gametitles/laser-sharkpool-###8###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();
@@ -545,7 +553,7 @@ export default {
     spawnButtons.forEach((item) => item.handle(grid, elapsed));
     // spawn food
     foodSpawnCounter += elapsed;
-    if (foodSpawnCounter > foodSpawnInterval/(larves.length/3)) {
+    if (foodSpawnCounter > foodSpawnInterval / (larves.length / 3)) {
       foodSpawnCounter = 0;
       // console.log('spawnie food');
       // spawn a new dots

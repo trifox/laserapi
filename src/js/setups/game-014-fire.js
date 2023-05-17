@@ -123,7 +123,7 @@ const handler = function (laserGrid) {
 
         //  var rgbs = hsv2rgb((0.3 + value * 0.4 + hsv[0] / 360) % 1, value, 1);
         // this.color(value * rgbs[0], value * rgbs[1], value * rgbs[2], value);
-        this.color( (1-r)*value,(1-g)* value, (1-b)*value);
+        this.color((1 - r) * value, (1 - g) * value, (1 - b) * value);
       })
       .setOutput([
         laserConfig.canvasResolution.width,
@@ -181,6 +181,8 @@ Have Fun!
 Copyright 2022 C.Kleinhuis and Georg Buchrucker 
 Copyright 2022 Frontend Solutions GmbH
 Copyright 2022 I-Love-Chaos`,
+
+      image: 'media/img/gametitles/laser-cowhorde-###8###.png',
       fontSize: '26px',
       lineHeight: 25,
       fillStyle: '#ffffff',
@@ -194,13 +196,15 @@ Copyright 2022 I-Love-Chaos`,
 export default {
   name: 'Laser-Fire',
   description: `
+Dies ist eine Studie.
 
-  Dies ist eine Studie,
-  es wird aufsteigendes Gas und simuliert.
-  
-  Erzeuge mit deinem Laser-Pointer spuren.
-  
-  Viel Spaß!`,
+
+Es wird aufsteigendes Gas simuliert.
+ 
+
+Erzeuge mit deinem Laser-Pointer spuren.
+`,
+  image: 'media/img/gametitles/laser-fire-###4###.png',
   handle: handler,
-  init: () => {},
+  init: () => { },
 };
