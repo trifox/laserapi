@@ -38,21 +38,22 @@ var games = [
   new GameWrapper(require('./setups/game-017-thehorde').default),
   new GameWrapper(require('./setups/game-016-lasershark').default),
   new GameWrapper(require('./setups/game-016b-lasersharkpool').default),
+  new GameWrapper(require('./setups/game-021-needle-in-haystack').default),
   // new GameWrapper(require('./setups/game-017-thehorde').default),
   // new GameWrapper(require('./setups/game-019-dienstagsmaler').default),
 
-
-  // new GameWrapper(require('./setups/game-019-sorter').default),
-  // new GameWrapper(require('./setups/game-020-defender').default),
-  // new GameWrapper(require('./setups/game-020-defenderborder').default),
-  // new GameWrapper(require('./setups/physics-game-defense/game-defense').default),
-  new GameWrapper(require('./setups/physics-game-defense-multi/game-defense').default),
-  // new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
-  // new GameWrapper(require('./setups/game-018-voter').default),
   new GameWrapper(require('./setups/game-008-mandelbrot').default),
+  new GameWrapper(require('./setups/game-019-sorter').default),
+  new GameWrapper(require('./setups/game-020-defender').default),
+  new GameWrapper(require('./setups/game-020-defenderborder').default),
+  new GameWrapper(
+    require('./setups/physics-game-defense/game-defense').default
+  ),
+//  new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
+//  new GameWrapper(require('./setups/game-iframe-loader').default),
+  new GameWrapper(require('./setups/game-022-fractal-bakery').default),
+  // new GameWrapper(require('./setups/game-018-voter').default)
 ];
-
-
 
 // logo lasergames
 const logolasergames = new Image();
@@ -135,69 +136,69 @@ async function frameHandler() {
     util.drawLine(
       zoomctx,
       laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
-      zoomx * 3,
+        zoomx * 3,
       laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
-      zoomy * 3,
+        zoomy * 3,
       laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
-      zoomx * 3,
+        zoomx * 3,
       laserConfig.transform.topright.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       '#00ff00'
     );
     util.drawLine(
       zoomctx,
       laserConfig.transform.topleft.x * laserConfig.videoResolution.width * 3 -
-      zoomx * 3,
+        zoomx * 3,
       laserConfig.transform.topleft.y * laserConfig.videoResolution.height * 3 -
-      zoomy * 3,
+        zoomy * 3,
       laserConfig.transform.bottomleft.x *
-      laserConfig.videoResolution.width *
-      3 -
-      zoomx * 3,
+        laserConfig.videoResolution.width *
+        3 -
+        zoomx * 3,
       laserConfig.transform.bottomleft.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       '#00ff00'
     );
     util.drawLine(
       zoomctx,
       laserConfig.transform.bottomright.x *
-      laserConfig.videoResolution.width *
-      3 -
-      zoomx * 3,
+        laserConfig.videoResolution.width *
+        3 -
+        zoomx * 3,
       laserConfig.transform.bottomright.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       laserConfig.transform.bottomleft.x *
-      laserConfig.videoResolution.width *
-      3 -
-      zoomx * 3,
+        laserConfig.videoResolution.width *
+        3 -
+        zoomx * 3,
       laserConfig.transform.bottomleft.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       '#00ff00'
     );
     util.drawLine(
       zoomctx,
       laserConfig.transform.bottomright.x *
-      laserConfig.videoResolution.width *
-      3 -
-      zoomx * 3,
+        laserConfig.videoResolution.width *
+        3 -
+        zoomx * 3,
       laserConfig.transform.bottomright.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       laserConfig.transform.topright.x * laserConfig.videoResolution.width * 3 -
-      zoomx * 3,
+        zoomx * 3,
       laserConfig.transform.topright.y *
-      laserConfig.videoResolution.height *
-      3 -
-      zoomy * 3,
+        laserConfig.videoResolution.height *
+        3 -
+        zoomy * 3,
       '#00ff00'
     );
   }
@@ -361,33 +362,37 @@ async function frameHandler() {
     if (games[lastGameIndex] && games[lastGameIndex].stop) {
       games[lastGameIndex].stop(laserGrid);
       games[laserConfig.gameIndex].init();
-      gameChanged = 250;
+      gameChanged = 1000;
     }
     lastGameIndex = laserConfig.gameIndex;
   }
   if (laserConfig.showGame) {
     if (gameChanged > 0) {
+      gameChanged -= 1;
 
-      if (!laserConfig.pressedKeys['Space']) {
-        gameChanged -= 1;
-      }
       ctx.drawImage(logolasergames, 10, 10, 250, 250);
-      const imageGame = games[laserConfig.gameIndex].getImage()
+      const imageGame = games[laserConfig.gameIndex].getImage();
       for (let i = 0; i < 5; i++) {
-        ctx.drawImage(imageGame,
+        ctx.drawImage(
+          imageGame,
           i * 1280 + gameChanged - 3 * 1280,
-          270, 1280, 768
-        )
-
+          270,
+          1280,
+          768
+        );
       }
-
 
       // gradient right
-      const gradient = ctx.createLinearGradient(1920 - 1200, 1080 / 2, 1920, 1080 / 2);
+      const gradient = ctx.createLinearGradient(
+        1920 - 1200,
+        1080 / 2,
+        1920,
+        1080 / 2
+      );
 
       // Add three color stops
-      gradient.addColorStop(0, "rgba(0,0,0,0)");
-      gradient.addColorStop(1, "rgba(0,0,0,0.5");
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0.5');
 
       // Set the fill style and draw a rectangle
       ctx.fillStyle = gradient;
@@ -398,15 +403,13 @@ async function frameHandler() {
       const gradient2 = ctx.createLinearGradient(0, 1080 / 2, 400, 1080 / 2);
 
       // Add three color stops
-      gradient2.addColorStop(0, "rgba(255,255,255,0.5)");
-      gradient2.addColorStop(1, "rgba(255,255,255,0");
+      gradient2.addColorStop(0, 'rgba(255,255,255,0.5)');
+      gradient2.addColorStop(1, 'rgba(255,255,255,0');
 
       // Set the fill style and draw a rectangle
       ctx.fillStyle = gradient2;
       ctx.fillRect(0, 270, 400, 768);
       // ----------------- gradiuent
-
-
 
       renderText({
         ctx: ctx,
@@ -416,7 +419,6 @@ async function frameHandler() {
         align: 'center',
         fillStyle: 'darkgrey',
         text: games[laserConfig.gameIndex].getName(),
-
       });
       renderTextStroke({
         ctx: ctx,
@@ -439,9 +441,8 @@ async function frameHandler() {
         text: games[laserConfig.gameIndex].getDescription(),
       });
 
-
       ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.75);
-      ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 250), 32);
+      ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 1000), 32);
     } else {
       // console.time("GameHandler")
       try {
@@ -554,8 +555,8 @@ if (document.addEventListener) {
       var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
       console.log('color is', c);
       testcolorinput.value = util.rgbToHex(c[0], c[1], c[2], c[4]);
-      evt.preventDefault()
-      event.stopImmediatePropagation()
+      evt.preventDefault();
+      event.stopImmediatePropagation();
     },
     false
   );
@@ -570,8 +571,8 @@ if (document.addEventListener) {
       var c = ctx.getImageData(Math.round(loc.x), Math.round(loc.y), 1, 1).data;
       console.log('color is', c);
       testcolorinput.value = util.rgbToHex(c[0], c[1], c[2], c[4]);
-      evt.preventDefault()
-      event.stopImmediatePropagation()
+      evt.preventDefault();
+      event.stopImmediatePropagation();
     },
     false
   );
@@ -674,25 +675,29 @@ if (document.addEventListener) {
 
 document.onkeyup = function (e) {
   laserConfig.pressedKeys[e.code] = false;
-  console.log(laserConfig.pressedKeys)
-}
+  console.log(laserConfig.pressedKeys);
+};
 
 document.onkeydown = function (evt) {
   laserConfig.pressedKeys[evt.code] = true;
-  console.log(laserConfig.pressedKeys)
+  console.log(laserConfig.pressedKeys);
   if (isNaN(evt.key)) {
     console.log(evt.key);
     switch (evt.key) {
       case 'PageUp':
         document.getElementById('game-selector').selectedIndex = Math.max(
-          document.getElementById('game-selector').selectedIndex - 1, 0);
+          document.getElementById('game-selector').selectedIndex - 1,
+          0
+        );
         break;
       case 'Home':
         document.getElementById('game-selector').selectedIndex = 0;
         break;
       case 'PageDown':
         document.getElementById('game-selector').selectedIndex = Math.min(
-          (document.getElementById('game-selector').selectedIndex + 1), document.getElementById('game-selector').length - 1)
+          document.getElementById('game-selector').selectedIndex + 1,
+          document.getElementById('game-selector').length - 1
+        );
         break;
       case 'd':
         //   console.log('doing it ',laserConfig.showDebug )
@@ -889,7 +894,7 @@ function fullscreen() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[Math.min(laserConfig.gameIndex || 0, games.length - 1)].init();
+  games[laserConfig.gameIndex || 0].init();
 }
 function fullscreenEdit() {
   console.log('fullscreenedit clicked');
@@ -924,7 +929,7 @@ function fullscreenEdit() {
     canvascontainer.webkitRequestFullscreen();
   }
 
-  games[Math.min(laserConfig.gameIndex || 0, games.length - 1)].init();
+  games[laserConfig.gameIndex || 0].init();
 }
 function initHTML() {
   document.getElementById('fullscreen_button').onclick = fullscreen;

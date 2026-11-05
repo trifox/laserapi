@@ -79,7 +79,7 @@ function createSpawnButtonsScreen() {
   return [
     guiFillButton({
       label: 'Start',
-      posX: 1920 / 2 + 50,
+      posX: 1920 / 2,
       posY: 1080 / 2,
       speedDown: 10,
       keyCode: 'Space',
@@ -409,9 +409,10 @@ export default {
   description: `Inspiriert von Flappy Bird.
   
   Erzeuge zu anfang des Spiels Blasen, 
- 
-  Magnetische Kontrolle:
-  Steuere deine Blase mit einem Laserstrahl!
+  die Blasen folgen deinem Laser-Pointer.
+
+  Wenn alle ihre Blasen erzeugt haben wird das Spiel
+  durch aktivieren des Start-Knopfes begonnen.
 
   Aufgabe ist es mit deiner Blase zu überleben,
   weiche den hindernissen aus.
@@ -420,7 +421,7 @@ export default {
    diese versperren sich.
   
   `,
-  image: 'media/img/gametitles/laser-flapping-###8###.png',
+  image: 'media/img/gametitles/laser-flapping-###4###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
 

@@ -448,22 +448,23 @@ function drawSineLine({
 }
 var time = Math.random() * 1000;
 var foodSpawnCounter = 0;
-var foodSpawnInterval = 1;
+var foodSpawnInterval = 3;
 export default {
   name: 'Laser-Shark',
   description: `
   
-Erzeuge Blasen mit dem Laser-Pointer,
-welche dem Laser-Pointer folgen. 
+    Erzeuge Blasen mit dem Laser-Pointer,
+   welche dem Laser-Pointer folgen.
+  
 
+  Starte das Spiel 
+  durch aktivieren des Start-Knopfes.
+  
 
-Aufgabe des Spiels ist es:
+  Aufgabe des Spiels ist es die Hai-Fische zu besiegen,
+  indem du kleine punkte futterst bis du größer bist als die Haie.`,
 
-den Hai-Fisch zu besiegen,
-indem du kleine punkte futterst,
- bis du größer bist als der Hai.`,
-
-  image: 'media/img/gametitles/laser-shark-###8###.png',
+  image: 'media/img/gametitles/laser-shark-###4###.png',
   init: function (data) {
     console.log('init game laser flappy birdy ');
     spawnButtons = createSpawnButtons();

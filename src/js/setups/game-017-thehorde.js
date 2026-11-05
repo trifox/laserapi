@@ -52,7 +52,7 @@ var buttonsSpawnScreen = [];
 const createButtonsSpawnScreen = () => [
   guiFillButton({
     label: 'Start',
-    posX: 1920 / 2 + 50,
+    posX: 1920 / 2,
     posY: 1080 / 2,
     speedDown: 10,
     keyCode: 'Space',
@@ -340,7 +340,7 @@ export default {
 
   `,
 
-  image: 'media/img/gametitles/laser-cowhorde-###8###.png',
+  image: 'media/img/gametitles/laser-cowhorde-###4###.png',
   init: function (data) {
     console.log('init game laser cowhorde');
     spawnButtons = createSpawnButtons({});

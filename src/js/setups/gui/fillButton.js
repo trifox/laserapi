@@ -32,21 +32,18 @@ export default ({
   activeValue = 75,
   minValue = 25,
   onEnterActive,
-  scanRadiusFactor = 1,
   onExitActive,
   visible = true,
-  singlePixel = true,
 }) => {
   var currentX = posX;
   var currentY = posY;
   var counter = 0;
   var currentEdges = edges;
-  var _currentRadius = radius;
+  var currentRadius = radius;
   var currentColor = normalColor;
   var currentLabel = label;
   var currentGrowColor = growColor;
   var currentActiveColor = activeColor;
-
   var state = 'normal';
   var result = {
     name: 'GUI flipButton',
@@ -109,14 +106,14 @@ export default ({
       return currentY;
     },
     getRadius() {
-      return _currentRadius;
+      return currentRadius;
     },
     setRadius(newRadius) {
-      _currentRadius = newRadius;
+      currentRadius = newRadius;
     },
     handle: function (grid, elapsed) {
       var ctx = MasterCanvas.get2dContext();
-      var currentRadius = _currentRadius * scanRadiusFactor
+
       /**
        * here we need to think about how to improve performance, would a shader with one output help here?
        * i think not because the shader would iterate over each field anyways
@@ -130,12 +127,9 @@ export default ({
       const factx = MasterCanvas.getCanvas().width / gridSize;
       const facty = MasterCanvas.getCanvas().height / gridSize;
       var found = false;
-      var foundCount = 0
-      var pixelCount = 0
       if (!keyCode) {
         for (var x = 0; x <= (currentRadius * 2) / factx; x++) {
           for (var y = 0; y <= (currentRadius * 2) / facty; y++) {
-            pixelCount++
             // if there is one, break, this is the scale of the grid, the step 0.. should be in grid pixel resolution
             if (
               moveToHelper_getGridPixel(
@@ -152,19 +146,13 @@ export default ({
               // );
               //  console.log("found increment!!!!!!!!!!!!!!!",x,y,);
               found = true;
-              if (singlePixel) break;
-              foundCount++
+              break;
             }
           }
-          if (found && singlePixel) break;
+          if (found) break;
         }
         if (found) {
-          if (singlePixel) {
-            counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
-          } else {
-            counter = Math.min(100, counter + Math.abs(speedUp * elapsed * (foundCount / pixelCount)));
-
-          }
+          counter = Math.min(100, counter + Math.abs(speedUp * elapsed));
         } else {
           counter = Math.max(0, counter - Math.abs(speedDown * elapsed));
         }
@@ -216,7 +204,7 @@ export default ({
           color: ctx.strokeStyle,
           Xcenter: currentX,
           Ycenter: currentY,
-          size: _currentRadius,
+          size: currentRadius,
           numberOfSides: currentEdges,
           angle,
           lineWidth,
@@ -227,7 +215,7 @@ export default ({
             color: ctx.strokeStyle,
             Xcenter: currentX,
             Ycenter: currentY,
-            size: _currentRadius / 2,
+            size: currentRadius / 2,
             numberOfSides: edges2,
             angle,
             lineWidth: lineWidth / 2,
@@ -238,11 +226,19 @@ export default ({
           color: ctx.strokeStyle,
           Xcenter: currentX,
           Ycenter: currentY,
-          size: _currentRadius * (counter / 100),
+          size: currentRadius * (counter / 100),
           numberOfSides: edges,
           filled: false,
           angle,
           lineWidth,
+        });
+        util.renderText({
+          ctx,
+          text: currentLabel,
+          x: currentX,
+          y: currentY - 10,
+          fillStyle: normalColor,
+          fontSize: '25px',
         });
 
         // render keycode information
@@ -255,16 +251,6 @@ export default ({
             y: currentY - 10,
 
           })
-        } else {
-          util.renderText({
-            ctx,
-            text: currentLabel,
-            x: currentX,
-            y: currentY - 10,
-            fillStyle: normalColor,
-            fontSize: '25px',
-          });
-
         }
       }
       if (oldstate != state) {

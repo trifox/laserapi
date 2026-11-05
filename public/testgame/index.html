@@ -1,0 +1,42 @@
+<html>
+  <head> </head>
+  <style>
+    canvas {
+      width: 100%;
+      height: 100%;
+      background-color: black;
+    }
+  </style>
+  <body>
+    <canvas id="thecanvas"></canvas>
+  </body>
+
+  <script>
+    var instances = [];
+    var context2d = document.getElementById('thecanvas').getContext('2d');
+    function start(data) {
+      //   console.log('init is really called', data);
+      console.log('xxxgame start is called');
+
+      // Initiate an example Button, with path provided to canvas
+      instances.push(
+        laser.util.fillButton({
+          posX: 55,
+          posY: 55,
+          onEnterActive: () => {
+            console.log('Yayaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+          },
+          onExitActive: () => {
+            console.log('Yayaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+          },
+        })
+      );
+    }
+    function handle(data, elapsed) {
+      instances.forEach((it) => it.handle(data, elapsed, context2d));
+    }
+    function stop(data) {
+      console.log('stop is really called', data);
+    }
+  </script>
+</html>

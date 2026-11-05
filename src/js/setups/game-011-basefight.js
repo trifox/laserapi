@@ -274,7 +274,7 @@ var lastResolution = -1;
 export default {
   name: 'Laser-Basefight',
   description: `Es existieren 4 Basen, 
-  such dir als Team eine Base aus.
+  such dir als Team eine Basis aus.
   
   Die Basen erzeugen Blasen,
    welche ausserhalb der Basis vereinigt werden können.
@@ -287,7 +287,7 @@ export default {
 
   Überlebe so lange du kannst mit deiner Base.
    `,
-  image: 'media/img/gametitles/laser-basefight-###8###.png',
+  image: 'media/img/gametitles/laser-basefight-###4###.png',
   init: function (data) {
     console.log('init game basefight ');
     startScreenButtons = createStartScreenButtons();
