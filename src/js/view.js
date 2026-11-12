@@ -52,7 +52,29 @@ var games = [
 //  new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
 //  new GameWrapper(require('./setups/game-iframe-loader').default),
   new GameWrapper(require('./setups/game-022-fractal-bakery').default),
-  // new GameWrapper(require('./setups/game-018-voter').default)
+  new GameWrapper(require('./setups/game-023-feuerwehr').default),
+  new GameWrapper(require('./setups/game-024-schaeferei').default),
+  new GameWrapper(require('./setups/game-025-seifenblasen').default),
+  new GameWrapper(require('./setups/game-026-tauziehen').default),
+  new GameWrapper(require('./setups/game-027-simon').default),
+  new GameWrapper(require('./setups/game-028-asteroiden').default),
+  new GameWrapper(require('./setups/game-029-leuchtturm').default),
+  new GameWrapper(require('./setups/game-030-maulwurf').default),
+  new GameWrapper(require('./setups/game-031-gaertner').default),
+  new GameWrapper(require('./setups/game-032-quiz').default),
+  new GameWrapper(require('./setups/game-033-kicker').default),
+  new GameWrapper(require('./setups/game-034-seeschlacht').default),
+  new GameWrapper(require('./setups/game-035-groovebox').default),
+  new GameWrapper(require('./setups/game-036-ausgrabung').default),
+  new GameWrapper(require('./setups/game-037-keksoase').default),
+  new GameWrapper(require('./setups/game-038-kristallwacht').default),
+  new GameWrapper(require('./setups/game-039-sternenlaeufer').default),
+  new GameWrapper(require('./setups/game-040-wortlicht').default),
+  new GameWrapper(require('./setups/game-041-sandburg').default),
+  new GameWrapper(require('./setups/game-042-oasenhueter').default),
+  new GameWrapper(require('./setups/game-043-brueckenwaechter').default),
+  new GameWrapper(require('./setups/game-044-lasershark2').default),
+//   new GameWrapper(require('./setups/game-018-voter').default)
 ];
 
 // logo lasergames
