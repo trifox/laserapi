@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}#report{display:none}</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<pre id="report"></pre>
+<script>
+// Testumgebung: deterministischer Zufall, künstliche Uhr, stumme Sounds, Bild-Ladeüberwachung, Paket-Stub
+(function () {
+  const q = new URLSearchParams(location.search);
+  let seed = Number(q.get('seed') || 12345) >>> 0;
+  Math.random = function () {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  window.__fakeNow = 0;
+  performance.now = () => window.__fakeNow;
+  Date.now = () => 1700000000000 + window.__fakeNow;
+  window.Audio = function () {
+    this.play = () => Promise.resolve();
+    this.pause = () => {};
+    this.addEventListener = () => {};
+    this.removeEventListener = () => {};
+    this.volume = 1;
+    this.loop = false;
+    this.currentTime = 0;
+  };
+  window.AudioContext = window.webkitAudioContext = undefined;
+  const RealImage = window.Image;
+  window.__images = [];
+  window.Image = function (w, h) {
+    const img = new RealImage(w, h);
+    window.__images.push(img);
+    return img;
+  };
+  const mk = () => {
+    const f = function () {};
+    return new Proxy(f, {
+      get: (t, k) => (k === Symbol.toPrimitive ? () => 0 : k === 'then' ? undefined : k === 'length' ? 0 : mk()),
+      apply: () => mk(),
+      construct: () => mk(),
+    });
+  };
+  window.__stub = mk();
+})();
+</script>
+<script type="module">
+const q = new URLSearchParams(location.search);
+const GAME = q.get('game');
+const title = Number(q.get('title') || 2); // Sekunden Titelbildschirm ohne Laser
+const until = Number(q.get('until') || 0); // Sekunden nach dem Start; < 0 = nur Titelbildschirm
+const players = Number(q.get('players') || 20);
+const dots = q.get('dots') !== '0';
+const keys = (q.get('keys') || '')
+  .split(',')
+  .filter(Boolean)
+  .map((k) => {
+    const [code, at] = k.split('@');
+    return { code, at: Number(at || 0) };
+  });
+const n = Number(q.get('grid') || 64);
+const W = 1920, H = 1080, DT = 1 / 30;
+const report = { frames: 0, errors: [], title: "" };
+const ctx = document.getElementById('c').getContext('2d');
+
+const waitImages = () =>
+  new Promise((res) => {
+    const t0 = Date.now();
+    const poll = () =>
+      window.__images.every((i) => !i.src || i.complete) || Date.now() - t0 > 4000
+        ? res()
+        : setTimeout(poll, 50);
+    poll();
+  });
+
+function gridFor(pts) {
+  const g = new Array(n * n).fill(0);
+  for (const p of pts) {
+    const gx = Math.floor((p.x / W) * n), gy = Math.floor((p.y / H) * n);
+    if (gx >= 0 && gy >= 0 && gx < n && gy < n) g[gx + gy * n] = 1;
+  }
+  return g;
+}
+
+function finish() {
+  document.getElementById('report').textContent = JSON.stringify(report);
+  document.title = 'DONE';
+}
+
+try {
+  const cfg = (await import('/src/LaserApiConfig.js')).default;
+  const G = (await import(GAME)).default;
+  report.title = G.name || '';
+  await waitImages();
+  if (G.init) G.init();
+  await waitImages();
+
+  // simulierte Spieler: wandern zu Zielen, ein Teil bildet Gruppen an gemeinsamen Hotspots
+  const hot = [0, 1, 2].map(() => ({ x: 300 + Math.random() * (W - 600), y: 200 + Math.random() * (H - 400), vx: (Math.random() - 0.5) * 120, vy: (Math.random() - 0.5) * 120 }));
+  const agents = Array.from({ length: players }, (_, i) => ({ x: Math.random() * W, y: Math.random() * H, tx: 0, ty: 0, timer: 0, hot: i % 2 === 0 ? i % 3 : -1, speed: 350 + Math.random() * 350 }));
+  const pickTarget = (a) => {
+    if (a.hot >= 0 && Math.random() < 0.8) {
+      const h = hot[a.hot];
+      a.tx = h.x + (Math.random() - 0.5) * 160;
+      a.ty = h.y + (Math.random() - 0.5) * 160;
+    } else {
+      a.tx = 60 + Math.random() * (W - 120);
+      a.ty = 60 + Math.random() * (H - 120);
+    }
+    a.timer = 0.6 + Math.random() * 2;
+  };
+  agents.forEach(pickTarget);
+
+  const total = until < 0 ? title : title + until;
+  let lastPts = [];
+  const frames = Math.round(total / DT);
+  for (let f = 0; f < frames; f++) {
+    const t = f * DT;
+    window.__fakeNow += DT * 1000;
+    let pts = [];
+    if (t >= title && t < title + 2.5) {
+      // Start-Knopf (meist in der Mitte) gemeinsam anleuchten
+      pts = agents.map(() => ({ x: W / 2 + (Math.random() - 0.5) * 140, y: H / 2 + 60 + (Math.random() - 0.5) * 240 }));
+    } else if (t >= title) {
+      hot.forEach((h) => {
+        h.x += h.vx * DT; h.y += h.vy * DT;
+        if (h.x < 200 || h.x > W - 200) h.vx *= -1;
+        if (h.y < 150 || h.y > H - 150) h.vy *= -1;
+      });
+      agents.forEach((a) => {
+        a.timer -= DT;
+        const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy);
+        if (d < 20 || a.timer <= 0) pickTarget(a);
+        const step = Math.min(d, a.speed * DT);
+        if (d > 0.01) { a.x += (dx / d) * step; a.y += (dy / d) * step; }
+      });
+      pts = agents.map((a) => ({ x: a.x, y: a.y }));
+    }
+    // Tasten: Space zum Start, weitere per Parameter
+    const pressed = {};
+    if (Math.abs(t - title) < DT * 1.5) pressed.Space = true;
+    keys.forEach((k) => { if (t >= title + k.at && t < title + k.at + DT * 3) pressed[k.code] = true; });
+    Object.keys(cfg.pressedKeys).forEach((k) => delete cfg.pressedKeys[k]);
+    Object.assign(cfg.pressedKeys, pressed);
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    try {
+      G.handle(gridFor(pts), DT);
+    } catch (e) {
+      const msg = String(e && e.stack ? e.stack.split('\n').slice(0, 2).join(' | ') : e);
+      if (!report.errors.some((x) => x.msg === msg)) report.errors.push({ t: +(t - title).toFixed(1), msg });
+      if (report.errors.length > 5) break;
+    }
+    report.frames++;
+    lastPts = pts;
+  }
+
+  if (dots) {
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    lastPts.forEach((p) => {
+      ctx.fillStyle = 'rgba(255,40,40,0.95)';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+  if (report.errors.length) {
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = '#ff3030';
+    ctx.font = 'bold 26px monospace';
+    ctx.textAlign = 'left';
+    report.errors.slice(0, 3).forEach((e, i) => ctx.fillText(`FEHLER t=${e.t}s: ${e.msg}`.slice(0, 140), 20, H - 120 + i * 34));
+    ctx.restore();
+  }
+} catch (e) {
+  report.errors.push({ t: -1, msg: String(e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e) });
+  ctx.fillStyle = '#ff3030';
+  ctx.font = 'bold 30px monospace';
+  ctx.fillText('LADEFEHLER: ' + report.errors[0].msg.slice(0, 120), 20, 60);
+}
+finish();
+</script>
+</body>
+</html>
