@@ -508,21 +508,19 @@ function averageForce(team) {
 }
 
 export default {
-  name: 'Laser-Tauziehen',
-  description: `
-Willkommen beim Laser-Tauziehen!
+  name: 'Tauziehen (Opus55)',
+  description: ` 
 
 Die linke Hälfte des Publikums spielt gegen die rechte.
-Jedes Team hat in seiner Bildschirmhälfte ein grosses Ziel, das umherwandert, schrumpft und wächst.
-Je mehr Fläche eures Ziels von Lasern bedeckt ist, desto stärker zieht euer Team am Seil.
-Der Knoten in der Mitte wandert zum stärkeren Team.
-Erreicht der Knoten eure Siegmarkierung, gewinnt ihr die Runde.
+
+Jedes Team hat in seiner Bildschirmhälfte ein bewegendes grosses Ziel, 
+je mehr jedes Team bedeckt: desto stärker zieht Team am Seil.
+
 Best of 5: wer zuerst ${DIFFICULTY.roundsToWin} Runden gewinnt, gewinnt das Match.
 
-Ab und zu erscheint ein Bonus-Stern nahe der Mitte.
-Wird er ausgelöst, zieht das Team auf dessen Seite ${DIFFICULTY.bonusDuration} Sekunden lang doppelt so stark.
-Sabotage lohnt sich nicht: Laser auf dem gegnerischen Ziel helfen dem Gegner!
-Tipp: Alle Laser zusammen auf das eigene Ziel – und dranbleiben, wenn es wandert und schrumpft!`,
+Ab und zu erscheint ein Bonus-Stern
+und gilt für das team auf dessen seite er erscheint!
+`,
   image: 'media/img/gametitles/laser-pong-###4###.png',
 
   init: function () {

@@ -51,7 +51,7 @@ const DIFFICULTY = {
   diagonalLevel: 3, // ab hier diagonal (vorwärts)
   allDirectionsLevel: 4, // ab hier alle 8 Richtungen
   // Zeitfenster, in dem alle Buchstaben eines Wortes angeleuchtet sein müssen
-  windowStart: 3.0,
+  windowStart: 10.0,
   windowPerLevel: 0.25,
   windowMin: 1.6,
   windowPerLetter: 0.3,
@@ -211,8 +211,8 @@ function updateColors() {
   COL = {
     bg1: getRgbSpreadHex(c, 0.6, 0.6, 0.07),
     bg2: getRgbSpreadHex(c, 0.52, 0.6, 0.2),
-    tile: getRgbSpreadHex(c, 0.55, 0.45, 0.28),
-    tileEdge: getRgbSpreadHex(c, 0.55, 0.5, 0.5),
+    tile: getRgbSpreadHex(c, 0.55, 0.45, 0.18),
+    tileEdge: getRgbSpreadHex(c, 0.55, 0.5, 0.25),
     hot: getRgbSpreadHex(c, 0.4, 0.85, 1),
     found: getRgbSpreadHex(c, 0.3, 0.6, 0.95),
     link: getRgbSpreadHex(c, 0.2, 0.7, 1),
@@ -365,11 +365,14 @@ function glyph(letter, color) {
     const size = cs;
     const c = makeCanvas(size, size);
     const ctx = c.getContext('2d');
-    ctx.fillStyle = color;
+    ctx.fillStyle = color*0.4;
+    ctx.strokeStyle = color;
     ctx.font = `bold ${Math.floor(size * 0.6)}px Verdana`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+
     ctx.fillText(letter, size / 2, size / 2 + size * 0.04);
+    ctx.strokeText(letter, size / 2, size / 2 + size * 0.04);
     glyphCache[key] = c;
   }
   return glyphCache[key];
@@ -1401,13 +1404,14 @@ export default {
   description: `
 Buchstabengitter für alle!
 
-Im Gitter sind Wörter versteckt – waagerecht, senkrecht, später auch rückwärts und diagonal.
-Ein Wort ist gefunden, wenn ALLE seine Buchstaben kurz nacheinander angeleuchtet werden.
-Lange Wörter klappen am besten gemeinsam: jeder nimmt einen Buchstaben!
+Im Gitter sind Wörter versteckt 
+waagerecht, senkrecht, später auch rückwärts und diagonal
 
-Nicht wild übers Gitter wischen – sonst ist es überbelichtet.
+Ein Wort ist gefunden, wenn 
+ALLE seine Buchstaben kurz nacheinander angeleuchtet werden
 
-Varianten: Klassisch, Lösungswort, Nachrutschen, Wortlinks.`,
+Varianten
+Klassisch, Lösungswort, Nachrutschen, Wortlinks`,
   image: 'media/img/gametitles/laser-sorter-###3###.png',
   init: function () {
     resetAll();

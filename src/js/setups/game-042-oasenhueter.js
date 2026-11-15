@@ -16,7 +16,7 @@
  * Neue Elemente:
  * - Level 2: Futter (Dattelpalme) und Schlafphasen. Schläft der Drache, darf ihn niemand anleuchten –
  *            sonst wacht er grantig auf: Punktabzug, Wachstum stockt, Bedürfnisse sinken schneller.
- * - Level 3: Spielen – der Ball folgt dem Licht (gui/followCircle) und muss zum Drachen gebracht werden.
+ * - Level 3: Spielen – der Ball folgt dem Laser (gui/followCircle) und muss zum Drachen gebracht werden.
  * - Level 4: Sandsturm – Dünen begraben Stationen, sie müssen erst freigeleuchtet werden.
  * - Level 5: Der Brunnen trocknet aus – erst die Brücke über das Wadi bauen (drei Planken anleuchten),
  *            dann Wasserkrüge von der Quelle über die Brücke zum Drachen führen. Neben der Brücke: Absturz.
@@ -464,6 +464,7 @@ function renderBackground() {
   ctx.beginPath();
   ctx.ellipse(POND.x, POND.y, POND.rx + 40, POND.ry + 30, 0, 0, Math.PI * 2);
   ctx.fill();
+  return c
   const pond = ctx.createRadialGradient(POND.x, POND.y, 20, POND.x, POND.y, POND.rx);
   pond.addColorStop(0, COL.waterDeep);
   pond.addColorStop(1, COL.water);
@@ -1382,7 +1383,7 @@ function updateSleep(ctx, grid, dt) {
   if (sleep.phase === 'sleep') {
     sleep.left -= dt;
     sleep.button.handle(grid, dt);
-    // Warnung, wenn Licht auf dem Drachen ist
+    // Warnung, wenn Laser auf dem Drachen ist
     const v = sleep.button.getValue() / 100;
     if (v > 0.05) {
       ctx.save();
@@ -1967,7 +1968,7 @@ function levelUp() {
 
 function newElementText(lvl) {
   if (lvl === DIFFICULTY.foodLevel) return 'NEU: Futter von der Dattelpalme – und Schlafphasen!\nSchläft der Drache: NICHT anleuchten!';
-  if (lvl === DIFFICULTY.playLevel) return 'NEU: Spielen! Der Ball folgt eurem Licht –\nbringt ihn zum Drachen!';
+  if (lvl === DIFFICULTY.playLevel) return 'NEU: Spielen! Der Ball folgt eurem Laser –\nbringt ihn zum Drachen!';
   if (lvl === DIFFICULTY.stormLevel) return 'NEU: Sandstürme begraben Stationen –\nleuchtet die Dünen frei!';
   if (lvl === DIFFICULTY.wellLevel) return 'NEU: Der Brunnen trocknet aus! Baut die Brücke\nund führt Wasserkrüge von der Quelle zum Drachen.';
   if (lvl === DIFFICULTY.riddleLevel) return 'NEU: Runen-Rätsel! Leuchtet die Runen in der\nReihenfolge an, an die der Drache denkt.';

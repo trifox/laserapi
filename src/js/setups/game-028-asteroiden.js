@@ -578,21 +578,20 @@ function renderEffects(ctx, elapsed) {
 }
 
 export default {
-  name: 'Laser-Asteroiden',
+  name: 'Laser-Asteroids (Opus55)',
   description: `
-Laser-Asteroiden - verteidigt euren Planeten!
 
-Von allen Seiten fliegen Asteroiden auf den Planeten in der Mitte zu.
-Leuchtet sie mit euren Lasern an, bis sie zerplatzen.
-Grosse Asteroiden zerbrechen in 2-3 mittlere, mittlere in 2 kleine, kleine verschwinden.
-Je grösser ein Asteroid, desto mehr Laser braucht er gleichzeitig - zielt gemeinsam!
-Jeder Einschlag kostet Schild, grosse Brocken deutlich mehr als kleine.
-Die Satelliten auf der Umlaufbahn laden den Schild langsam wieder auf - beschützt sie!
-Wer einen Satelliten anleuchtet, schiesst ihn ab: Schild -${DIFFICULTY.satelliteShotPenalty}% und er ist für immer weg.
-Alle ${DIFFICULTY.levelDuration} Sekunden steigt das Level: mehr, schnellere und grössere Asteroiden.
-Alle ${DIFFICULTY.satelliteEveryLevels} Level gibt es einen neuen Satelliten.
-Sinkt der Schild auf 0%, ist der Planet verloren - Game Over.
-Tipp: Teilt euch auf - jede Gruppe bewacht eine Seite, und haltet die Laser von den Satelliten fern.`,
+  Von allen Seiten fliegen Asteroiden 
+  auf den Planeten in der Mitte zu
+  und teilen sich...
+  
+
+
+Die Satelliten auf der Umlaufbahn 
+laden den Schild langsam wieder auf
+aber vorsicht die gehen kapott
+
+`,
   image: 'media/img/gametitles/laser-defense-###4###.png',
   init: function () {
     gameState = 'gameover';

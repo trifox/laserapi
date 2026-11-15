@@ -28,6 +28,10 @@ import soundExplosion from '../../../public/media/414346__bykgames__explosion-fa
 import soundLevelUp from '../../../public/media/opengameart/Level Up.ogg';
 import soundError from '../../../public/media/opengameart/Menu Error.ogg';
 
+import highscoreManager from '../util/highscore.js' 
+const highScoreInstance=highscoreManager("Schäferei","Score");  // Make highscore instance, will be global until reloaded, but manages saving itself
+
+
 const DIFFICULTY = {
   // Herde pro Runde
   sheepStart: 6,
@@ -119,11 +123,11 @@ function roundValue(start, perRound, cap) {
 
 // Farben, alle von der Laserfarbe abgeleitet
 const colors = () => ({
-  sheep: getRgbSpreadHex(laserConfig.testColor, 0.5, 0.15, 1),
+  sheep: getRgbSpreadHex(laserConfig.testColor, 0.5, 0.25, .8),
   sheepHead: getRgbSpreadHex(laserConfig.testColor, 0.5, 0.2, 0.55),
-  wolf: getRgbSpreadHex(laserConfig.testColor, 0.7, 0.6, 0.9),
-  wolfHit: getRgbSpreadHex(laserConfig.testColor, 0.85, 0.8, 1),
-  wolfEyes: getRgbSpreadHex(laserConfig.testColor, 0.2, 1, 1),
+  wolf: getRgbSpreadHex(laserConfig.testColor, 0.6, 0.6, 0.9),
+  wolfHit: getRgbSpreadHex(laserConfig.testColor, 0.5, 0.8, .9),
+  wolfEyes: getRgbSpreadHex(laserConfig.testColor, 0.35, .7, .9),
   fence: getRgbSpreadHex(laserConfig.testColor, 0.3, 0.6, 0.8),
   grass: getRgbSpreadHex(laserConfig.testColor, 0.35, 0.6, 0.12),
   hud: getRgbSpreadHex(laserConfig.testColor, 0.4),
@@ -246,7 +250,7 @@ function collideWithPen(sheep) {
 function isInPen(sheep) {
   const x = sheep.getX();
   const y = sheep.getY();
-  return x > PEN.left && x < PEN.right && y > PEN.top && y < PEN.bottom;
+  return x > PEN.left-5 && x < PEN.right+5 && y > PEN.top && y < PEN.bottom;
 }
 
 function eatSheep(sheep) {
@@ -395,6 +399,7 @@ function gameOver() {
   gameState = 'gameover';
   hasPlayed = true;
   buttonsGameOverScreen = createButtonsGameOverScreen();
+  highScoreInstance.addEntry({"Score":score,"Level":round,"Time":gameTime})
 }
 
 function resetGame() {
@@ -497,7 +502,7 @@ function renderPen(ctx) {
     fontSize: '120px',
     dropDistX: 5,
     dropDistY: 5,
-    fillStyle: palette.sheep,
+    fillStyle: palette.sheep*0.75,
     x: (PEN.left + PEN.right) / 2,
     y: (PEN.top + PEN.bottom) / 2 + 40,
   });
@@ -525,21 +530,18 @@ function renderFloatingTexts(ctx, elapsed) {
 }
 
 export default {
-  name: 'Laser-Schäferei',
+  name: 'Schafspferch (Opus55)',
   description: `
-Willkommen in der Laser-Schäferei!
+Die Schafe fliehen vor euren Lasern. 
 
-Die Schafe fliehen vor euren Lasern. Treibt die Herde durch die Öffnung in den Pferch rechts.
-Jedes Schaf im Pferch ist gerettet: +${DIFFICULTY.pointsSheep} Punkte.
-Von links, oben und unten schleichen Wölfe heran und fressen Schafe, die sie erreichen.
-Leuchtet auf einen Wolf, bis er voll ist: abgeschossen, +${DIFFICULTY.pointsWolf} Punkte.
-Große Wölfe brauchen mehrere Laser, getroffene Wölfe werden langsamer.
-Aber Vorsicht: Laser auf Wölfen scheuchen auch die Schafe daneben weg!
+Treibt die Herde durch die Öffnung in den Pferch rechts.
 
-Sind alle Schafe gerettet oder gefressen, kommt die nächste Runde mit mehr Schafen und Wölfen.
+Es schleichen Wölfe heran und fressen Schafe.
+
+Sind alle Schafe gerettet, kommt die nächste Runde mit mehr Schafen und Wölfen.
+
 Wird in einer Runde mehr als die Hälfte der Herde gefressen, ist Game Over.
-
-Tipp: Teilt euch auf - eine Gruppe treibt die Herde, die andere jagt Wölfe!`,
+`,
   image: 'media/img/gametitles/laser-cowhorde-###4###.png',
 
   init: function () {
@@ -597,6 +599,8 @@ und schießt die Wölfe ab, bevor sie die Herde fressen!`,
       x: laserConfig.canvasResolution.width / 2,
       y: 350,
     });
+
+    highScoreInstance.renderHighAndLowScores(ctx)
   },
 
   handleGameScreen(grid, elapsed) {

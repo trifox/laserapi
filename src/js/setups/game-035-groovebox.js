@@ -1233,19 +1233,20 @@ function renderChallengeHud(ctx) {
 /* ---------------------------------------------------------------- Spiel-Export */
 
 export default {
-  name: 'Laser-Groovebox',
+  name: 'Laser-Groovebox (Opus55)',
   description: `
-Die Laser-Groovebox: Ihr macht gemeinsam Musik!
-16 Schritte, 6 Spuren: Kick, Snare, HiHat, Bass, Akkord, Melodie.
-Leuchtet auf ein Feld, bis es sich füllt - dann schaltet es an oder aus.
-Die Abspielleiste läuft durch, alle hellen Felder erklingen. Es klingt nie schief!
+  Ihr macht gemeinsam Musik!
 
-Freies Jammen: endlos, unten Tempo, Tonart, Zufall, Löschen (lange halten).
-Rhythmus-Challenge: ein Muster wird vorgespielt und kurz gezeigt -
-baut es aus dem Gedächtnis nach! Ab ${DIFFICULTY.matchToWin} % Treffer ist die Runde gewonnen,
-Restzeit bringt Punkte, "Nochmal hören" kostet ${DIFFICULTY.replayCost}. ${DIFFICULTY.maxMissed} verpasste Runden = Ende.
+16 4 Viertel Noten, 6 Spuren
+ Kick, Snare, HiHat, Bass, Akkord, Melodie
 
-Tipp: Jede Gruppe übernimmt eine Spur. Wildes Herumleuchten bringt nur Chaos.`,
+Leuchtet auf ein Feld
+bis es sich füllt 
+
+Freies Jammen
+
+Rhythmus-Challenge
+ein Muster wird vorgespielt`,
 
   image: 'media/img/gametitles/laser-flapping-###4###.png',
 

@@ -84,9 +84,9 @@ const DIFFICULTY = {
   goldChance: 0.07,
   goldGrow: 9,
   // Haie
-  sharksStart: 2, // Haie im ersten Level
+  sharksStart: 1, // Haie im ersten Level
   sharksPerLevel: 1,
-  sharksCap: 9,
+  sharksCap: 3,
   activeStart: 2, // gleichzeitig aktive Haie
   activeEveryLevels: 2, // alle X Level einer mehr
   activeCap: 5,
@@ -235,9 +235,9 @@ function updateColors() {
     weed: getRgbSpreadHex(c, 0.33, 0.65, 0.4),
     bubble: getRgbSpreadHex(c, 0.48, 0.25, 0.95),
     fish: [
-      getRgbSpreadHex(c, 0.3, 0.6, 1),
-      getRgbSpreadHex(c, 0.4, 0.55, 1),
-      getRgbSpreadHex(c, 0.2, 0.65, 1),
+      getRgbSpreadHex(c, 0.3, 0.6, .1),
+      getRgbSpreadHex(c, 0.4, 0.55, .1),
+      getRgbSpreadHex(c, 0.2, 0.65, .1),
     ],
     fishFin: [
       getRgbSpreadHex(c, 0.27, 0.8, 0.75),
@@ -255,12 +255,12 @@ function updateColors() {
     eye: getRgbSpreadHex(c, 0.15, 0.9, 1),
     mouth: getRgbSpreadHex(c, 0.6, 0.7, 0.1),
     hit: getRgbSpreadHex(c, 0.5, 0.05, 1),
-    plankton: getRgbSpreadHex(c, 0.37, 0.5, 1),
+    plankton: getRgbSpreadHex(c, 0.57, 1, .9),
     gold: getRgbSpreadHex(c, 0.16, 0.75, 1),
     jelly: getRgbSpreadHex(c, 0.78, 0.45, 1),
     jellyCore: getRgbSpreadHex(c, 0.82, 0.2, 1),
-    egg: getRgbSpreadHex(c, 0.33, 0.3, 0.95),
-    eggRim: getRgbSpreadHex(c, 0.3, 0.7, 0.9),
+    egg: getRgbSpreadHex(c, 0.43, 0.3, 0.25),
+    eggRim: getRgbSpreadHex(c, 0.45, 0.7, 0.8),
     team: getRgbSpreadHex(c, 0.33, 0.85, 1),
     ringBase: getRgbSpreadHex(c, 0.5, 0.2, 0.9),
     ringWeak: getRgbSpreadHex(c, 0.12, 0.85, 1),

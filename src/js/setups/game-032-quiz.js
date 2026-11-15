@@ -132,7 +132,7 @@ const QUESTIONS = [
 ];
 
 const LETTERS = ['A', 'B', 'C', 'D'];
-const FIELD_HUES = [0.15, 0.4, 0.6, 0.85]; // Farbdrehung je Feld relativ zur Laserfarbe
+const FIELD_HUES = [0.25, 0.40, 0.55, 0.7]; // Farbdrehung je Feld relativ zur Laserfarbe
 const FIELD_KEYS = ['Digit1', 'Digit2', 'Digit3', 'Digit4'];
 
 var gameState = 'gameover';
@@ -362,21 +362,20 @@ function renderBar(ctx, x, y, width, height, fraction, color) {
 }
 
 export default {
-  name: 'Laser-Quiz',
+  name: 'Quiz (Opus55)',
   description: `
-Willkommen beim Laser-Quiz!
 
-Oben steht eine Frage, darunter vier große Antwortfelder A, B, C und D.
-Ihr stimmt ab, indem ihr das Feld eurer Wahl mit dem Laser beleuchtet.
-Je mehr Laser auf ein Feld zielen, desto schneller füllt es sich.
-Das erste volle Feld ist eure gemeinsame Antwort, danach ist alles gesperrt.
-Der Balken unter jedem Feld zeigt die aktuelle Stimmung im Saal.
+Oben steht eine Frage 
+darunter vier große Antwortfelder A, B, C und D
 
-Pro Frage habt ihr 20 Sekunden. Läuft die Zeit ab, zählt das vollste Feld.
-Richtig: +1 Punkt und die Serie wächst. Falsch oder keine Antwort: ein Leben weg.
-Ihr habt 3 Leben. Sind sie weg, ist Game Over. Schafft ihr alle Fragen, habt ihr gewonnen!
 
-Tipp: Einigt euch schnell! Wer auf verschiedene Felder leuchtet, bremst die ganze Gruppe.`,
+Das erste volle Feld ist eure gemeinsame Antwort,
+ danach ist alles gesperrt
+
+
+Der Balken unter jedem Feld 
+zeigt die aktuelle Stimmung im Saal
+`,
   image: 'media/img/gametitles/laser-sorter-###4###.png',
 
   init: function () {
@@ -518,7 +517,7 @@ Das Feld mit den meisten Lasern füllt sich am schnellsten.`;
         dropDistY: 4,
         fillStyle: lastAnswerCorrect ? getCorrectColor() : textColor,
         x: 1920 / 2,
-        y: 345,
+        y: 345-96,
       });
     }
 
@@ -535,7 +534,7 @@ Das Feld mit den meisten Lasern füllt sich am schnellsten.`;
         dropDistY: 4,
         fillStyle: color,
         x,
-        y: DIFFICULTY.fieldY + 32,
+        y: DIFFICULTY.fieldY -196,
       });
       util.renderTextDropShadow({
         ctx,

@@ -524,22 +524,19 @@ function renderFloatingTexts(ctx, elapsed) {
 }
 
 export default {
-  name: 'Laser-Gärtner',
+  name: 'LS Sonnenblumen (Opus55)',
   description: `
-Willkommen im Laser-Garten!
-Eure Laser sind das Sonnenlicht, die Pflanzen WOLLEN beleuchtet werden.
+LANDWIRTSCHAFT SIMULATOR
 
-Blumen: anleuchten, dann wachsen sie. Ist eine Blume voll, erblüht sie: +10 Punkte,
-große Blumen +25. Danach wird der Platz frei und es wird neu gepflanzt.
-Ohne Licht welken Blumen langsam. Verwelkt eine Blume ganz, ist sie verdorrt: -1 Leben.
 
-Unkraut (zackig, andere Farbe): NICHT anleuchten! Bekommt es genug Licht, wuchert es
-auf den Nachbarplatz und verdrängt dort die Blume: -5 Punkte, mit Blume -10.
-Unkraut ohne Licht vertrocknet nach einer Weile von selbst.
+Eure Laser sind das Sonnenlicht, 
+die Pflanzen WOLLEN beleuchtet werden
 
-Ihr habt 5 Leben, sind alle verbraucht, ist Game Over.
-Mit jedem Level welken die Blumen schneller und es kommt mehr Unkraut.
-Große Blumen brauchen mehrere Laser gleichzeitig: teilt euch auf und helft euch!`,
+Ohne Licht welken Blumen langsam 
+und verdorren
+
+Unkraut NICHT anleuchten 
+sonst wuchert es`,
   image: 'media/img/gametitles/laser-paradise-###4###.png',
 
   init: function () {

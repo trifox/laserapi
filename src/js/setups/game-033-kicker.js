@@ -808,26 +808,20 @@ function toKmh(speed) {
 }
 
 export default {
-  name: 'Laser-Kicker',
+  name: 'Laser-Kicker (Opus55)',
   description: `
-Willkommen beim Laser-Kicker!
+Die linke Hälfte des Publikums (Team Links) 
+spielt gegen die rechte (Team Rechts)
 
-Die linke Hälfte des Publikums (Team Links) spielt gegen die rechte (Team Rechts).
-Wie beim Tischkicker gibt es 8 Stangen: Torwart, Abwehr, Mittelfeld und Sturm für jedes Team.
-Leuchtet mit dem Laser auf eine Figur: sie folgt eurem Punkt nach oben oder unten,
-und die ganze Stange bewegt sich mit. Eine schnelle Bewegung gibt einen kräftigen Schuss!
-Schiesst den Ball ins gegnerische Tor: Team Links spielt nach rechts, Team Rechts nach links.
+Wie beim Tischkicker gibt es 8 Stangen:
+Torwart, Abwehr, Mittelfeld und Sturm
 
-Achtung: Jeder Laser kann JEDE Figur bewegen – auch die des Gegners. Stören ist erlaubt!
-Zwei Laser auf derselben Stange in verschiedene Richtungen heben sich auf.
+Ein Satz geht bis ${DIFFICULTY.goalsPerSet} Tore
+gespielt wird Best of ${DIFFICULTY.setsToWin * 2 - 1} Sätze.
 
-Ein Satz geht bis ${DIFFICULTY.goalsPerSet} Tore, gespielt wird Best of ${DIFFICULTY.setsToWin * 2 - 1} Sätze.
-Nach jedem Satz gibt es eine Pause mit Zwischenstand, und der Ball wird schneller.
-Anstoss hat immer das Team, das das Tor kassiert hat.
-Liegt der Ball zu lange still, gibt es einen Einwurf von der Mitte.
-
-Tipp: Teilt euch auf! Pro Stange ein, zwei Leute, die nur diese Stange spielen –
-dann gibt es keinen Laser-Salat und der Torwart ist nie allein.`,
+Liegt der Ball zu lange still,
+gibt es einen Einwurf von der Mitte.
+`,
   image: 'media/img/gametitles/laser-pong-###4###.png',
 
   init: function () {

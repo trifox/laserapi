@@ -1010,17 +1010,21 @@ function handleGameOver(grid, elapsed, ctx) {
 }
 
 export default {
-  name: 'Kristallwacht',
-  description: `
-Tower Defense mit Laser-Energie!
+  name: 'Kristallwacht (Opus55)',
+  description: `Gegner ziehen über den Leuchtpfad 
+  zum Kristall in der Mitte
 
-Gegner ziehen über den Leuchtpfad zum Kristall.
-Die Türme feuern NUR, solange ihr sie anleuchtet –
-je mehr Laser auf einem Turm, desto schneller pulst er.
-Lange beleuchtete Türme steigen auf (bis Stufe 3).
+Die Türme feuern NUR
+solange ihr sie anleuchtet
 
-Achtung: Die Schockwellen treffen auch die Pilger mit Heiligenschein.
-Verteilt euch – und lasst Türme kurz los, wenn ein Pilger vorbeizieht!`,
+je mehr Laser auf einem Turm
+ desto besser
+
+Lange beleuchtete Türme
+ werden besser
+
+Pilger mit Heiligenschein
+sollten überleben`,
   image: 'media/img/gametitles/laser-defense-###4###.png',
   init: function () {
     resetGame();

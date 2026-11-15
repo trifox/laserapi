@@ -19,6 +19,7 @@
  */
 
 import util, { drawNgon, getRgbSpreadHex, removeItemFromArray } from '../util.js';
+import highscoreManager from '../util/highscore.js'
 var laserConfig = require('../LaserApiConfig.js').default;
 var MasterCanvas = require('../MasterCanvas').default;
 var guiFillButton = require('./gui/fillButton').default;
@@ -26,8 +27,7 @@ var guiPixelFillButton = require('./gui/pixelFillButton').default;
 import soundPlop from '../../../public/media/369952__mischy__plop-1.wav';
 import soundExplosion from '../../../public/media/414346__bykgames__explosion-far.wav';
 import soundLevelUp from '../../../public/media/opengameart/Level Up.ogg';
-import soundError from '../../../public/media/opengameart/Menu Error.ogg';
-
+import soundError from '../../../public/media/opengameart/Menu Error.ogg';  
 const DIFFICULTY = {
   levelDuration: 25, // Sekunden pro Level
   // Anzahl gleichzeitiger Brände (übergesprungene Brände zählen mit, werden aber nicht begrenzt)
@@ -115,9 +115,9 @@ function levelValue(start, perLevel, cap) {
 
 // Farben, alle von der Laserfarbe abgeleitet
 const colors = () => ({
-  fire: getRgbSpreadHex(laserConfig.testColor, 0.12, 1, 1),
-  fireInner: getRgbSpreadHex(laserConfig.testColor, 0.16, 0.6, 1),
-  fireGlow: getRgbSpreadHex(laserConfig.testColor, 0.12, 1, 0.35),
+  fire: getRgbSpreadHex(laserConfig.testColor, 0.22, 1, 1),
+  fireInner: getRgbSpreadHex(laserConfig.testColor, 0.26, 0.6, 1),
+  fireGlow: getRgbSpreadHex(laserConfig.testColor, 0.22, 1, 0.35),
   water: getRgbSpreadHex(laserConfig.testColor, 0.55, 0.8, 1),
   cat: getRgbSpreadHex(laserConfig.testColor, 0.75, 0.5, 1),
   houseFill: getRgbSpreadHex(laserConfig.testColor, 0.6, 0.4, 0.18),
@@ -192,7 +192,7 @@ function drawFlames(ctx, x, y, radius, t) {
       Xcenter: x + Math.sin(t * 5 + k) * 4,
       Ycenter: y - k * radius * 0.12,
       color: k === 2 ? palette.fireInner : palette.fire,
-      filled: true,
+      filled: false,
       angle: t * (k + 1),
       lineWidth: 2,
     });
@@ -411,8 +411,16 @@ function burnDownHouse(h) {
     gameOver();
   }
 }
-
+ 
 function gameOver() {
+  
+  highScoreInstance.addEntry({
+  "Score":score, 
+  "Saved Time":stats.savedTime,
+  "Extinguished":stats.extinguished,
+  "Level": level
+})
+
   gameState = 'gameover';
   hasPlayed = true;
   buttonsGameOverScreen = createButtonsGameOverScreen();
@@ -422,7 +430,10 @@ function resetGame() {
   gameState = 'game';
   gameTime = 0;
   level = 1;
-  score = 0;
+  score = 0; 
+
+
+
   palette = colors();
   houses = [];
   for (let h = 0; h < HOUSE_COUNT; h++) {
@@ -444,7 +455,7 @@ const createButtonsGameOverScreen = () => [
   guiFillButton({
     label: 'Start',
     posX: 1920 / 2,
-    posY: 1080 / 2 + 250,
+    posY: 1080 / 2 + 350,
     radius: 150,
     edges: 6,
     speedUp: 25,
@@ -476,7 +487,7 @@ function renderHouses(ctx) {
     ctx.lineWidth = 5;
     ctx.strokeStyle = house.burnt ? '#444444' : palette.houseLine;
     ctx.fillStyle = house.burnt ? '#1a1a1a' : palette.houseFill;
-    ctx.fillRect(left, HOUSE_TOP, HOUSE_WIDTH, HOUSE_BOTTOM - HOUSE_TOP);
+//    ctx.fillRect(left, HOUSE_TOP, HOUSE_WIDTH, HOUSE_BOTTOM - HOUSE_TOP);
     ctx.strokeRect(left, HOUSE_TOP, HOUSE_WIDTH, HOUSE_BOTTOM - HOUSE_TOP);
     // Dach
     ctx.beginPath();
@@ -555,24 +566,21 @@ function renderFloatingTexts(ctx, elapsed) {
     });
   }
 }
-
+const highScoreInstance=highscoreManager("FeuerWehr","Score");
 export default {
-  name: 'Laser-Feuerwehr',
+  name: 'Feuerwehr (Opus55)',
   description: `
-Willkommen bei der Laser-Feuerwehr!
-
 In der Häuserzeile brechen in den Fenstern Brände aus.
-Euer Laser ist der Löschstrahl: leuchtet auf einen Brand, bis er voll ist, dann ist er gelöscht.
-Brände wachsen mit der Zeit. Je größer ein Brand, desto mehr Laser braucht er gleichzeitig.
+
+Euer Laser ist der Löschstrahl Brände wachsen mit der Zeit.
+
 Früh löschen gibt mehr Punkte (10 bis 30 pro Brand).
+
 Ausgewachsene Brände springen auf Nachbarfenster und Nachbarhäuser über.
 
-Achtung Katzen! Wer eine Katze nass spritzt, verliert ${DIFFICULTY.catPenalty} Punkte und die Katze haut ab.
-Jedes brennende Fenster beschädigt sein Haus (Leiste unter dem Haus).
-Bei 100 % brennt das Haus ab. Sind alle Häuser abgebrannt, ist Game Over.
-Alle ${DIFFICULTY.levelDuration} Sekunden steigt das Level: mehr Brände, schnelleres Feuer.
+Achtung: Katzen nicht ärgern!
 
-Tipp: Verteilt euch auf die Häuser und löscht große Brände gemeinsam!`,
+Bei 100 % brennt das Haus ab. Sind alle Häuser abgebrannt, ist Game Over.`,
   image: 'media/img/gametitles/laser-fire-###4###.png',
 
   init: function () {
@@ -619,9 +627,12 @@ Tipp: Verteilt euch auf die Häuser und löscht große Brände gemeinsam!`,
             1
           )}s Einsatz, Level ${level}.
 ${stats.extinguished} Brände gelöscht, ${stats.savedTime.toFixed(1)}s Brandzeit verhindert,
-${stats.spread} Brände übergesprungen, ${stats.wetCats} Katzen nass gespritzt.`
+${stats.spread} Brände übergesprungen, ${stats.wetCats} Katzen nass gespritzt.
+
+`
         : `Löscht die Brände in den Fenstern mit euren Lasern.
-Große Brände brauchen mehrere Laser - aber spritzt keine Katzen nass!`,
+Große Brände brauchen mehrere Laser - aber spritzt keine Katzen nass!
+`,
       fontSize: '45px',
       lineHeight: 70,
       dropDistX: 5,
@@ -630,6 +641,10 @@ Große Brände brauchen mehrere Laser - aber spritzt keine Katzen nass!`,
       x: laserConfig.canvasResolution.width / 2,
       y: 350,
     });
+
+    highScoreInstance.renderHighAndLowScores(ctx)
+
+
   },
 
   handleGameScreen(grid, elapsed) {

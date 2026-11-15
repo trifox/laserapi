@@ -28,13 +28,16 @@ import soundError from '../../../public/media/opengameart/Menu Error.ogg';
 import soundLevelUp from '../../../public/media/opengameart/Level Up.ogg';
 import soundTransition from '../../../public/media/opengameart/Transition.ogg';
 
+import highscoreManager from '../util/highscore.js' 
+const highScoreInstance=highscoreManager("Seifenblasen","Score");  // Make highscore instance, will be global until reloaded, but manages saving itself
+
 const DIFFICULTY = {
   levelDuration: 25, // Sekunden pro Level
   lives: 3,
   // Anzahl gleichzeitig aufsteigender Blasen
   maxActiveStart: 6,
-  maxActivePerLevel: 2,
-  maxActiveCap: 22,
+  maxActivePerLevel: 1,
+  maxActiveCap: 18,
   // Spawn-Intervall in Sekunden
   spawnIntervalStart: 1.3,
   spawnIntervalFactor: 0.88, // pro Level
@@ -139,9 +142,9 @@ function computeTypeColors() {
   typeColors = [];
   typeGrowColors = [];
   for (let i = 0; i < BUBBLE_TYPES.length; i++) {
-    const hue = 0.5 + (i - (BUBBLE_TYPES.length - 1) / 2) * spacing;
-    typeColors.push(getRgbSpreadHex(laserConfig.testColor, hue, 0.85, 0.95));
-    typeGrowColors.push(getRgbSpreadHex(laserConfig.testColor, hue, 0.35, 1));
+    const hue = 0.25 + (i - (BUBBLE_TYPES.length - 1) / 2) * spacing;
+    typeColors.push(getRgbSpreadHex(laserConfig.testColor, hue, 0.85, 0.5));
+    typeGrowColors.push(getRgbSpreadHex(laserConfig.testColor, hue, 0.95, .7));
   }
 }
 
@@ -164,6 +167,7 @@ function endGame() {
   hasPlayed = true;
   bubbles = [];
   buttonsGameOverScreen = createButtonsGameOverScreen();
+  highScoreInstance.addEntry({"Score":score,"Popped":stats.popped,"Escaped":stats.escaped,"Wrong":stats.wrong})
 }
 
 function popBubble(bubble, type, radius) {
@@ -451,24 +455,21 @@ function renderHud(ctx) {
 }
 
 export default {
-  name: 'Laser-Seifenblasen',
-  description: `
-Willkommen bei Laser-Seifenblasen!
+  name: 'Seifenblasen Kamm (Opus55)',
+  description: ` 
 
-Seifenblasen in 4 Farben steigen von unten nach oben.
-Jede Farbe hat zusätzlich eine eigene innere Form (Dreieck, Quadrat, Sechseck, Strich).
-Oben in der Mitte steht die Zielfarbe – nur diese Blasen zerplatzen!
-Haltet die Laser auf eine Blase, bis sie platzt.
+  Seifenblasen in 4 Farben steigen von unten nach oben
+(Dreieck, Quadrat, Sechseck, Strich)
 
-Richtige Blase = Punkte, grosse Blasen geben mehr Punkte,
-brauchen aber mehrere Laser gleichzeitig.
-Richtige Treffer hintereinander erhöhen den Combo-Multiplikator (bis x${DIFFICULTY.comboMaxMultiplier}).
-Falsche Farbe zerplatzt = ein Leben weg und Combo weg.
-Entkommt eine Blase in Zielfarbe oben, ist nur die Combo weg.
-Alle ${DIFFICULTY.targetInterval} Sekunden wechselt die Zielfarbe, ein Countdown kündigt es an.
-Nach ${DIFFICULTY.lives} falschen Blasen ist das Spiel vorbei.
-Mit jedem Level kommen mehr und schnellere Blasen, die Farben werden sich ähnlicher.
-Tipp: Sprecht euch ab und zielt gemeinsam auf die grossen Blasen in Zielfarbe!`,
+
+Oben in der Mitte steht die Zielfarbe 
+nur diese Blasen zerstören! 
+
+
+
+
+Alle ${DIFFICULTY.targetInterval} Sekunden wechselt die Zielfarbe
+`,
   image: 'media/img/gametitles/laser-paradise-###4###.png',
 
   init: function () {
@@ -553,6 +554,8 @@ ${stats.wrong} falsche Blasen zerplatzt, ${stats.escaped} Zielblasen entkommen.`
         });
       }
     }
+
+    highScoreInstance.renderHighAndLowScores(ctx)
   },
 
   handleGameScreen(grid, elapsed) {

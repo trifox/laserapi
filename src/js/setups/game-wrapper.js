@@ -11,7 +11,7 @@ class GameWapper {
 
       const regext = /###(\d)###/
       var image = this.game.image
-      console.log('regexp is', regext)
+     // console.log('regexp is', regext)
       const regexpresult = regext.exec(image)
       if (regexpresult) {
         console.log(regexpresult)

@@ -51,30 +51,28 @@ var games = [
   ),
 //  new GameWrapper(require('./setups/physics-game-sorter/game-sorter').default),
 //  new GameWrapper(require('./setups/game-iframe-loader').default),
-  new GameWrapper(require('./setups/game-022-fractal-bakery').default),
-  new GameWrapper(require('./setups/game-023-feuerwehr').default),
-  new GameWrapper(require('./setups/game-024-schaeferei').default),
-  new GameWrapper(require('./setups/game-025-seifenblasen').default),
-  new GameWrapper(require('./setups/game-026-tauziehen').default),
-  new GameWrapper(require('./setups/game-027-simon').default),
-  new GameWrapper(require('./setups/game-028-asteroiden').default),
-  new GameWrapper(require('./setups/game-029-leuchtturm').default),
-  new GameWrapper(require('./setups/game-030-maulwurf').default),
-  new GameWrapper(require('./setups/game-031-gaertner').default),
-  new GameWrapper(require('./setups/game-032-quiz').default),
-  new GameWrapper(require('./setups/game-033-kicker').default),
-  new GameWrapper(require('./setups/game-034-seeschlacht').default),
-  new GameWrapper(require('./setups/game-035-groovebox').default),
-  new GameWrapper(require('./setups/game-036-ausgrabung').default),
-  new GameWrapper(require('./setups/game-037-keksoase').default),
-  new GameWrapper(require('./setups/game-038-kristallwacht').default),
-  new GameWrapper(require('./setups/game-039-sternenlaeufer').default),
-  new GameWrapper(require('./setups/game-040-wortlicht').default),
-  new GameWrapper(require('./setups/game-041-sandburg').default),
-  new GameWrapper(require('./setups/game-042-oasenhueter').default),
-  new GameWrapper(require('./setups/game-043-brueckenwaechter').default),
-  new GameWrapper(require('./setups/game-044-lasershark2').default),
-//   new GameWrapper(require('./setups/game-018-voter').default)
+  new GameWrapper(require('./setups/game-022-fractal-bakery').default), // jawoll das letzte von menschen inspirierte original game mit handarbeit, aber mit ki vollendet
+  new GameWrapper(require('./setups/game-023-feuerwehr').default), // geht, ki generiert von guten/schlechten targets funktioniert aber finde ich
+  new GameWrapper(require('./setups/game-024-schaeferei').default), // inspiriert von den ck original games, geht durchaus gute levelstruktur
+  new GameWrapper(require('./setups/game-025-seifenblasen').default), // sehr gut macht durchaus laune und wenn man nix macht geht spiel immer weiter, witzig geworden
+// total langeweilig und stressig  new GameWrapper(require('./setups/game-026-tauziehen').default),
+  new GameWrapper(require('./setups/game-027-simon').default), // jo, klassik funktioniert aber
+  new GameWrapper(require('./setups/game-028-asteroiden').default), // auch gut nur skalierung noch off, alles zu gross muss kleiner werden
+  new GameWrapper(require('./setups/game-029-leuchtturm').default), // ports of call maessig, eigentlich echt gut finde ich
+  new GameWrapper(require('./setups/game-030-maulwurf').default), // eher langeweilig kandidat zum rausfliegen
+  new GameWrapper(require('./setups/game-031-gaertner').default), // haha, landwirtschaft simulator, geht gut mit sonnenblumen anleuchten
+  new GameWrapper(require('./setups/game-032-quiz').default), // geht, nur zu wenig fragen halt, massiv erweitern ey
+// tischfussball, witzig aber irgendwie bring es nix zu wenig physik usw  new GameWrapper(require('./setups/game-033-kicker').default),
+  new GameWrapper(require('./setups/game-034-seeschlacht').default), // aufarbeitung von torpedo game, finde es durchaus stabil geworden
+  new GameWrapper(require('./setups/game-035-groovebox').default), // naja geht fuer musik freaks durchaus witzig geworden
+  new GameWrapper(require('./setups/game-036-ausgrabung').default), // neues konzept eher schwierig mit zu hellem hintergrund
+  new GameWrapper(require('./setups/game-038-kristallwacht').default), // so lala, geht aber tower defense ganz klassisch
+  new GameWrapper(require('./setups/game-039-sternenlaeufer').default), // richtig witzig und gut geworden
+  new GameWrapper(require('./setups/game-040-wortlicht').default), // von georg, klappt soweit mit angepasstgen kontrasten der buttons nicht zu hell
+// mit hintergrund, bringt irgendwie nix, so lala spielidee tamagochi  new GameWrapper(require('./setups/game-042-oasenhueter').default),
+  new GameWrapper(require('./setups/game-043-brueckenwaechter').default), // ein bisschen orga gute grafik weil buttons nur unten, passtg
+  new GameWrapper(require('./setups/game-044-lasershark2').default),// shark game auch gut
+  new GameWrapper(require('./setups/game-045-bollwerk').default),  // geil und ausbaufaehig
 ];
 
 // logo lasergames
@@ -370,9 +368,6 @@ async function frameHandler() {
 
   laserGrid = Lowpassfilter.handle(laserGrid, elapsed);
 
-  if (laserConfig.showDebug) {
-    gameDebug.handle(laserGrid, elapsed);
-  }
 
   // console.timeEnd("frameHandler");
   // console.log("Lasergrid is", laserGrid);
@@ -471,11 +466,13 @@ async function frameHandler() {
         // console.log('caller elapsed is', elapsed);
         games[laserConfig.gameIndex || 0].handle(laserGrid, elapsed);
       } catch (e) {
+/*
         console.log(
           'nervermind dude, dudess and du,something happened in game',
           games[laserConfig.gameIndex || 0].name,
           e
         );
+        */
         games[laserConfig.gameIndex || 0].error = e;
       }
 
@@ -491,6 +488,11 @@ async function frameHandler() {
       // console.timeEnd("GameHandler")
     }
   }
+
+    if (laserConfig.showDebug) {
+    gameDebug.handle(laserGrid, elapsed);
+  }
+
 
   //setTimeout(frameHandler, 0);
 
@@ -1172,7 +1174,7 @@ function saveToLocalStorage() {
     laserConfig: laserConfig,
   });
   if (lastStore != data) {
-    console.log('Saving to localstorage', data);
+    //console.log('Saving to localstorage', data);
     lastStore = data;
     window.localStorage.setItem('laser', data);
   }

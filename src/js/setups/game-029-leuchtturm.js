@@ -623,22 +623,18 @@ function renderEffects(ctx, elapsed) {
 }
 
 export default {
-  name: 'Laser-Leuchtturm',
+  name: 'Hafen Lotse (Opus55)',
   description: `
-Nachts auf See - ihr seid der Leuchtturm!
 
-Schiffe tauchen am rechten Rand auf und fahren eurem Laserlicht hinterher.
-Leuchtet knapp vor ein Schiff, dann fährt es in diese Richtung.
-Ohne Licht treiben die Schiffe mit der Strömung langsam nach links.
+  Schiffe tauchen rechts auf
+und fahren eurem Laserlicht hinterher.
 
-Lotst jedes Schiff unten links in den Hafen - die Einfahrt ist nur von oben.
-Jedes Schiff im Hafen bringt 100 Punkte mal Level.
-Felsen, Kaimauer und (ab Level 2) treibende Eisberge versenken Schiffe.
-Treibt ein Schiff links aus dem Bild, ist es verloren.
-Jedes gesunkene oder verirrte Schiff kostet ein Leben, bei 0 von 5 ist Game Over.
+Lotst jedes Schiff unten links in den Hafen
+die Einfahrt ist nur von oben.
 
-Mit jedem Level: mehr Schiffe gleichzeitig, mehr Felsen, stärkere Strömung.
-Tipp: Teilt euch auf - jede Gruppe kümmert sich um ein Schiff!`,
+Treibt ein Schiff links aus dem Bild 
+ist es verloren
+`,
   image: 'media/img/gametitles/laser-torpedo-###4###.png',
   init: function () {
     gameState = 'gameover';

@@ -816,8 +816,8 @@ var LaserApi = {
         console.log('Stream received', stream);
         video.srcObject = stream;
         video.onloadedmetadata = function (e) {
-          console.log('Metadata received', this);
-          console.log('Metadata received', e);
+       //   console.log('Metadata received', this);
+       //   console.log('Metadata received', e);
           // Do something with the video here.
           video.play();
           LaserApi.canvas.width = Math.floor(video.videoWidth);

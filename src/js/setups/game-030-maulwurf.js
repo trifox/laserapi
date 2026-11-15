@@ -577,21 +577,18 @@ function renderHud(ctx) {
 }
 
 export default {
-  name: 'Laser-Maulwurf',
+  name: 'Best Weed (Opus55)' ,
   description: `
-Hau den Maulwurf - mit Laserpointern!
 
-Aus den 12 Erdhügeln tauchen für kurze Zeit Figuren auf.
-Maulwurf: anleuchten, bis er sich gefüllt hat = +1 Punkt.
-Gold-Maulwurf: selten und gross, braucht viele Laser gleichzeitig = +5 Punkte.
-Igel: NICHT treffen! Ein getroffener Igel kostet 3 Punkte und die Combo.
 
-Treffer in Folge bauen eine Combo auf: alle 5 Treffer gibt es mehr Punkte (bis x3).
-Ein entwischter Maulwurf setzt die Combo zurück.
+  Ein perfekten Rasen
 
-Jedes Level dauert 90 Sekunden. Erreicht ihr die Zielpunktzahl, geht es ins nächste Level,
-sonst ist Game Over. Jedes Level: mehr Punkte nötig, mehr Figuren, schneller, mehr Igel.
-Tipp: Verteilt euch auf die Hügel und sammelt euch gemeinsam auf dem Gold-Maulwurf!`,
+aber auf keinen fall:
+IGEL töten!
+
+es gibt geruechte 
+vom goldenen maulwurf
+`,
   image: 'media/img/gametitles/laser-haystack-###4###.png',
   init: function () {
     gameState = 'gameover';

@@ -1302,26 +1302,22 @@ function drawShowcase(ctx, y) {
 }
 
 export default {
-  name: 'Laser-Ausgrabung',
-  description: `
-Laser-Ausgrabung: gemeinsam Fundstücke freilegen!
+  name: 'Laser-Ausgrabung (Opus55)',
+  description: `Unter der Erde liegen
+  Knochen, Schädel, Amphoren, Münzen, Schwerter und Ammoniten
+  
+  Ist ein Fund grösstenteils frei, leuchtet sein Ring grün
+  jetzt LOSLASSEN, dann wird er geborgen und kommt in die Vitrine
 
-Unter der Erde liegen Knochen, Schädel, Amphoren, Münzen, Schwerter und Ammoniten.
-Wo ihr hinleuchtet, wird Erde abgetragen. Ist ein Fund grösstenteils frei,
-leuchtet sein Ring grün: jetzt LOSLASSEN, dann wird er geborgen und kommt in die Vitrine.
+Vorsicht, die Funde sind zerbrechlich! 
+Grabt am Rand und lasst die Mitte in Ruhe
 
-Vorsicht, die Funde sind zerbrechlich! Wer auf die Mitte eines schon halb
-freigelegten Fundes leuchtet, macht Risse hinein, bis er zerbricht.
-Grabt am Rand und lasst die Mitte in Ruhe.
+Unter dunklen, feuchten Stellen liegen Wasseradern 
+Wasser spült die Erde ringsum wieder zu
 
-Unter dunklen, feuchten Stellen liegen Wasseradern. Grabt ihr sie an,
-spült das Wasser die Erde ringsum wieder zu.
+Der Metalldetektor piept alle paar Sekunden 
 
-Der Metalldetektor piept alle paar Sekunden über Funden in der Nähe eurer Laser:
-heiß, warm oder lau. Wer gezielt sucht statt alles umzugraben, bekommt Effizienz-Bonus.
-
-Bis Sonnenuntergang muss mindestens die Hälfte der Funde geborgen sein.
-Tipp: Verteilt euch, jeder Fund braucht nur wenige Laser am Rand!`,
+Bis Sonnenuntergang muss mindestens die Hälfte der Funde geborgen sein`,
   image: 'media/img/gametitles/laser-shark-###4###.png',
 
   init: function () {

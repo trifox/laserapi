@@ -1192,18 +1192,22 @@ function handleGameOver(grid, elapsed, ctx) {
 }
 
 export default {
-  name: 'Sternenläufer',
+  name: 'Sternenläufer (Opus55 Turrican)',
   description: `
-Run & Gun auf einem fremden Planeten!
+  Der Sternenläufer
+   rennt unten durch die Landschaft.
 
-Der Sternenläufer rennt unten durch die Landschaft.
-Sein Geschütz zielt automatisch auf die MITTE aller Laserpunkte.
-Leuchtet alle gemeinsam auf denselben Gegner – je enger ihr zusammen seid,
-desto schneller feuert er.
+Sein Geschütz zielt automatisch
+ auf die MITTE aller Laserpunkte.
 
-Rettungskapseln mit Kreuz NICHT abschiessen.
-Waffenkapseln mit W abschiessen = Mehrfachschuss.
-Entkommene Gegner und Bomben kosten Schild.`,
+e enger ihr zusammen seid
+desto schneller wird gefeuert
+
+Rettungskapseln mit Kreuz
+NICHT abschiessen superschwer
+
+Entkommene Gegner und Bomben 
+kosten Schild`,
   image: 'media/img/gametitles/laser-torpedo-###4###.png',
   init: function () {
     resetGame();

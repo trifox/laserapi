@@ -52,12 +52,12 @@ const DIFFICULTY = {
 
 // 6 Felder: Form, Farbton (nie 0/1 = Laserfarbe), Ton
 const FIELDS = [
-  { label: 'Dreieck', edges: 3, edges2: undefined, angle: Math.PI / 2, hue: 0.15, freq: 262 },
-  { label: 'Quadrat', edges: 4, edges2: undefined, angle: Math.PI / 4, hue: 0.3, freq: 330 },
+  { label: 'Dreieck', edges: 3, edges2: undefined, angle: Math.PI / 2, hue: 0.25, freq: 262 },
+  { label: 'Quadrat', edges: 4, edges2: undefined, angle: Math.PI / 4, hue: 0.35, freq: 330 },
   { label: 'Fünfeck', edges: 5, edges2: undefined, angle: Math.PI / 2, hue: 0.45, freq: 392 },
-  { label: 'Sechseck', edges: 6, edges2: 3, angle: 0, hue: 0.6, freq: 440 },
-  { label: 'Achteck', edges: 8, edges2: 4, angle: Math.PI / 8, hue: 0.75, freq: 523 },
-  { label: 'Kreis', edges: 32, edges2: 32, angle: 0, hue: 0.88, freq: 659 },
+  { label: 'Sechseck', edges: 6, edges2: 3, angle: 0, hue: 0.55, freq: 440 },
+  { label: 'Achteck', edges: 8, edges2: 4, angle: Math.PI / 8, hue: 0.65, freq: 523 },
+  { label: 'Kreis', edges: 32, edges2: 32, angle: 0, hue: 0.75, freq: 659 },
 ];
 const FIELD_RADIUS = 150;
 const RING_RX = 450;
@@ -377,21 +377,15 @@ function renderLives(ctx) {
 }
 
 export default {
-  name: 'Laser-Simon',
+  name: 'Melodien (simon) (Opus55)',
   description: `
-Laser-Simon - das Gedächtnisspiel für alle!
 
-Sechs grosse Felder liegen im Kreis. Zuerst leuchten einige Felder nacheinander auf
-und spielen ihren Ton. Bei "Schaut zu!" nicht leuchten - die Felder reagieren dann nicht.
-Bei "Nachmachen!" müsst ihr die Felder in genau derselben Reihenfolge auslösen.
-Ein Feld löst erst aus, wenn es gut zwei Sekunden lang beleuchtet wird.
-Richtiges Feld: Ton und weiter zum nächsten Schritt.
-Falsches Feld oder Zeitbalken abgelaufen: ein Leben weg, die Sequenz wird nochmal gezeigt.
-Sequenz geschafft: nächste Runde, die Sequenz wird ein Feld länger.
-Ab Runde 5 wird immer schneller vorgespielt.
-Ihr habt 3 Leben, danach ist Game Over.
-Tipp: Einigt euch laut auf das nächste Feld und leuchtet alle gemeinsam darauf -
-wer wild auf andere Felder leuchtet, löst sie womöglich aus und kostet ein Leben!`,
+(Opus55)
+
+  Immer längere Melodien nachspielen.
+
+
+  `,
   image: 'media/img/gametitles/laser-mandelbrot-###4###.png',
   init: function () {
     gameState = 'gameover';

@@ -939,36 +939,21 @@ Upgrades: Energie+ ${team.levels.energy} · Panzer+ ${team.levels.armor} · Batt
 // ---------------------------------------------------------------------------
 
 export default {
-  name: 'Laser-Seeschlacht',
-  description: `
-Laser-Seeschlacht: Team Links gegen Team Rechts!
+  name: 'Torpedo-2Ai (Opus55)',
+  description: ` 
+Zerstöre gegnerische Basis
+indirekt durch schiffe
 
-Ziel: Versenkt das gegnerische Hauptquartier (HQ). Jedes HQ hat ${DIFFICULTY.hqHealth} Punkte.
-Euer Hafen liegt an eurem Bildrand, 5 Fahrrinnen führen zum Gegner.
+Energie lädt sich langsam auf 
+(${DIFFICULTY.energyRegen} pro Sekunde, maximal ${DIFFICULTY.energyMax}).
 
-Energie: lädt sich langsam auf (${DIFFICULTY.energyRegen} pro Sekunde, maximal ${DIFFICULTY.energyMax}).
-Werften: pro Rinne 3 Buttons am eigenen Rand. Laser draufhalten = Schiff läuft vom Stapel.
-Graue Werften: zu wenig Energie oder Flotte voll (${DIFFICULTY.maxShipsPerTeam} Schiffe).
-  Schnellboot (Dreieck): ${DIFFICULTY.ships[0].cost} Energie, schnell, Panzer ${DIFFICULTY.ships[0].hp}, HQ-Schaden ${DIFFICULTY.ships[0].hqDamage}
-  Zerstörer (Raute): ${DIFFICULTY.ships[1].cost} Energie, mittel, Panzer ${DIFFICULTY.ships[1].hp}, HQ-Schaden ${DIFFICULTY.ships[1].hqDamage}
-  Schlachtschiff (Sechseck): ${DIFFICULTY.ships[2].cost} Energie, langsam, Panzer ${DIFFICULTY.ships[2].hp}, HQ-Schaden ${DIFFICULTY.ships[2].hqDamage}
+Werften produzieren Schiffe
+je nach Energie 
 
-Verteidigen: Gegnerische Schiffe mit Lasern versenken. Je mehr Laser auf einem Schiff, desto schneller sinkt es.
-Schlachtschiffe brauchen viele Laser gleichzeitig!
-Treffen sich zwei Schiffe in einer Rinne, gewinnt das mit mehr Restpanzer und wird dabei beschädigt.
+Graue Werften: 
+zu wenig Energie oder Flotte voll (${DIFFICULTY.maxShipsPerTeam} Schiffe).
 
-Friendly Fire: Der Laser kennt kein Team! Wird ein Schiff in seiner eigenen Hälfte per Laser versenkt,
-verliert sein Team zusätzlich ${Math.round(DIFFICULTY.friendlyFirePenalty * 100)} % der Baukosten an Energie.
-
-Upgrades (unten, je ${DIFFICULTY.upgradeMaxLevel} Stufen, lange draufhalten):
-  Energie+: schnellere Energie-Regeneration
-  Panzer+: neue Schiffe halten mehr aus
-  Batterie: Küstenbatterie schiesst automatisch auf das vorderste gegnerische Schiff in Reichweite
-
-Sudden Death nach ${Math.round(DIFFICULTY.suddenDeathTime / 60)} Minuten: doppelter HQ-Schaden, doppelte Energie.
-
-Tipp: Teilt euch auf! Ein paar Leute bauen Schiffe und kaufen Upgrades,
-der Rest verteidigt den eigenen Hafen. Wildes Herumleuchten versenkt eure eigene Flotte!`,
+Upgrades durch lange draufhalten `,
   image: 'media/img/gametitles/laser-torpedo-###4###.png',
 
   init: function () {
