@@ -73,6 +73,11 @@ var games = [
   new GameWrapper(require('./setups/game-043-brueckenwaechter').default), // ein bisschen orga gute grafik weil buttons nur unten, passtg
   new GameWrapper(require('./setups/game-044-lasershark2').default),// shark game auch gut
   new GameWrapper(require('./setups/game-045-bollwerk').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-046-grandprix').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-047-wuerfelreiche').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-048-umfrage').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-999-gui-showcase').default),  // geil und ausbaufaehig
 ];
 
 // logo lasergames
