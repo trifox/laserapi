@@ -144,7 +144,11 @@ Experimentell|Malspiel|Gemeinsam Bilder oder Flächen gestalten
 Experimentell|Exergame|Körperliche Bewegung als Steuerung
 Experimentell|Augmented Reality|Spiel mischt sich mit der echten Umgebung
 Experimentell|Asymmetrisches Multiplayer|Teams mit völlig unterschiedlichen Rollen
-EOF
+Experimentell|Maenneken retten, also Lemmings| Teams muessen unterschiedliche "Tribes Retten"
+Experimentell|God Game| Die Goetter spielen gegeneinander, "machen halt krasse wunder um gegnerischen god zu besiegen, erdbeben vulkan regen windsturm usw. "
+Experimentell|Worms| Klassisch, prinzip halt je aelter, desto angreifbarer
+Experimentell|Frogger| 
+
 )
 
 if [ "$listcats" = 1 ]; then
