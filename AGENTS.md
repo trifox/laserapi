@@ -85,3 +85,45 @@ Weitere Helfer: `repellAll`, `checkBorderAndSlowDown` aus `game-017-thehorde.js`
 - Wie bestehende Spiele: `import`/`require(...).default` gemischt, modul-globaler Zustand.
 - Kopfkommentar mit Name + Regeln; Kommentare und Texte auf **Deutsch**. Prettier: 2 Spaces, Single Quotes, Semikolons.
 - Arrays, aus denen in `handle()` entfernt wird, mit `.slice()` iterieren.
+graphify
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+
+When graphify-out/graph.json exists, run graphify query "<question>" before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use graphify path "<A>" "<B>" for relationships and graphify explain "<concept>" for focused concepts. When the answer is under a Markdown heading, graphify section "<heading>" prints that section's text, so the .md need not be opened. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+After modifying code, run graphify update . to keep the graph current (AST-only, no API cost).
+A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
+Engine-Pipeline (vor handle(grid, elapsed))
+Aktueller Fokus: nur Spiele entwickeln. Die Engine (view.js ausser Spielregistrierung, LaserApi.js, game-000000000-lowpassfilter.js, game-wrapper.js, CanvasVideo.js, MasterCanvas.js) wird nicht angefasst. Die unten gelisteten Engine-Fehler existieren aktuell und werden in Zukunft gefixt – nicht jetzt nebenbei reparieren, sondern in Spielen darum herum bauen.
+
+Ablauf pro Frame (view.js frameHandler)
+elapsed = Sekunden seit letztem Frame (ungeclampt).
+animationHandler() liest HTML-Regler in laserConfig, speichert alles in localStorage.
+Canvas schwarz; bei debugVideo Kamerabild drüber.
+LaserApi.getFine(video) – ein kombinierter GPU-Kernel: Blur → Sharpen → Perspektiv-Entzerrung (4 Ecken, Hermite) → Farbmatrix → RGB-Abstand zu testColor/testColor2 < threshold → Downscale auf gridResolution² Zellen (Pixel-Zählung).
+Lowpassfilter.handle() – Zelle an, wenn sie oder ein 4er-Nachbar leuchtet (+100/s, −10/s), Ausgabe nochmals um Nachbarn dilatiert, binär 0/1.
+Spielwechsel: stop() alt, init() neu, dann Intro über 1000 Frames (kein handle()).
+games[i].handle(grid, elapsed) in try/catch.
+Für Spiele heisst das: grid ist binär (0/1), zeilenweise, y=0 oben. Ein Laserpunkt erscheint als verbreitertes Kreuz mit ~100 ms Nachleuchten – „Flächenanteil“ misst also verbreiterte Punkte, nicht echte Laserfläche.
+
+Bekannte Engine-Fehler (aktuell vorhanden, Fix später)
+In Spielen berücksichtigen:
+
+elapsed ist ungeclampt (erster Frame = Zeit seit Seitenstart, Tab-Wechsel = riesig) → in jedem Spiel const dt = Math.min(elapsed, 0.1);.
+Aus localStorage wiederhergestelltes Spiel bekommt beim Start kein init() (nur Spiel 0 wird initialisiert, lastGameIndex = -1) → Spielzustand im Modul so vorbelegen, dass handle() auch ohne init() nicht crasht.
+Debug-Tasten in view.js (d v g r m h t f F s, PageUp/PageDown/Home) feuern zusätzlich zu Spieltasten → diese Tasten in Spielen nicht belegen. (Bekannte Kollision: game-049 nutzt T für Teammodus.)
+Eine einmal geworfene Exception bleibt als rote ERROR-Zeile bis zum Reload stehen (error wird nie zurückgesetzt) → Fehler in Spielen vermeiden, nicht auf Neustart verlassen.
+Intro-Dauer zählt Frames statt Sekunden (60 Hz ≈ 17 s).
+Nur Engine-intern (für spätere Fixes):
+
+Farbmatrix in LaserApi.js (Video-Kernel ~L584, matrixMulVec) multipliziert pixel[i] statt pixel[x] → keine echte Matrix; matrixMul schreibt transponiert. Helligkeit/Kontrast/Sättigung wirken anders als gedacht.
+getColorDistance returnt früh mit RGB-Abstand → colorWeights und HSV-Code wirkungslos.
+Downscale-Kernel: Schleifen <= (zählt Nachbarpixel mit), / resY statt / resX, erste Zeile liest ausserhalb des Bildes.
+Filter-/Lowpass-Kernel ohne Randprüfung; Lowpass pos±1 wrappt über Zeilenränder.
+Kombinierter Kernel wird einmal gebaut → gridResolution zur Laufzeit ändern passt nicht mehr.
+createSubtractLastCanvasKernel kaputt (resY undefiniert), trotzdem in combineKernels; LaserApi.init() ruft auskommentiertes updateCanvasRegular() (toter Code).
+FPS-Anzeige misst nur CPU-Zeit im frameHandler, nicht Frame-Abstand.
+Pro Frame ~20 DOM-Reads + JSON.stringify der Config für localStorage.
+Kamera via veraltetem navigator.getUserMedia, leerer Fehler-Callback; getFine ausserhalb try/catch.

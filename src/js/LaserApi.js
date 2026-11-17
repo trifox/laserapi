@@ -90,7 +90,7 @@ function matrixMul(a, b) {
       for (let i = 0; i < 4; i++) {
         sum += a[y][i] * b[i][x];
       }
-      result[x][y] = sum;
+      result[y][x] = sum;
     }
   }
   return result;
@@ -584,7 +584,7 @@ var LaserApi = {
         for (let i = 0; i < 4; i++) {
           sum = 0;
           for (let x = 0; x < 4; x++) {
-            sum += colormatrix[x][i] * pixel[i];
+            sum += colormatrix[x][i] * pixel[x];
          
           }
           result[i] = sum; 

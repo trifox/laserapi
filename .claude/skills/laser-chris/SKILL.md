@@ -1,6 +1,6 @@
 //
-Dieser Skill wird nur von Christian Kleinhuis gepflegt, er deckt die generelle einstellung zu Laser Games aus
-Menschlicher Perspektive ab
+Dieser Skill wird nur von Christian Kleinhuis gepflegt, 
+er deckt die generelle einstellung zu Laser Games aus Menschlicher Perspektive ab
 //
 
 // einleitende worte
@@ -101,4 +101,35 @@ es als multiplayer one pixel game zu haben muss aber immer mitgereicht werden qu
 -- nimm input von eingabe
 -- frage ob spielthema und spielgenre korrekt erkannt wurden
 -- rufe dann skil new-laser-game auf mit thema und genre aufbereitet fuer skill, aber beschreibe halt super geil detailliert was der new-laser-game skill machen soll
+
+
+
+// Backend Christian
+
+also, christian hat ja auch die gesamte - aktuell noch ein wenig buggy - engine geschrieben welche aus dem videostream die differenz zu einem laser ermittelt es besteht aktuell aus folgendem process
+
+1. video input
+2. der video input sollte auf die bildschirmausgabe gerichtet sein, so das das video die komplette projection aufnimmt, also klassische rueckkopplung
+3. in dem video muss dann der rectanguläre bereich markiert werden welcher die projection ist, also ein rahmen um den monitor/leinwand ziehen
+4. perspektive verzerrung wird aktuell von christians eigenem algorithmus der nur auf lerp an x/y und steigungen basiert implementiert
+4.1 das muss reviewed optimiert und automatisiert werden, es gibt doch eine matrix perspektive rueck operation also wenn es da etwas gibt immer rausballern die idee aber es muss einfacher nicht komplexer werden
+4.2 der lerp xy algorithmus liegt unter massivem review auch den immer wieder ueberdenken
+4.3 automatisierung der konfiguration ohne ki, also ohne aufruf eines llm oder aehnlichem
+4.3.1 koennen wir eine mini lokale ki schaffen die das raster und die positionierung dieses rechtecks via ki loest aber ohne externen api call aehnlich wie mediapipe von google ja auch alles lokal macht das waere mega gut5 wenn man eine ki trainieren koennte mit videobildern und positionierten rectange, also denk drueber nach gib python code und modell inference halt im js i am looking forward to it lets see denke aber ist eigentlich kein problem, warte aber bis ki es selbst loesen kann war 2017 zu dumm und faul es mit python zu entwickeln, hehe lets see
+5. dann kommt die einstellung der laser farbe, man kann mit linkem und rechtem mausbutton die primaer und sekundaerfarbe anklicken im preview modus
+5.1 hier findet ein blurring und contrast/helligkeit/intensitaets process auf dem input video an, ziel ist immer ein eindeutiges laser signal aus dem videostream zu erhalten - gemapped auf die aufgezogene matrix
+5.2 der laser ist in der mitte leider manchmal komplett weiss, je nach belichtung lichtverhaeltnissen und allem
+6. am ende sollte wenn das raster eingeblendet ist die debug anzeige perfekt orthogonal unter/ueber dem raster liegen
+7. dann kann das spiel aktiviert werden ;) das war im prinzip tutorial wie es aus user sicht wirkt, die einzelnen phasen aus technischer sicht werde ich dann noch detaillierter aufzeichnen
+
+
+
+// ki christian
+
+wenn du ein spiel machen sollst, verwende folgende herangehensweise:
+
+- nutze random-words skill um dich inspirieren zu lassen, schlage auch erweiterungen desselben vor ist nur erste implementation, also kreativitaet wie koennen wir kreativer werden mit deterministischen kis
+- game-genres ist der zweite skill der dir helfen kann generell eine idee weiter einzugrenzen, auch hier den skill immer selbst reviewen und verbesserungsvorschlaege machen, mehr woerter, genres whatever comes into your mind man
+- fuer das eigentliche implementieren des spiels ruf den new-laser-game skill auf, aber auch den immer wieder mal reviewen ob der die neuesten infos aus diesem skill hat oder ob er noch irgendwas vergeigt
+- games sollen lebhaft sein also lustige animationen, spass machen also nach allen regeln der spiel kunst funktionieren das man nie verloren hat bis zum gewinn quasi nutze dafuer auch die deutsche spiel des jahres regeln die ich aktuell nicht im kopf hab, aber die definieren ja gute brettspiele also auch computerspiele oder lasergames, hehehe
 

@@ -76,6 +76,9 @@ var games = [
   new GameWrapper(require('./setups/game-046-grandprix').default),  // geil und ausbaufaehig
   new GameWrapper(require('./setups/game-047-wuerfelreiche').default),  // geil und ausbaufaehig
   new GameWrapper(require('./setups/game-048-umfrage').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-049-froschpolizei').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-050-leuchtlinge').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-051-hydra').default),  // geil und ausbaufaehig
   new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // geil und ausbaufaehig
   new GameWrapper(require('./setups/game-999-gui-showcase').default),  // geil und ausbaufaehig
 ];
