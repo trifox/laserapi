@@ -455,7 +455,7 @@ function renderHud(ctx) {
 }
 
 export default {
-  name: 'Seifenblasen Kamm (Opus55)',
+  name: 'Seifenblasen Kamm ',
   description: ` 
 
   Seifenblasen in 4 Farben steigen von unten nach oben

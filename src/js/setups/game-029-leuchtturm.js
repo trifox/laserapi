@@ -623,7 +623,7 @@ function renderEffects(ctx, elapsed) {
 }
 
 export default {
-  name: 'Hafen Lotse (Opus55)',
+  name: 'Hafen Lotse ',
   description: `
 
   Schiffe tauchen rechts auf

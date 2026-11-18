@@ -1010,7 +1010,7 @@ function handleGameOver(grid, elapsed, ctx) {
 }
 
 export default {
-  name: 'Kristallwacht (Opus55)',
+  name: 'Kristallwacht ',
   description: `Gegner ziehen über den Leuchtpfad 
   zum Kristall in der Mitte
 

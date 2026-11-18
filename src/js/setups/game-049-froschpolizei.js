@@ -62,11 +62,11 @@ var highscore = createHighscore('Froschpolizei', 'punkte');
 // --- Balancing ---
 const DIFFICULTY = {
   // Autos
-  carStartSpeed: 170, // px/s
+  carStartSpeed: 120, // px/s
   carSpeedPerLevel: 22,
-  carMaxSpeed: 360,
+  carMaxSpeed: 260,
   laneSpeedMul: [1.0, 1.15, 0.9, 1.25],
-  spawnStart: 3.4, // s zwischen zwei Autos pro Spur
+  spawnStart: 8.4, // s zwischen zwei Autos pro Spur
   spawnFactor: 0.88,
   spawnMin: 1.4,
   carRadius: 62, // Laser-Messkreis eines Autos
@@ -82,11 +82,11 @@ const DIFFICULTY = {
   convoyFromLevel: 3,
   bigConvoyFromLevel: 5,
   queueGap: 34, // Mindestabstand im Stau
-  harmlessSpeed: 25, // langsamer als das (px/s) überfährt ein Auto keinen Frosch
+  harmlessSpeed: 35, // langsamer als das (px/s) überfährt ein Auto keinen Frosch
   vollgasFactor: 1.3, // Teammodus: Anleuchten auf gegnerischer Hälfte
   keyFillSpeed: 260, // Tastatur-Test
   // Fluss
-  logBaseSpeed: [85, 110, 95],
+  logBaseSpeed: [65, 90, 85],
   logSpeedPerLevel: 0.07,
   logFillSpeed: 95,
   logEmptySpeed: 35,

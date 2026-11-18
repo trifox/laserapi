@@ -377,10 +377,10 @@ function renderLives(ctx) {
 }
 
 export default {
-  name: 'Melodien (simon) (Opus55)',
+  name: 'Melodien (simon) ',
   description: `
 
-(Opus55)
+
 
   Immer längere Melodien nachspielen.
 

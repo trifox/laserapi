@@ -1233,7 +1233,7 @@ function renderChallengeHud(ctx) {
 /* ---------------------------------------------------------------- Spiel-Export */
 
 export default {
-  name: 'Laser-Groovebox (Opus55)',
+  name: 'Laser-Groovebox ',
   description: `
   Ihr macht gemeinsam Musik!
 

@@ -808,7 +808,7 @@ function toKmh(speed) {
 }
 
 export default {
-  name: 'Laser-Kicker (Opus55)',
+  name: 'Laser-Kicker ',
   description: `
 Die linke Hälfte des Publikums (Team Links) 
 spielt gegen die rechte (Team Rechts)

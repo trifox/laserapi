@@ -1,4 +1,4 @@
-import { Solver } from 'p2';
+
 import util, { getRgbSpreadHex, renderText, renderTextStroke } from './util.js';
 import { length, lerp2d } from './math.js';
 var helper = require('./helper.js');
@@ -53,10 +53,10 @@ var games = [
 //  new GameWrapper(require('./setups/game-iframe-loader').default),
   new GameWrapper(require('./setups/game-022-fractal-bakery').default), // jawoll das letzte von menschen inspirierte original game mit handarbeit, aber mit ki vollendet
   new GameWrapper(require('./setups/game-023-feuerwehr').default), // geht, ki generiert von guten/schlechten targets funktioniert aber finde ich
-  new GameWrapper(require('./setups/game-024-schaeferei').default), // inspiriert von den ck original games, geht durchaus gute levelstruktur
+  // einfach zu schlecht new GameWrapper(require('./setups/game-024-schaeferei').default), // inspiriert von den ck original games, geht durchaus gute levelstruktur
   new GameWrapper(require('./setups/game-025-seifenblasen').default), // sehr gut macht durchaus laune und wenn man nix macht geht spiel immer weiter, witzig geworden
 // total langeweilig und stressig  new GameWrapper(require('./setups/game-026-tauziehen').default),
-  new GameWrapper(require('./setups/game-027-simon').default), // jo, klassik funktioniert aber
+  new GameWrapper(require('./setups/game-027-simon').default), // jo, klassik funktioniert aber echt nice eigentlich
   new GameWrapper(require('./setups/game-028-asteroiden').default), // auch gut nur skalierung noch off, alles zu gross muss kleiner werden
   new GameWrapper(require('./setups/game-029-leuchtturm').default), // ports of call maessig, eigentlich echt gut finde ich
   new GameWrapper(require('./setups/game-030-maulwurf').default), // eher langeweilig kandidat zum rausfliegen

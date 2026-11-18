@@ -568,7 +568,7 @@ function renderFloatingTexts(ctx, elapsed) {
 }
 const highScoreInstance=highscoreManager("FeuerWehr","Score");
 export default {
-  name: 'Feuerwehr (Opus55)',
+  name: 'Feuerwehr ',
   description: `
 In der Häuserzeile brechen in den Fenstern Brände aus.
 

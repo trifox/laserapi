@@ -1302,7 +1302,7 @@ function drawShowcase(ctx, y) {
 }
 
 export default {
-  name: 'Laser-Ausgrabung (Opus55)',
+  name: 'Laser-Ausgrabung ',
   description: `Unter der Erde liegen
   Knochen, Schädel, Amphoren, Münzen, Schwerter und Ammoniten
   

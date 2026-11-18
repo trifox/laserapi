@@ -1170,7 +1170,7 @@ function handleGameOver(grid, elapsed, ctx) {
 }
 
 export default {
-  name: 'Keks-Oase (Opus55)',
+  name: 'Keks-Oase ',
   description: `
 Mitten in der Pixel-Wüste liegt ein Keksgarten.
 Die wütende Sonne wirft glühende Hitze-Pixel auf die Beete!

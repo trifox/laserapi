@@ -70,7 +70,7 @@ const SIZES = {
   klein: { radius: 50, speed: 95, hitTime: 0.3, label: 'kleine' },
 };
 
-const PLANET = { x: 1920 / 2, y: 1080 / 2, radius: 110 };
+const PLANET = { x: 1920 / 2, y: 1080 / 2, radius: 75 };
 
 var lastTime = 0;
 var gameState = 'gameover';
@@ -162,8 +162,8 @@ function createAsteroid(sizeKey, x, y, vx, vy) {
   let angle = Math.random() * Math.PI * 2;
   let velX = vx;
   let velY = vy;
-  const rockFill = getRgbSpreadHex(laserConfig.testColor, 0.12, 0.35, 0.22);
-  const rockLine = getRgbSpreadHex(laserConfig.testColor, 0.12, 0.45, 0.75);
+  const rockFill = getRgbSpreadHex(laserConfig.testColor, 0.52, 0.35, 0.22);
+  const rockLine = getRgbSpreadHex(laserConfig.testColor, 0.52, 0.45, 0.75);
   const hitColor = getRgbSpreadHex(laserConfig.testColor, 0.45, 0.8, 1);
 
   const asteroid = guiPixelFillButton({
@@ -578,7 +578,7 @@ function renderEffects(ctx, elapsed) {
 }
 
 export default {
-  name: 'Laser-Asteroids (Opus55)',
+  name: 'Laser-Asteroids ',
   description: `
 
   Von allen Seiten fliegen Asteroiden 

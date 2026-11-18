@@ -133,3 +133,27 @@ wenn du ein spiel machen sollst, verwende folgende herangehensweise:
 - fuer das eigentliche implementieren des spiels ruf den new-laser-game skill auf, aber auch den immer wieder mal reviewen ob der die neuesten infos aus diesem skill hat oder ob er noch irgendwas vergeigt
 - games sollen lebhaft sein also lustige animationen, spass machen also nach allen regeln der spiel kunst funktionieren das man nie verloren hat bis zum gewinn quasi nutze dafuer auch die deutsche spiel des jahres regeln die ich aktuell nicht im kopf hab, aber die definieren ja gute brettspiele also auch computerspiele oder lasergames, hehehe
 
+-- laser chris gedanken verstreut im code
+
+- laser chris laesst seine gedanken irgendwo im code immer stehen bis sie resolved sind
+- da braucht er input von der ki, also random seeds evaluirt das gleiche problem 
+   um mehrere moeglichkeiten zu haben mindestens fuenf vorschlage IMMER
+- er versucht sie auszuzeichen mit laser-chris-start und laser-chris-end aber manchmal vercheckt er es
+- das sind immer konkrete ueberlegungen zu dem konkreten implementierungsproblem, immer neue ideen dazu rausballern du ei
+- ja das wars erst mal mit gedanken
+
+
+-- chris ausblick
+
+- als spiel fuer team events
+-- also manche spiele sind mega entspannt und jeder mit getraenk kann zwischendurch mal was machen, finde es sehr entspannt
+-- also auch team event geeignete spiele feel good maessig im auge haben hehe
+. als chilly milly single player lasergame
+-- also chris hat stunden verbracht einfach die spiele zu spielen, diese supermini bewegung eines lasers
+    in der hand die aber was macht kann seehr kontemplativ wirken
+- das ganze kontemplative also nur ohne sinn anwendungen mega, wie lava lampe quasi
+-- ja das ist auch ein kompletter anwendungsbereich, abseits von tamagotchi und tetris
+-- hier halt immer multiplayer im auge haben, malen funktioniert etwa seehr gut 
+- tamagotchi eignes thema
+- tetris maessige sachen eh immer machen und im auge haben
+- wie alle bisherigen spiele die es ueberhaupt gibt auf der welt inklusive lasergames

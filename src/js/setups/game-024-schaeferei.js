@@ -530,7 +530,7 @@ function renderFloatingTexts(ctx, elapsed) {
 }
 
 export default {
-  name: 'Schafspferch (Opus55)',
+  name: 'Schafspferch ',
   description: `
 Die Schafe fliehen vor euren Lasern. 
 

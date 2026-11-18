@@ -577,7 +577,7 @@ function renderHud(ctx) {
 }
 
 export default {
-  name: 'Best Weed (Opus55)' ,
+  name: 'Best Weed ' ,
   description: `
 
 

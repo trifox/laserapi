@@ -939,7 +939,7 @@ Upgrades: Energie+ ${team.levels.energy} · Panzer+ ${team.levels.armor} · Batt
 // ---------------------------------------------------------------------------
 
 export default {
-  name: 'Torpedo-2Ai (Opus55)',
+  name: 'Torpedo-2Ai ',
   description: ` 
 Zerstöre gegnerische Basis
 indirekt durch schiffe

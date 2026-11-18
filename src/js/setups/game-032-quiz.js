@@ -362,7 +362,7 @@ function renderBar(ctx, x, y, width, height, fraction, color) {
 }
 
 export default {
-  name: 'Quiz (Opus55)',
+  name: 'Quiz ',
   description: `
 
 Oben steht eine Frage 

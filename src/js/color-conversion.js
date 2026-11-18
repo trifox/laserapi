@@ -1,3 +1,8 @@
+// laser-chris-start
+// eh was war die idee hier, wird es gebraucht, kann es weg?!??!?!??!
+// color eh ja nen thema aber macht et watt ist de froch
+// laser-chris-end
+
 /**
  * Converts an RGB color value to HSL. Conversion formula
  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.

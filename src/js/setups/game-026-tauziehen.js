@@ -508,7 +508,7 @@ function averageForce(team) {
 }
 
 export default {
-  name: 'Tauziehen (Opus55)',
+  name: 'Tauziehen ',
   description: ` 
 
 Die linke Hälfte des Publikums spielt gegen die rechte.

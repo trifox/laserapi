@@ -524,7 +524,7 @@ function renderFloatingTexts(ctx, elapsed) {
 }
 
 export default {
-  name: 'LS Sonnenblumen (Opus55)',
+  name: 'LS Sonnenblumen ',
   description: `
 LANDWIRTSCHAFT SIMULATOR
 
