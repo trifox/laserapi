@@ -69,18 +69,19 @@ var games = [
   new GameWrapper(require('./setups/game-038-kristallwacht').default), // so lala, geht aber tower defense ganz klassisch
   new GameWrapper(require('./setups/game-039-sternenlaeufer').default), // richtig witzig und gut geworden
   new GameWrapper(require('./setups/game-040-wortlicht').default), // von georg, klappt soweit mit angepasstgen kontrasten der buttons nicht zu hell
-// mit hintergrund, bringt irgendwie nix, so lala spielidee tamagochi  new GameWrapper(require('./setups/game-042-oasenhueter').default),
+// mit hintergrund, bringt irgendwie nix, so lala spielidee tamagochi 
+ new GameWrapper(require('./setups/game-042-oasenhueter').default),
   new GameWrapper(require('./setups/game-043-brueckenwaechter').default), // ein bisschen orga gute grafik weil buttons nur unten, passtg
   new GameWrapper(require('./setups/game-044-lasershark2').default),// shark game auch gut
   new GameWrapper(require('./setups/game-045-bollwerk').default),  // geil und ausbaufaehig
   new GameWrapper(require('./setups/game-046-grandprix').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-047-wuerfelreiche').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-048-umfrage').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-049-froschpolizei').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-050-leuchtlinge').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-051-hydra').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // geil und ausbaufaehig
-  new GameWrapper(require('./setups/game-999-gui-showcase').default),  // geil und ausbaufaehig
+  new GameWrapper(require('./setups/game-047-wuerfelreiche').default),  // geil und ausbaufaehig, hier noch echt problems wie es funktionieren soll
+  new GameWrapper(require('./setups/game-048-umfrage').default),  // standard could have been a powerpoint, hehe jo aber hammes
+  new GameWrapper(require('./setups/game-049-froschpolizei').default),  // funktioniert eigentlich geil, aber aktuell noch balancing probleme mit geschwindigkeit also am anfang zu schnell quasi
+  new GameWrapper(require('./setups/game-050-leuchtlinge').default),  // geil, ein wenig mehr varianz in hoeheren leveln durchaus noch machen
+  new GameWrapper(require('./setups/game-051-hydra').default),  // ui, finde echt gut
+  new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // testscene fuer ai aktualisierte ui komps
+  new GameWrapper(require('./setups/game-999-gui-showcase').default),  // neue nur ai generierte komps test seite
 ];
 
 // logo lasergames

@@ -3,6 +3,10 @@ Dieser Skill wird nur von Christian Kleinhuis gepflegt,
 er deckt die generelle einstellung zu Laser Games aus Menschlicher Perspektive ab
 //
 
+// chris macht aktuell alles hier, also jeder kommentar wir immer laser-chris zugeordnet!!1einself!
+
+1einself! ist copyricht ck es meint halt brutal mit shift 1und! zu druecken, hrhr
+
 // einleitende worte
 
 Ok, also die philosophie der laser games war immer gewesen:
