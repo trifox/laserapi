@@ -80,6 +80,7 @@ var games = [
   new GameWrapper(require('./setups/game-049-froschpolizei').default),  // funktioniert eigentlich geil, aber aktuell noch balancing probleme mit geschwindigkeit also am anfang zu schnell quasi
   new GameWrapper(require('./setups/game-050-leuchtlinge').default),  // geil, ein wenig mehr varianz in hoeheren leveln durchaus noch machen
   new GameWrapper(require('./setups/game-051-hydra').default),  // ui, finde echt gut
+  new GameWrapper(require('./setups/game-052-horde2').default),  //  
   new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // testscene fuer ai aktualisierte ui komps
   new GameWrapper(require('./setups/game-999-gui-showcase').default),  // neue nur ai generierte komps test seite
 ];
