@@ -17,7 +17,7 @@ var currentStream = null; // Speichert den aktiven MediaStream, um ihn später s
 const CAMERA_SETTINGS = {
   // Belichtungszeit: Kleinere Werte = dunkleres Bild, verhindert Schlieren (Motion Blur) bei schnellen Lasern.
   // Einheit meist in 100 Mikrosekunden (50 = 5ms).
-  exposureTime: 40,
+  exposureTime: 250,
   
   // Weißabgleich komplett ausschalten? (true = none, verhindert automatisches "Pumpen" der Helligkeit/Farben)
   disableWhiteBalance: true,

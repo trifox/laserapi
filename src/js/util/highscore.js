@@ -1,9 +1,6 @@
 var laserConfig = require('../LaserApiConfig.js').default;
-import util, {
-  drawNgon,
-  getRgbSpread,
-  getRgbSpreadHex,
-  removeItemFromArray,
+import util, { 
+  getRgbSpreadHex, 
 } from '../util.js';
 
 export default function (highscoreGameName, highscoreGameKeyPointsFieldName) {

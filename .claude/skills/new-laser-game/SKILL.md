@@ -112,3 +112,12 @@ Jedes der beiden Konzepte muss alle drei Säulen erfüllen:
 3. Dem Nutzer zum Schluss knapp berichten: Spielname, Datei, Idee in 2–3 Sätzen, Level-Mechanik,
    Tastatur-Testbelegung, und dass er es mit `npm run dev` in der Selectbox testen kann.
    Ehrlich sagen, dass es nur gebaut, nicht im Browser mit Lasern getestet wurde.
+
+# performance und agents
+ 
+- spare soviele tokens wie moeglich, bild analyse und spiel analyse soll nicht teil der standard processes sein
+- hinterlege den prompt und das angewendete modell definitiv immer im source .js file des erstellten spiels
+- mache aber immer 3 screenshots pro erstelltem game
+- mach halt keine fehler dann brauchste auch keine screenshots, hehe, aber klar manchmal gehts nicht ohne!
+- halte die externen bibliotheken so klein wie moeglich, frage IMMER IMMER IMMER nach wenn du eine externe datei anlegen moechtest
+-- klassifiziere sie als gui, util, und lege sie dann auch wiederverwendbar gut dokumentiert entsprechend ab, also nicht wie damals game 55 mit cellphysics, das ist ja eventuell wiederverwendbar, oder pack es unten als js object in die single game datei
