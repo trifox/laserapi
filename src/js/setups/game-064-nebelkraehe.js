@@ -5693,12 +5693,20 @@ const MINIGAMES = [mgFeuergefecht, mgScharfschuetze, mgMinenfeld, mgNachtwache, 
 
 export default {
   name: 'Trupp Nebelkrähe',
-  description:
-    'Trupp Nebelkrähe – nach Lost Patrol (Amiga 1990)\n\n' +
-    'Euer Trupp ist hinter der Grenze abgeschnitten. Drei Gebiete bis zur Basis – immer nach RECHTS.\n' +
-    'Auf der Karte: gemeinsam ein Richtungs-Pad anleuchten, das volle Pad gewinnt.\n' +
-    'Jeder Schritt kostet Proviant. Unterwegs warten 14 Begegnungen – jede ein eigenes Laser-Minispiel.\n' +
-    'Eigene Leute nie anleuchten! Im Menü gibt es einen Minispiel-Test.',
+  description: `nach Lost Patrol (Amiga 1990)
+  
+  Euer Trupp ist hinter der Grenze abgeschnitten
+  Drei Gebiete bis zur Basis immer nach RECHTS
+    
+   Auf der Karte: 
+    gemeinsam ein Richtungs-Pad anleuchten, das volle Pad gewinnt
+
+    Jeder Schritt kostet Proviant. Unterwegs warten 14 Begegnungen 
+    jede ein eigenes Laser-Minispiel
+
+    Eigene Leute nie anleuchten! 
+    
+    Im Menü gibt es einen Minispiel-Test`,
   image: 'media/img/gametitles/laser-defense-###4###.png',
   init() {
     ensurePalette();

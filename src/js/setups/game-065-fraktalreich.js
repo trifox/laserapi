@@ -3485,12 +3485,12 @@ const BATTLES = [btFeldschlacht, btFortsturm, btZugueberfall, btBrueckensprengun
 export default {
   name: 'Nord gegen Süd im Fraktalreich',
   description:
-    'Nord gegen Süd im Fraktalreich – frei nach North & South (Amiga 1989)\n\n' +
-    'Linke Saalhälfte = MANDELBROTIEN (Apfelmännchen), rechte Saalhälfte = JULIANA (Spiralkringel).\n' +
+    'frei nach North & South (Amiga 1989)\n\n' +
+    'Linke Saalhälfte = MANDELBROTIEN (Apfelmännchen), rechte Saalhälfte = JULIANA (Spiralkringel).\n\n' +
     'Armeen anleuchten bis der Ring voll ist, auf eine Nachbar-Provinz ziehen, loslassen = marschieren.\n' +
-    'Treffen sich Armeen, gibt es eine Action-Schlacht – beide Hälften gleichzeitig.\n' +
-    'Minen liefern Iterationen (JIPII!) für neue Armeen. Den Iterations-Zug anleuchten = plündern.\n' +
-    'Wer alle Provinzen hat – oder nach 8 Minuten die meisten – gewinnt. Im Menü: Schlacht-Test.',
+    'Treffen sich Armeen, gibt es eine Action-Schlacht – beide Hälften gleichzeitig.\n\n' +
+    'Minen liefern Iterationen (JIPII!) für neue Armeen. \nDen Iterations-Zug anleuchten = plündern.\n\n' +
+    'Wer alle Provinzen hat – oder nach 8 Minuten die meisten – gewinnt. \n\nIm Menü: Schlacht-Test.',
   image: 'media/img/gametitles/laser-basefight-###4###.png',
   init() {
     ensurePalette();
