@@ -601,21 +601,22 @@ function renderLegend(ctx) {
 }
 
 export default {
-  name: 'Fractal-Bakery',
+  name: 'Fractal-Orbits',
   description: `
-Willkommen in der Fraktal-Bäckerei!
+Aufgabe ist es den Orbit im Mandelbrot zu finden
 
-Julia-Mengen fallen in den Teig.
-Zusammenhängende Julias sind gute Rosinen: reinfallen lassen!
-Staubige Julias verklumpen den Teig: abschiessen!
-Wer eine Rosine abschiesst, verbrennt sie.
+Es wird eine julia menge, inklusive ihres orbits angezeit
 
-Grosse Staubwolken brauchen mehrere Laser gleichzeitig.
-Erreicht der Teig die Verstopfungs-Linie, ist Feierabend.`,
+aufgabe ist
+
+den punkt gemeinsam zu finden im 
+dargestellten fraktal
+
+`,
 
 image: 'media/img/gametitles/laser-fire-###4###.png',
   init: function () {
-    console.log('init game fractal bakery');
+    console.log('init game fractal orbits');
     resetGame();
   },
   handle: function (grid) {
@@ -643,10 +644,8 @@ image: 'media/img/gametitles/laser-fire-###4###.png',
     });
     util.renderTextDropShadow({
       ctx,
-      text: `Die Teigmaschine ist verstopft!
-       Ihr habt ${gameTime.toFixed(1)}s gebacken und Level ${level} erreicht.
-${Math.floor(gameScore)} Mandelbrötchen verkauft, ${stats.shot} Staubwolken abgeschossen,
-${stats.raisins} Rosinen eingebacken, ${stats.burned} Rosinen verbrannt.`,
+      text: `Ihr habt ${gameTime.toFixed(1)}s mandelbrot locations identifiziert und Level ${level} erreicht.
+Insgesamt N Orbits klassifiziert, danke ey!`,
       fontSize: '45px',
       lineHeight: 70,
       dropDistX: 5,
