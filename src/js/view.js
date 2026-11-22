@@ -88,6 +88,12 @@ var games = [
   new GameWrapper(require('./setups/game-057-fallensteller').default),  //  
   new GameWrapper(require('./setups/game-058-heliretter').default),  //  
   new GameWrapper(require('./setups/game-059-kolonieauktion').default),  //   
+  new GameWrapper(require('./setups/game-060-domination').default),  //   
+  new GameWrapper(require('./setups/game-061-labyrinth').default),  //   
+  new GameWrapper(require('./setups/game-062-sortierspiel').default),  //   
+  new GameWrapper(require('./setups/game-063-tempelsturz').default),  // indiana jones inspiriert   
+  new GameWrapper(require('./setups/game-064-nebelkraehe').default),  // amiga lost inspiriert, lol 14 minigames   
+  new GameWrapper(require('./setups/game-065-fraktalreich').default),  // amiga north und south inspiriert, lol auch minigames
   new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // testscene fuer ai aktualisierte ui komps
   new GameWrapper(require('./setups/game-999-gui-showcase').default),  // neue nur ai generierte komps test seite
 ];
