@@ -389,6 +389,12 @@ async function frameHandler() {
   //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
   var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
 
+/**
+ hier bauen wir debug maessig den maus cursor als debug moeglichkeit ein anhand der bild coordinate
+tbd
+*/
+
+
   laserGrid = Lowpassfilter.handle(laserGrid, elapsed);
 
 
