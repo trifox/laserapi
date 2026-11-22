@@ -111,26 +111,26 @@ const SETTINGS = {
   startMedkits: 1,
   hoursPerStep: 2,
   walkTime: 0.55, // s pro Schritt (Animation)
-  revealRadius: 1,
+  revealRadius: 2, // der revealradius sollte eigentlich vom fitness abhaengen, aber ok
   padRadius: 66,
   introDuration: 2.6,
   resultDuration: 3.4,
   eventDuration: 2.8,
   transitionDuration: 3.5,
   starveEvery: 3, // ohne Proviant: alle n Schritte wird jemand schwächer
-  randomEncounterChance: 0.14,
-  maxParticles: 400,
+  randomEncounterChance: 0.34,
+  maxParticles: 300,
   maxFloaters: 30,
 };
 
 const DIFFICULTY = {
   // pro Screen (0, 1, 2)
-  minigamesPerScreen: [5, 5, 4],
-  findsPerScreen: [3, 3, 2],
+  minigamesPerScreen: [5, 7, 9],
+  findsPerScreen: [4, 3, 4],
   swampPerScreen: [3, 6, 2],
-  restPerScreen: [1, 1, 1],
-  villagePerScreen: [1, 1, 0],
-  cavePerScreen: [1, 1, 1],
+  restPerScreen: [1, 2, 3],
+  villagePerScreen: [1, 2, 3],
+  cavePerScreen: [2, 1, 3],
   caveJump: 3,
 };
 
@@ -142,7 +142,7 @@ const SCREENS = [
   { name: 'Bergpass zur Basis', seedR: 0.285, seedI: 0.01, hue: 0.58 },
 ];
 
-const SQUAD_NAMES = ['Feldwebel Brakk', 'Ida Morw', 'Tjark', 'Lenni Stoltz', 'Ossip', 'Mara Quell', 'Jorin', 'Funker Pellmann'];
+const SQUAD_NAMES = ['Colonel Cologne', 'Seargent Searge', 'Meister Proper', '', 'Ossi Oskar', 'Wessi Wilhelm', 'Klara Klahr', 'Claudia Diebh'];
 
 const MG_NAMES = [
   'Feuergefecht',
