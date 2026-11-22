@@ -595,16 +595,12 @@ function renderLegend(ctx) {
 }
 
 export default {
-  name: 'Fractal-Orbits',
+  name: 'Fractal-Simon',
   description: `
-Aufgabe ist es den Orbit im Mandelbrot zu finden
+  
+Die Iterationen Leuchten auf
 
-Es wird eine julia menge, inklusive ihres orbits angezeit
-
-aufgabe ist
-
-den punkt gemeinsam zu finden im 
-dargestellten fraktal
+Spielt sie nach!
 
 `,
 

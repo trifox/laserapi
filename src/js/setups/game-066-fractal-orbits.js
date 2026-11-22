@@ -605,12 +605,21 @@ export default {
   description: `
 Aufgabe ist es den Orbit im Mandelbrot zu finden
 
-Es wird eine julia menge, inklusive ihres orbits angezeit
+Es wird eine julia menge
+links oben
 
+Und der orbit dieser julia menge
+rechts oben 
+
+angezeigt
 aufgabe ist
 
-den punkt gemeinsam zu finden im 
-dargestellten fraktal
+die stelle in der jeweiligen
+Mandelbrot uebersicht zu finden
+
+aber achtung:
+es sind sehr viele unterschiedliche base mandelbrote implementiert
+phoenix, burnings ship usw...
 
 `,
 

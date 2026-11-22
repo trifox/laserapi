@@ -594,16 +594,13 @@ function renderLegend(ctx) {
 }
 
 export default {
-  name: 'Fractal-Orbits',
+  name: 'Fractal-Iterations',
   description: `
-Aufgabe ist es den Orbit im Mandelbrot zu finden
 
-Es wird eine julia menge, inklusive ihres orbits angezeit
+  Markiert die vorgegebene
 
-aufgabe ist
-
-den punkt gemeinsam zu finden im 
-dargestellten fraktal
+  
+Iteration
 
 `,
 
