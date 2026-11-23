@@ -87,7 +87,7 @@ const SETTINGS = {
   introDuration: 1.8, // Stationskarte
   failDuration: 2.2, // Fehlerkarte
   templeDoneDuration: 3.2, // Tempel-Übergang
-  maxParticles: 400,
+  maxParticles: 300,
   padColorHue: 0.5,
 };
 

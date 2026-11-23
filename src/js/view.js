@@ -94,9 +94,9 @@ var games = [
   new GameWrapper(require('./setups/game-063-tempelsturz').default),  // indiana jones inspiriert   
   new GameWrapper(require('./setups/game-064-nebelkraehe').default),  // amiga lost inspiriert, lol 14 minigames   
   new GameWrapper(require('./setups/game-065-fraktalreich').default),  // amiga north und south inspiriert, lol auch minigames
-  new GameWrapper(require('./setups/game-068-fractal-orbits.js').default),  //  tbd
-  new GameWrapper(require('./setups/game-066-fractal-iteration.js').default),  //  tbd
-  new GameWrapper(require('./setups/game-067-fractal-simon.js').default),  // tbd
+  new GameWrapper(require('./setups/game-066-fractaliteration.js').default),  //  tbd
+  new GameWrapper(require('./setups/game-067-fraktalsimon.js').default),  //  tbd
+  new GameWrapper(require('./setups/game-068-fraktalorbits.js').default),  //  tbd
   new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // testscene fuer ai aktualisierte ui komps
   new GameWrapper(require('./setups/game-999-gui-showcase').default),  // neue nur ai generierte komps test seite
 ];
