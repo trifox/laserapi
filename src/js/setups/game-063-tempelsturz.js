@@ -56,7 +56,15 @@
  * Pixel füllt langsam, viele schnell; die Balance vergleicht relative Anteile der vier Ecken – mit
  * Millionen Pixeln funktioniert sie genauso (die Ecke ergibt sich aus der Position des Pixels).
  */
-
+/**
+ * laser-chris:
+ * ganz ok, aber keinerlei dramatik der spielablauf mit immer gleich usw geht zwar aber die spiele sind alle total daemelig 
+ * habs aber noch nicht mit mehr leuten getested bis jetzt nur laserchris allene, also 4leute spiel schon oooke aber nicht
+ * ganz klar wieso vier leute notwendig wenn es nur links rechts wackelt
+ * 
+ * schiessanlage ja toll einfach anleuchten und aus
+ * also alles total langweilig hier meiner meinung
+ */
 import util, { getRgbSpreadHex } from '../util.js';
 import { createKeyEdge, isKeyDown, clamp } from './gui/gridScan.js';
 import soundPlop from '../../../public/media/369952__mischy__plop-1.wav';

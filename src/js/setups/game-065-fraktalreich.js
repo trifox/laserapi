@@ -61,6 +61,12 @@
  * - Neue Armeen gehen verloren, wenn der Hauptstadt-Stapel schon Stärke 9 hat (spawnArmy).
  */
 
+/**
+ * laser-chris:
+ * 
+ * lol noch nicht ganz reviewed, topic nord sued auch wieder fraglich ob eher fraktalich sein sollte!
+ * 
+ * */
 import util, { getRgbSpreadHex } from '../util.js';
 import { createKeyEdge, isKeyDown as gsIsKeyDown } from './gui/gridScan.js';
 import sndShot from '../../../public/media/flash-253597_4508519-lq.mp3';

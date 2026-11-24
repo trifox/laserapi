@@ -41,6 +41,11 @@
  * keine Debug-Tasten belegt, Fraktal progressiv mit Zeitbudget statt pro Frame neu.
  */
 
+/**
+ * laser-chris:
+ * ok, aber noch viel feinjustierung noetig, gpu rendering lib fehlt mit bestehender gpujs
+ *  
+ */
 import { getRgbSpread, getRgbSpreadHex } from '../util.js';
 var util = require('../util.js').default;
 var laserConfig = require('../LaserApiConfig.js').default;

@@ -17,6 +17,10 @@
  * 
  */
 
+/**
+ * laser-chris:
+ * funktioniert, ist auch witzig fine tuning notwendig, gpu rendering lib fehlt mit bestehender gpujs
+ */
 import util, {
   drawNgon,
   getRgbSpread,

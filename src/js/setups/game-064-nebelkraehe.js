@@ -59,6 +59,24 @@
  *   { win, casualties, loot: { food, ammo }, text }.
  */
 
+/**
+ * laser-chris: wow, richtig gut geworden, ein paar ideen noch: die julia black areas sollten eigentlich irgendwelche special nice
+ * fractal minigames haben, also nix machen ich schreibe nur auf, das neue game 068 mit den fraktal orbits, uiuiu das wuerd gut passen hier
+ * 
+ * ansonsten mega gut geworden, mini games usw spitze! noch nicht alle live getested aber super, halt zu brutal, 
+ * wollen eher richtung nett und so gehen aber lost patrol style passt, aber vietnam uuiiuuiuiuiuiiuui sehr problematic auch aus
+ * propaganda gruenden also soll eigentlich eher weg die minispiele also beibehalten aber lols komplett ummapen, das ruhig mal vorschlagen
+ * wenn du reviewst also keine ahnung mit wem ich grade rede aber mach einfach
+ * 
+ * also lol alle spiele straight auf mandelbrot/julia mode mappen immer nachfragen bevor was gemacht wird, 3 auswahlmoeglichkeiten anbieten immer
+ * vor allen dingen mandelbrot mit gpu berechnen als gui library methode vorsehen
+ * inklusive formula injection, also nicht nur zquadratplusc aber fuer spaeter hier erst mal nur logging
+ * 
+ * 
+ * 
+ */
+
+
 import util, { getRgbSpreadHex } from '../util.js';
 import { createKeyEdge, isKeyDown as gsIsKeyDown } from './gui/gridScan.js';
 import sndShot from '../../../public/media/flash-253597_4508519-lq.mp3';
@@ -5695,13 +5713,17 @@ export default {
   name: 'Trupp Nebelkrähe',
   description: `nach Lost Patrol (Amiga 1990)
   
-  Euer Trupp ist hinter der Grenze abgeschnitten
-  Drei Gebiete bis zur Basis immer nach RECHTS
-    
-   Auf der Karte: 
-    gemeinsam ein Richtungs-Pad anleuchten, das volle Pad gewinnt
+  Euer Trupp ist hinter dem Julia Fractalgebirge abgeschnitten
 
-    Jeder Schritt kostet Proviant. Unterwegs warten 14 Begegnungen 
+  Drei Gebiete bis zur Basis
+    gemeinsam ein Richtungs-Pad anleuchten
+
+  Regeln
+  - bewegung kostet 1 Proviant und 2 Stunden. Sumpf kostet doppelt 
+  - Ohne Proviant wird alle paar Schritte jemand schwächer 
+   
+ 
+    Unterwegs warten 14 Begegnungen 
     jede ein eigenes Laser-Minispiel
 
     Eigene Leute nie anleuchten! 

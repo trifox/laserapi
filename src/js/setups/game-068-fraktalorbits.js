@@ -50,7 +50,14 @@
  * Engine-Rücksichten (CLAUDE.md): dt geclampt, Zustand vorbelegt (handle() ohne init()), keine
  * Debug-Tasten belegt, kein Spread-Operator, kein grid-Zugriff, Fraktale progressiv mit Zeitbudget.
  */
-
+/**
+ * laser-chris:
+ * 
+ * mega gut geworden, habs schon mit scrolling versehen, mega!
+ * aber natuerlich noch viel potzencial, insbesonder mit live gpu rendering fractals aber ist erstmal okay
+ * 
+ * 
+ *  */
 import { getRgbSpread, getRgbSpreadHex } from '../util.js';
 var util = require('../util.js').default;
 var laserConfig = require('../LaserApiConfig.js').default;
