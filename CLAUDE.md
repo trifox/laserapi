@@ -1,6 +1,6 @@
 # AGENTS.md – Laser-Spiele-Entwicklung
 
-Spiele für **10–50 Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera welche den bildschirm aufnimmt dient als input, ihr bild wird transformiert und auf ein raster mit farb abstandsfunktion zur erkennung der Laserpunkte.
+Spiele für **1–50 Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera welche den bildschirm aufnimmt dient als input, ihr bild wird transformiert und auf ein raster mit farb abstandsfunktion zur erkennung der Laserpunkte.
 
 ## Arbeitsbereich
 - die original quellcodes im setups ordner bis 022-fractal-bakery nicht anfassen oder veraendern die sind speciel da sie komplett ohne ki erzeugt wurden
