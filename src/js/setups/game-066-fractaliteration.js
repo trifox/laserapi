@@ -45,6 +45,20 @@
  * laser-chris:
  * ok, aber noch viel feinjustierung noetig, gpu rendering lib fehlt mit bestehender gpujs
  *  
+ * zur errinerung das war mein input fuer opus55
+ * 
+ * 
+ * fraktal iteration
+ * 
+ * / es wird fraktal angezeigt
+ * / aufgabe ist halt eine bestimmte iteration anzuleuchten, egal wo (daraus entstand dann fraktal-simon)
+ * // hints darf es geben
+ * // sie muss voll glowen und geil aussehen
+ * // ist aber halt je nach zoom/loc geil und sehr tief durchaus
+ * // also witz soll hier sein das tiefe zooms so iter 1056 vorgeben, hehe
+ * // nur als fraktal witz gedacht
+ * 
+ * 
  */
 import { getRgbSpread, getRgbSpreadHex } from '../util.js';
 var util = require('../util.js').default;

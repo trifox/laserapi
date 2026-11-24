@@ -55,7 +55,18 @@
  * - N: Level sofort schaffen
  *   (d v g r m h t f F s, PageUp/PageDown/Home sind in view.js Debug-Tasten und hier bewusst frei)
  */
-
+/**
+ * laser-chris:
+ * also richtig gute idee insgesamt
+ * 
+ * snapping von ablagepositionen aber noch total off:
+ * denke wir sollten da ein snapp einbauen, also wenn ziel in target range dann snap bumm und erreicht,
+ * aktuelle implementierung mit loslassen und dann snap wird von mir auch eine million procent
+ * abgelehnt, warum? naja es ist eine mechanik die hier speciell erfunden wurde aber die schon mit
+ * einfacheren weniger code mitteln haette erreicht werden koennen, also mega minus fuer zu viel selbst
+ * gemacht, das muss ich aber noch komprimieren in kompakten satz hier wieder nur logging erst mal
+ * 
+ */
 import util, { getRgbSpreadHex } from '../util.js';
 import { createKeyEdge, isKeyDown } from './gui/gridScan.js';
 import soundPlop from '../../../public/media/369952__mischy__plop-1.wav';

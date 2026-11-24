@@ -35,7 +35,22 @@
  * Engine-Rücksichten (CLAUDE.md): dt geclampt, Zustand vorbelegt (handle() läuft ohne init()), keine
  * Debug-Tasten belegt, kein Spread-Operator, Fraktal progressiv mit Zeitbudget.
  */
-
+/**fractal-chris:
+ * 
+ * auch ok geworden, hier erst mal noch log vom input prompt fuer opus55
+ * 
+ * 
+ * fraktal simon
+ * 
+ * / es wird ein fraktal gezeigt, anfang natuerlich mandelbrot
+ * // aber es kann jeder ort, jede zoompos (am rand), jedes fraktal gezeigt werden
+ * / es blinken im angezeigten bereich iterationsbereiche auf
+ * // also beispiel mandelbrot ohne zoom
+ * /// iteration 3-5 und iteration 10-12 und iteration 20-25, maxiter 50
+ * /// es geht halt6 dadrum nur die wirklich "klickbaren" bereiche als range darzustellen
+ * /// da kann es sein das bei maxiter 50 und root mandelbrot eher iters 4..15 sinn machen da sie gross genug sind
+ * 
+ */
 import { getRgbSpread, getRgbSpreadHex } from '../util.js';
 var util = require('../util.js').default;
 var laserConfig = require('../LaserApiConfig.js').default;

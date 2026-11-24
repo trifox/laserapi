@@ -60,7 +60,10 @@
  */
 
 /**
- * laser-chris: wow, richtig gut geworden, ein paar ideen noch: die julia black areas sollten eigentlich irgendwelche special nice
+ * laser-chris: 
+ * wow, richtig gut geworden!eins11! 
+ * 
+ * ein paar ideen noch: die julia black areas sollten eigentlich irgendwelche special nice
  * fractal minigames haben, also nix machen ich schreibe nur auf, das neue game 068 mit den fraktal orbits, uiuiu das wuerd gut passen hier
  * 
  * ansonsten mega gut geworden, mini games usw spitze! noch nicht alle live getested aber super, halt zu brutal, 

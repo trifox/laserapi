@@ -54,9 +54,21 @@
  * laser-chris:
  * 
  * mega gut geworden, habs schon mit scrolling versehen, mega!
- * aber natuerlich noch viel potzencial, insbesonder mit live gpu rendering fractals aber ist erstmal okay
+ * aber natuerlich noch viel potencial, insbesondere mit live gpu rendering fractals aber ist erstmal okay
  * 
+ * und noch opus55 input log 
  * 
+ * hier geht es um folgendes>
+ * 
+ * / es werden orbits gezeigt, als verbundene linien mit punkten an den konkreten werten
+ * // es wird random ein 3er orbit am anfang gezeigt, es gibt geschlossene und offene orbits
+ * // mit cardioid methode werden koordinaten nah am rand gefunden
+ * / und naja aufgabe ist es den punkt des orbits im mandelbrot mit der laser gruppe zu treffen
+ * // es wird verschiedene hints geben, also es wird immer der orbit der laser mitte angezeigt
+ * // wenn man nah dran ist pulsiert es im rythmus schneller quasi so ist die idee
+ * //
+ * // hier noch die anderen fraktal games die christian vorhat, er will ja 100 games schaffen, weia
+ * // 
  *  */
 import { getRgbSpread, getRgbSpreadHex } from '../util.js';
 var util = require('../util.js').default;
