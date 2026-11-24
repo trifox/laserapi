@@ -1,9 +1,11 @@
 # AGENTS.md – Laser-Spiele-Entwicklung
 
-Spiele für **1–50 Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera welche den bildschirm aufnimmt dient als input, ihr bild wird transformiert und auf ein raster mit farb abstandsfunktion zur erkennung der Laserpunkte.
+Spiele für **1–n Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera welche den bildschirm aufnimmt dient als input, ihr bild wird transformiert und auf ein raster mit farb abstandsfunktion zur erkennung der Laserpunkte.
 
 ## Arbeitsbereich
 - die original quellcodes im setups ordner bis 022-fractal-bakery nicht anfassen oder veraendern die sind speciel da sie komplett ohne ki erzeugt wurden
+-- eh ja, im prinzip alles ist heilig vor commit datumsjahr 2022 wo chatjipiti released wurde, straight
+-- die ki soll das durchaus kommentieren und verbesserungsvorschlaege machen
 - Nur `src/js/setups/`: Spiele als `game-NNN-<name>.js`, Eingabe-Bausteine in `gui/`.
 - Engine nicht ändern (`LaserApi.js`, `view.js`-Loop, `MasterCanvas.js`, `LaserApiConfig.js`, `util.js`, `math.js`,
   `gpuTools.js`, Webpack). Ausnahme: Spiel in `src/js/view.js` registrieren:  `new GameWrapper(require('./setups/game-NNN-name').default),`

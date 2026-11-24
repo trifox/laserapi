@@ -18,6 +18,16 @@
  * Alle Stellschrauben stehen gesammelt in DIFFICULTY.
  */
 
+/**
+ * laser-chris:
+ * 
+ * this is epic, it won in an early stage the comparade 2026 demoscene wild competition
+ * it was not ready at the time, but was basically the first live test of the concept of this
+ * particular game, and it worked quite well, so let me collec the relevant youtube links
+ * 
+ * https://www.youtube.com/watch?v=P41VV_Roi68 
+ */
+
 import util, {
   drawNgon,
   getRgbSpread,
