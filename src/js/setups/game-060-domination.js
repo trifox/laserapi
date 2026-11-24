@@ -1161,12 +1161,18 @@ const KEY_LIST = ['Space', 'Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft
 export default {
   name: 'Domination',
   description:
-    'Domination – erobert die Karte!\n' +
-    'Jede/r hat ein Kästchen mit der eigenen Laser-Nummer. Markiert einen der vier Pfeile.\n' +
-    'Wenn der Counter NULL erreicht: Ein markierter Pfeil erobert das Nachbarkästchen –\n' +
-    'außer der Nachbar zeigt zurück (beide canceln) oder ein anderes Reich zeigt auch drauf (Blockade).\n' +
-    'Eroberte Kästchen gehören zum Reich und können selbst weiter expandieren.\n' +
-    'Ende: ein Reich hat alles, oder 4 Runden ohne Veränderung – das größte Reich gewinnt.',
+    `Jede/r hat ein Kästchen mit der eigenen Laser-Nummer
+    Markiert einen der vier Pfeile
+
+    Wenn der Counter NULL erreicht: 
+    Ein markierter Pfeil erobert das Nachbarkästchen 
+    außer der Nachbar zeigt zurück (beide canceln) 
+    oder ein anderes Reich zeigt auch drauf (Blockade)
+
+    Eroberte Kästchen gehören zum Reich und können selbst weiter expandieren
+
+    Ende: ein Reich hat alles, oder 4 Runden ohne Veränderung 
+    das größte Reich gewinnt`, 
   image: 'media/img/gametitles/laser-basefight-###4###.png',
   init() {
     gameState = 'start';

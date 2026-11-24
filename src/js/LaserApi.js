@@ -101,7 +101,7 @@ gpu.addFunction(function matrixMulVec(mat, vec) {
   for (let i = 0; i < 4; i++) {
     sum = 0;
     for (let x = 0; x < 4; x++) {
-      sum += mat[x][i] * vec[i];
+      sum += mat[x][i] * vec[x];
     }
     result[i] = sum;
   }
@@ -590,6 +590,10 @@ var LaserApi = {
           result[i] = sum; 
         }
 
+        result[0] = Math.min(Math.max(result[0], 0), 1);
+        result[1] = Math.min(Math.max(result[1], 0), 1);
+        result[2] = Math.min(Math.max(result[2], 0), 1);
+
         var colorDistance1 = getColorDistance(
           [result[0], result[1], result[2]],
           [referenceColor[0], referenceColor[1], referenceColor[2]],
@@ -816,8 +820,8 @@ var LaserApi = {
         console.log('Stream received', stream);
         video.srcObject = stream;
         video.onloadedmetadata = function (e) {
-       //   console.log('Metadata received', this);
-       //   console.log('Metadata received', e);
+          //console.log('Metadata received', this);
+          //console.log('Metadata received', e);
           // Do something with the video here.
           video.play();
           LaserApi.canvas.width = Math.floor(video.videoWidth);

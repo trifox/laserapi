@@ -85,17 +85,27 @@ Weitere Helfer: `repellAll`, `checkBorderAndSlowDown` aus `game-017-thehorde.js`
 - Wie bestehende Spiele: `import`/`require(...).default` gemischt, modul-globaler Zustand.
 - Kopfkommentar mit Name + Regeln; Kommentare und Texte auf **Deutsch**. Prettier: 2 Spaces, Single Quotes, Semikolons.
 - Arrays, aus denen in `handle()` entfernt wird, mit `.slice()` iterieren.
-graphify
+
+
+## graphify
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
 Rules:
 
 When graphify-out/graph.json exists, run graphify query "<question>" before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use graphify path "<A>" "<B>" for relationships and graphify explain "<concept>" for focused concepts. When the answer is under a Markdown heading, graphify section "<heading>" prints that section's text, so the .md need not be opened. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+
 If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+
 Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+
 After modifying code, run graphify update . to keep the graph current (AST-only, no API cost).
+
 A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
+
+## Engine Status remarks
+
 Engine-Pipeline (vor handle(grid, elapsed))
+
 Aktueller Fokus: nur Spiele entwickeln. Die Engine (view.js ausser Spielregistrierung, LaserApi.js, game-000000000-lowpassfilter.js, game-wrapper.js, CanvasVideo.js, MasterCanvas.js) wird nicht angefasst. Die unten gelisteten Engine-Fehler existieren aktuell und werden in Zukunft gefixt – nicht jetzt nebenbei reparieren, sondern in Spielen darum herum bauen.
 
 Ablauf pro Frame (view.js frameHandler)
@@ -118,12 +128,10 @@ Eine einmal geworfene Exception bleibt als rote ERROR-Zeile bis zum Reload stehe
 Intro-Dauer zählt Frames statt Sekunden (60 Hz ≈ 17 s).
 Nur Engine-intern (für spätere Fixes):
 
-Farbmatrix in LaserApi.js (Video-Kernel ~L584, matrixMulVec) multipliziert pixel[i] statt pixel[x] → keine echte Matrix; matrixMul schreibt transponiert. Helligkeit/Kontrast/Sättigung wirken anders als gedacht.
-getColorDistance returnt früh mit RGB-Abstand → colorWeights und HSV-Code wirkungslos.
-Downscale-Kernel: Schleifen <= (zählt Nachbarpixel mit), / resY statt / resX, erste Zeile liest ausserhalb des Bildes.
-Filter-/Lowpass-Kernel ohne Randprüfung; Lowpass pos±1 wrappt über Zeilenränder.
-Kombinierter Kernel wird einmal gebaut → gridResolution zur Laufzeit ändern passt nicht mehr.
-createSubtractLastCanvasKernel kaputt (resY undefiniert), trotzdem in combineKernels; LaserApi.init() ruft auskommentiertes updateCanvasRegular() (toter Code).
-FPS-Anzeige misst nur CPU-Zeit im frameHandler, nicht Frame-Abstand.
-Pro Frame ~20 DOM-Reads + JSON.stringify der Config für localStorage.
-Kamera via veraltetem navigator.getUserMedia, leerer Fehler-Callback; getFine ausserhalb try/catch.
+
+## code style
+
+- immer die moderne `` string variante nutzen, nicht anfangen mit + und /n shit zu arbeiten, das muss ich alles nun anpassen, da wollte die ki wohl nur token erzeugen, also bleib bei kompakter schreibweise, aber variablen und kommentare natuerlich schoen sprechend
+- nutze immer highscore.js es ist das interface was fuer highscore funktionalitaet genutzt werden soll
+-- special sachen wie mehrere teams muessen halt als entry codiert werden, wir aber nur high/lowscore listen geben nicht noch extra listen fuer teams
+-- persistens ist aktuell noch nicht implementiert, wird aber impl des interfaces dann bald machen
