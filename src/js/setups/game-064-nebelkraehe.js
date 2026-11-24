@@ -142,7 +142,7 @@ const SCREENS = [
   { name: 'Bergpass zur Basis', seedR: 0.285, seedI: 0.01, hue: 0.58 },
 ];
 
-const SQUAD_NAMES = ['Colonel Cologne', 'Seargent Searge', 'Meister Proper', '', 'Ossi Oskar', 'Wessi Wilhelm', 'Klara Klahr', 'Claudia Diebh'];
+const SQUAD_NAMES = ['Colonel Köln', 'Sgt. HighTower', 'Meister Proper', '', 'Osi Oskar', 'Wessi Wilhelm', 'Klara Klahr', 'Claudia Diehb',"Hans Hans"];
 
 const MG_NAMES = [
   'Feuergefecht',
