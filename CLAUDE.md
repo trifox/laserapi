@@ -1,14 +1,12 @@
 # AGENTS.md – Laser-Spiele-Entwicklung
 
-Spiele für **10–50 Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera liefert pro Frame ein
-grobes, verrauschtes Grid der Laserpunkte.
+Spiele für **10–50 Leute gleichzeitig mit Laserpointern** auf einer Projektion. Eine Kamera welche den bildschirm aufnimmt dient als input, ihr bild wird transformiert und auf ein raster mit farb abstandsfunktion zur erkennung der Laserpunkte.
 
 ## Arbeitsbereich
 - die original quellcodes im setups ordner bis 022-fractal-bakery nicht anfassen oder veraendern die sind speciel da sie komplett ohne ki erzeugt wurden
 - Nur `src/js/setups/`: Spiele als `game-NNN-<name>.js`, Eingabe-Bausteine in `gui/`.
 - Engine nicht ändern (`LaserApi.js`, `view.js`-Loop, `MasterCanvas.js`, `LaserApiConfig.js`, `util.js`, `math.js`,
-  `gpuTools.js`, Webpack). Ausnahme: Spiel in `src/js/view.js` registrieren:
-  `new GameWrapper(require('./setups/game-NNN-name').default),`
+  `gpuTools.js`, Webpack). Ausnahme: Spiel in `src/js/view.js` registrieren:  `new GameWrapper(require('./setups/game-NNN-name').default),`
 - Bestehende Spiele/GUI-Komponenten nur auf Anfrage ändern. Neue npm-Pakete nur nach Rückfrage (vorhanden: `gpu.js`, `p2`, `tone`).
 - Prüfen: `npm run dev`, Spiel in der Selectbox wählen. Keine Tests/Linter; Fehler in `handle()` erscheinen rot oben links.
 
@@ -67,8 +65,14 @@ Weitere Helfer: `repellAll`, `checkBorderAndSlowDown` aus `game-017-thehorde.js`
 
 - `export default { name, description, image, init(), handle(grid, elapsed), stop() }`; `description` deutscher
   Intro-Text, `image` aus `public/media/img/gametitles/` (`###N###` = Zufallsvariante 2…N+1).
-- `gameState`: Start ⇄ Spiel ⇄ Game-Over; `init()` setzt alles zurück. Start-`fillButton` OHNE `keyCode` (sonst ignoriert er die Laser), Leertaste separat abfragen (`pressedKeys['Space']`),
+- `gameState`: Start ⇄ Spiel ⇄ Game-Over; `init()` setzt alles zurück. Start-`fillButton` OHNE `keyCode` (sonst ignoriert er die Laser), Leertaste separat abfragen (`pressedKeys['Space']`) [laser-chris: lol hier ist ja was gehoerig schiefgegangen, unbedingt fixen],
   Game-Over mit Statistik. Balancing-Werte im `DIFFICULTY`-Objekt oben. Vorlage: `game-022-fractal-bakery.js`.
+- immer highscore.js interface nutzen
+-- mehrere teams in wert codieren, kann beliebig viele eigenschaften speichern, ein sortierfeld
+-- sie pflegt automatisch high und low score auch wenn es nicht sinnvoll ist, aber der schlechteste zu sein ist manchmal genauso herausfordernd, wie etwa bei einem abraeumspiel, dort kann ja eine maximal und eine minimalzahl erreicht wird, etwa wenn anzahl gleichzeitig weggenommener ja punktzahl bestimmt, man kann also feld auf 2 arten abraeumen mit maximal punkten oder weniger, ersma nur geschwafel hier aber das ist sozusagen der grund mit high und low
+-- also: es wird keine liste per team/region whatever anglegt
+-- api wird weiterentwickelt aktuell noch nicht persistiert
+
 
 ## Design-Regeln
 
@@ -83,8 +87,12 @@ Weitere Helfer: `repellAll`, `checkBorderAndSlowDown` aus `game-017-thehorde.js`
 ## Code-Stil
 
 - Wie bestehende Spiele: `import`/`require(...).default` gemischt, modul-globaler Zustand.
-- Kopfkommentar mit Name + Regeln; Kommentare und Texte auf **Deutsch**. Prettier: 2 Spaces, Single Quotes, Semikolons.
+- Kopfkommentar mit Name + Regeln; Kommentare und Texte auf **Deutsch**. Prettier: 2 Spaces, Single Quotes, Semikolons. und dem verwendeten llm modell.
 - Arrays, aus denen in `handle()` entfernt wird, mit `.slice()` iterieren.
+- immer die moderne `` string variante nutzen, nicht anfangen mit + und /n shit zu arbeiten, das muss ich alles nun anpassen, da wollte die ki wohl nur token erzeugen, also bleib bei kompakter schreibweise, aber variablen und kommentare natuerlich schoen sprechend
+- nutze immer highscore.js es ist das interface was fuer highscore funktionalitaet genutzt werden soll
+-- special sachen wie mehrere teams muessen halt als entry codiert werden, wir aber nur high/lowscore listen geben nicht noch extra listen fuer teams
+-- persistens ist aktuell noch nicht implementiert, wird aber impl des interfaces dann bald machen
 
 
 ## graphify
@@ -128,10 +136,4 @@ Eine einmal geworfene Exception bleibt als rote ERROR-Zeile bis zum Reload stehe
 Intro-Dauer zählt Frames statt Sekunden (60 Hz ≈ 17 s).
 Nur Engine-intern (für spätere Fixes):
 
-
-## code style
-
-- immer die moderne `` string variante nutzen, nicht anfangen mit + und /n shit zu arbeiten, das muss ich alles nun anpassen, da wollte die ki wohl nur token erzeugen, also bleib bei kompakter schreibweise, aber variablen und kommentare natuerlich schoen sprechend
-- nutze immer highscore.js es ist das interface was fuer highscore funktionalitaet genutzt werden soll
--- special sachen wie mehrere teams muessen halt als entry codiert werden, wir aber nur high/lowscore listen geben nicht noch extra listen fuer teams
--- persistens ist aktuell noch nicht implementiert, wird aber impl des interfaces dann bald machen
+ 
