@@ -147,7 +147,20 @@ Experimentell|Asymmetrisches Multiplayer|Teams mit völlig unterschiedlichen Rol
 Experimentell|Maenneken retten, also Lemmings| Teams muessen unterschiedliche "Tribes Retten"
 Experimentell|God Game| Die Goetter spielen gegeneinander, "machen halt krasse wunder um gegnerischen god zu besiegen, erdbeben vulkan regen windsturm usw. "
 Experimentell|Worms| Klassisch, prinzip halt je aelter, desto angreifbarer
-Experimentell|Frogger| 
+Experimentell|Frogger| Frogger maessig einen hinderniskurs ueberwinden
+Experimentell|Fraktal| Irgendwas mit Mandelbrot/Julia 
+
+
+# boh here we need to create laser pointer games
+LaserPointerGame|Fraktal| Irgendwas mit Mandelbrot/Julia 
+LaserPointerGame|Crowd| Alle zusammen arbeiten an einem ziel
+LaserPointerGame|Crowd|Flappy Bird | Flappy bird alle kontrolieren ein oder mehrere sachen die vor hindernissen ausweichen mit oder ohne gravitation
+LaserPointerGame|CrowdPvP| Publikum gegeneinander auf eine art 
+LaserPointerGame|CrowdPvP|Tron| Tron style links rechts sind torhüter quasi
+LaserPointerGame|CrowdPvPMulti| More than 2 teams in the game 
+LaserPointerGame|CrowdPvPMulti|BaseFight| A capture the flag style game, the base ist the flag so to say
+ 
+
 
 )
 
