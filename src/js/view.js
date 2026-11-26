@@ -19,6 +19,9 @@ var gameDebugCorners = require('./setups/game-004-debug-corners').default;
 var gameDebugTransform = require('./setups/game-004-debug-transform').default;
 var GameWrapper = require('./setups/game-wrapper').default;
 var gameChanged = 0;
+// Leertaste hat das Intro übersprungen → Space bis zum Loslassen NICHT ans Spiel weitergeben
+// (sonst würde dasselbe Drücken im ersten Spiel-Frame gleich den Start-Knopf auslösen)
+var swallowSpace = false;
 //var game01 = require('./setups/game-005-switch').default
 var games = [
   // new GameWrapper(require('./setups/game-006-montagsmaler').default),
@@ -97,6 +100,12 @@ var games = [
   new GameWrapper(require('./setups/game-066-fractaliteration.js').default),  //  tbd
   new GameWrapper(require('./setups/game-067-fraktalsimon.js').default),  //  tbd
   new GameWrapper(require('./setups/game-068-fraktalorbits.js').default),  //  tbd
+  new GameWrapper(require('./setups/game-069-realtimeschach').default),  // Realtime-Schach (Idee Georg)
+  new GameWrapper(require('./setups/game-070-mauerbrecher').default),  // Mauerbrecher (Idee Georg, gui/speedRail)
+  new GameWrapper(require('./setups/game-071-schlangenfutter').default),  // Schlangenfutter – Snake umgekehrt (Idee Georg)
+  new GameWrapper(require('./setups/game-072-alphabet').default),  // Alphabet – Kühlschrankpoesie (Idee Georg)
+  new GameWrapper(require('./setups/game-073-laserkristall').default),  // Laserkristall – Points connect (Idee Georg)
+  new GameWrapper(require('./setups/game-074-farbenturm').default),  // Farbenturm – größter Klumpen (Idee Georg)
   new GameWrapper(require('./setups/game-998-gui-ai2-test').default),  // testscene fuer ai aktualisierte ui komps
   new GameWrapper(require('./setups/game-999-gui-showcase').default),  // neue nur ai generierte komps test seite
 ];
@@ -121,8 +130,69 @@ function stopGame(index) {
     games[index].stop();
   }
 }
-startGame(0);
-var avgElapsed = 0;
+// kein startGame(0) mehr beim Laden: Das erste init() macht der frameHandler für das tatsächlich
+// gewählte Spiel (sonst bekam Spiel 0 ein init(), das wiederhergestellte Spiel aber keins).
+
+/**
+ * Debug-Maus als Laser:
+ * Linke Maustaste über dem Spiel-Canvas gedrückt halten = ein Laserpunkt an der Mausposition.
+ * Er wird VOR dem Lowpassfilter ins Grid geschrieben und bekommt damit dieselbe Verbreiterung und dasselbe
+ * Nachleuchten wie ein echter Laser – Spiele merken keinen Unterschied.
+ * Kein Eingriff in init()/Spielwechsel: es wird nur im laufenden Frame ins Grid geschrieben.
+ * Ausgeschaltet beim Einmessen (showMapping / showTransform), da dort die Maus die Eckmarker zieht.
+ */
+const MOUSE_LASER_RADIUS_PX = 12; // Größe des Maus-Lasers auf dem 1920×1080-Canvas
+var mouseLaser = { x: 0, y: 0, down: false, inside: false };
+function updateMouseLaser(evt) {
+  const canvasEl = document.getElementById('canvas');
+  if (!canvasEl) return;
+  const rect = canvasEl.getBoundingClientRect();
+  mouseLaser.x = (evt.clientX - rect.left) / rect.width;
+  mouseLaser.y = (evt.clientY - rect.top) / rect.height;
+  mouseLaser.inside = mouseLaser.x >= 0 && mouseLaser.x < 1 && mouseLaser.y >= 0 && mouseLaser.y < 1;
+}
+document.addEventListener('mousemove', updateMouseLaser);
+document.addEventListener('mousedown', (evt) => {
+  if (evt.button !== 0) return;
+  updateMouseLaser(evt);
+  mouseLaser.down = true;
+});
+document.addEventListener('mouseup', (evt) => {
+  if (evt.button === 0) mouseLaser.down = false;
+});
+window.addEventListener('blur', () => {
+  mouseLaser.down = false;
+});
+
+function injectMouseLaser(grid) {
+  if (!grid || !mouseLaser.down || !mouseLaser.inside) return;
+  // beim Einmessen gehört die Maus den Eckmarkern
+  if (laserConfig.showMapping || laserConfig.showTransform) return;
+  const res = Math.floor(Math.sqrt(grid.length));
+  if (!res) return;
+  const cx = Math.floor(mouseLaser.x * res);
+  const cy = Math.floor(mouseLaser.y * res);
+  // Zellen sind nicht quadratisch (1920/res breit, 1080/res hoch) → Radius je Achse umrechnen
+  const rx = Math.round(MOUSE_LASER_RADIUS_PX / (1920 / res));
+  const ry = Math.round(MOUSE_LASER_RADIUS_PX / (1080 / res));
+  for (let y = Math.max(0, cy - ry); y <= Math.min(res - 1, cy + ry); y++) {
+    for (let x = Math.max(0, cx - rx); x <= Math.min(res - 1, cx + rx); x++) {
+      const nx = rx ? (x - cx) / rx : 0;
+      const ny = ry ? (y - cy) / ry : 0;
+      if (nx * nx + ny * ny <= 1) grid[x + y * res] = 1;
+    }
+  }
+}
+
+/**
+ * FPS-Messung: aus dem echten Abstand zwischen zwei Frames (elapsed), nicht aus der Rechenzeit im frameHandler.
+ * Geglättet wird die Frame-ZEIT (zeitbasiert, ~1 s), FPS = 1 / geglättete Frame-Zeit.
+ * Ausreißer (erster Frame, Tab-Wechsel > 1 s) zählen nicht. Die Warnung erscheint erst nach einer Anlaufzeit.
+ */
+const FPS_SMOOTHING_SECONDS = 1;
+const FPS_WARN_BELOW = 25;
+const FPS_WARMUP_SECONDS = 2;
+var fpsStats = { frameTime: 0, workMs: 0, measured: 0 };
 var lastGameIndex = -1;
 async function scaleImageData(imageData, width, height) {
   const resizeWidth = width >> 0;
@@ -392,10 +462,8 @@ async function frameHandler() {
   //var laserGrid = LaserApi.getRectForInputImageGPU(canvasColorInterest);
   var laserGrid = LaserApi.getFine(CanvasVideo.getVideo());
 
-/**
- hier bauen wir debug maessig den maus cursor als debug moeglichkeit ein anhand der bild coordinate
-tbd
-*/
+  // Debug-Maus als Laserpunkt (vor dem Lowpass → gleiches Kreuz + Nachleuchten wie ein echter Laser)
+  injectMouseLaser(laserGrid);
 
 
   laserGrid = Lowpassfilter.handle(laserGrid, elapsed);
@@ -407,13 +475,25 @@ tbd
 
   // console.log(laserGrid);
 
-  if (lastGameIndex !== laserConfig.gameIndex) {
-    if (games[lastGameIndex] && games[lastGameIndex].stop) {
+  // Spielwechsel: altes Spiel stoppen, neues IMMER initialisieren – auch beim allerersten Frame
+  // (z. B. aus dem localStorage wiederhergestelltes Spiel). Früher bekam nur ein Wechsel mit Vorgänger init().
+  // Index als Zahl vergleichen: die Selectbox liefert Strings, der localStorage evtl. Zahlen.
+  const currentGameIndex = Number(laserConfig.gameIndex) || 0;
+  if (lastGameIndex !== currentGameIndex) {
+    const isFirstStart = lastGameIndex === -1;
+    if (games[lastGameIndex]) {
       games[lastGameIndex].stop(laserGrid);
-      games[laserConfig.gameIndex].init();
-      gameChanged = 1000;
     }
-    lastGameIndex = laserConfig.gameIndex;
+    if (games[currentGameIndex]) {
+      games[currentGameIndex].error = undefined; // alte ERROR-Zeile nicht ins neue Spiel mitnehmen
+      try {
+        games[currentGameIndex].init();
+      } catch (e) {
+        games[currentGameIndex].error = e;
+      }
+    }
+    if (!isFirstStart) gameChanged = 1000; // Intro wie bisher nur beim Wechsel, nicht beim Seitenstart
+    lastGameIndex = currentGameIndex;
   }
   if (laserConfig.showGame) {
     if (gameChanged > 0) {
@@ -492,6 +572,15 @@ tbd
 
       ctx.fillStyle = getRgbSpreadHex(laserConfig.testColor, 0.75);
       ctx.fillRect(0, 270 + 768 + 10, 1920 * (gameChanged / 1000), 32);
+      renderText({
+        ctx: ctx,
+        x: 1920 - 20,
+        y: 1080 - 4,
+        fontSize: '24px',
+        align: 'right',
+        fillStyle: 'darkgrey',
+        text: 'Leertaste = überspringen',
+      });
     } else {
       // console.time("GameHandler")
       try {
@@ -534,9 +623,15 @@ tbd
   if (laserConfig.showTransform) {
     gameDebugTransform.handle(laserGrid, elapsed);
   }
-  var currentTime2 = performance.now();
-  var elapsed2 = (currentTime2 - currentTime) / 1000;
-  avgElapsed = (avgElapsed + elapsed2) / 2;
+  // Rechenzeit dieses Frames (nur zur Info) und echte Bildrate aus dem Frame-Abstand
+  const workTime = (performance.now() - currentTime) / 1000;
+  if (elapsed > 0 && elapsed < 1) {
+    const k = Math.min(1, elapsed / FPS_SMOOTHING_SECONDS);
+    fpsStats.frameTime = fpsStats.frameTime ? fpsStats.frameTime + (elapsed - fpsStats.frameTime) * k : elapsed;
+    fpsStats.workMs += (workTime * 1000 - fpsStats.workMs) * k;
+    fpsStats.measured += elapsed;
+  }
+  const fps = fpsStats.frameTime > 0 ? 1 / fpsStats.frameTime : 0;
   if (laserConfig.showHelp) {
     showHelp(ctx);
     renderText({
@@ -544,17 +639,17 @@ tbd
       fontSize: '25px',
       align: 'left',
       fillStyle: 'red',
-      text: `FPS = ${(1 / avgElapsed).toFixed(2)}`,
+      text: `FPS = ${fps.toFixed(1)} · Rechenzeit ${fpsStats.workMs.toFixed(1)} ms`,
     });
   }
-  if (1 / avgElapsed < 30) {
+  if (fpsStats.measured > FPS_WARMUP_SECONDS && fps < FPS_WARN_BELOW) {
     renderText({
       ctx: ctx,
       y: 150,
       fontSize: '25px',
       align: 'left',
       fillStyle: 'green',
-      text: `WARNING LOW FPS = ${(1 / avgElapsed).toFixed(2)}`,
+      text: `WARNING LOW FPS = ${fps.toFixed(1)}`,
     });
   }
   window.requestAnimationFrame(frameHandler);
@@ -731,10 +826,20 @@ if (document.addEventListener) {
 
 document.onkeyup = function (e) {
   laserConfig.pressedKeys[e.code] = false;
+  if (e.code === 'Space') swallowSpace = false;
   console.log(laserConfig.pressedKeys);
 };
 
 document.onkeydown = function (evt) {
+  // Leertaste während des Intros: Intro überspringen. Kein init() hier – das macht weiterhin nur der
+  // Spielwechsel im frameHandler. Das Spiel bekommt diesen Tastendruck nicht zu sehen (swallowSpace).
+  if (evt.code === 'Space' && (gameChanged > 0 || swallowSpace)) {
+    if (gameChanged > 0) gameChanged = 0;
+    swallowSpace = true;
+    laserConfig.pressedKeys.Space = false;
+    evt.preventDefault(); // kein Scrollen der Seite
+    return;
+  }
   laserConfig.pressedKeys[evt.code] = true;
   console.log(laserConfig.pressedKeys);
   if (isNaN(evt.key)) {
