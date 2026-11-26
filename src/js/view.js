@@ -22,6 +22,9 @@ var gameChanged = 0;
 // Leertaste hat das Intro übersprungen → Space bis zum Loslassen NICHT ans Spiel weitergeben
 // (sonst würde dasselbe Drücken im ersten Spiel-Frame gleich den Start-Knopf auslösen)
 var swallowSpace = false;
+
+
+
 //var game01 = require('./setups/game-005-switch').default
 var games = [
   // new GameWrapper(require('./setups/game-006-montagsmaler').default),
@@ -120,6 +123,10 @@ console.log('games are', games);
 MainCanvas.init(document.getElementById('canvas'));
 CanvasVideo.init(document.getElementById('video'));
 
+
+function isImageReady(img) {
+  return img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0;
+}
 function startGame(index) {
   if (games[index].init) {
     games[index].init();
@@ -501,6 +508,7 @@ async function frameHandler() {
 
       ctx.drawImage(logolasergames, 10, 10, 250, 250);
       const imageGame = games[laserConfig.gameIndex].getImage();
+      if(isImageReady(imageGame)){
       for (let i = 0; i < 5; i++) {
         ctx.drawImage(
           imageGame,
@@ -510,6 +518,7 @@ async function frameHandler() {
           768
         );
       }
+    }
 
       // gradient right
       const gradient = ctx.createLinearGradient(
